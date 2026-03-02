@@ -1,347 +1,314 @@
-require('dotenv').config();
-const path = require('path');
 const express = require('express');
 const cors = require('cors');
+const { Sequelize, DataTypes } = require('sequelize');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { Sequelize, DataTypes } = require('sequelize');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../frontend')));
 
-const JWT_SECRET = process.env.JWT_SECRET || 'apple_store_kolwezi_secret_2024';
-
-// DB Connection
+// ─── Database Connection ───────────────────────────────────────────────────────
 let sequelize;
+
 if (process.env.DATABASE_URL) {
-  // Railway internal network doesn't use SSL; only enable SSL for external URLs
-  const isExternalDB = process.env.DATABASE_URL.includes('railway.app') || process.env.DATABASE_URL.includes('amazonaws.com');
-  const dialectOptions = isExternalDB ? { ssl: { require: true, rejectUnauthorized: false } } : {};
-  sequelize = new Sequelize(process.env.DATABASE_URL, {
+  console.log('Connecting to DB via DATABASE_URL...');
+  const dbUrl = process.env.DATABASE_URL;
+  const isInternalUrl = dbUrl.includes('.railway.internal') || dbUrl.includes('localhost') || dbUrl.includes('127.0.0.1');
+  sequelize = new Sequelize(dbUrl, {
     dialect: 'postgres',
     logging: false,
-    dialectOptions,
-    pool: { max: 5, min: 0, acquire: 30000, idle: 10000 }
+    dialectOptions: isInternalUrl ? {} : {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
+    }
   });
 } else {
-  sequelize = new Sequelize(
-    process.env.DB_NAME || 'apple_store',
-    process.env.DB_USER || 'postgres',
-    process.env.DB_PASS || 'postgres123',
-    {
-      host: process.env.DB_HOST || 'localhost',
-      dialect: 'postgres',
-      logging: false,
-      pool: { max: 5, min: 0, acquire: 30000, idle: 10000 }
+  const host = process.env.PGHOST || 'localhost';
+  const port = parseInt(process.env.PGPORT) || 5432;
+  const user = process.env.PGUSER || 'postgres';
+  const password = process.env.PGPASSWORD || '';
+  const database = process.env.PGDATABASE || 'railway';
+
+  console.log(`Connecting to DB via individual vars: ${host}:${port}/${database}`);
+
+  // Use SSL only for external hosts, not for Railway internal network
+  const isInternal = host.includes('.railway.internal') || host === 'localhost' || host === '127.0.0.1';
+
+  sequelize = new Sequelize(database, user, password, {
+    host,
+    port,
+    dialect: 'postgres',
+    logging: false,
+    dialectOptions: isInternal ? {} : {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false
+      }
     }
-  );
+  });
 }
 
-// Models
+// ─── Models ────────────────────────────────────────────────────────────────────
 const User = sequelize.define('User', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   username: { type: DataTypes.STRING, unique: true, allowNull: false },
   password: { type: DataTypes.STRING, allowNull: false },
-  role: { type: DataTypes.ENUM('admin', 'cashier'), defaultValue: 'cashier' }
-});
+  role: { type: DataTypes.ENUM('admin', 'manager', 'cashier'), defaultValue: 'cashier' }
+}, { tableName: 'users' });
 
 const Product = sequelize.define('Product', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   name: { type: DataTypes.STRING, allowNull: false },
-  category: { type: DataTypes.STRING, defaultValue: 'iPhone' },
-  price: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
-  stock: { type: DataTypes.INTEGER, defaultValue: 0 },
+  category: { type: DataTypes.STRING },
   sku: { type: DataTypes.STRING, unique: true },
+  price: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
+  cost: { type: DataTypes.DECIMAL(10, 2) },
+  stock: { type: DataTypes.INTEGER, defaultValue: 0 },
+  minStock: { type: DataTypes.INTEGER, defaultValue: 5 },
   description: { type: DataTypes.TEXT }
-});
+}, { tableName: 'products' });
 
 const Sale = sequelize.define('Sale', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  productId: { type: DataTypes.INTEGER, allowNull: false },
-  productName: { type: DataTypes.STRING },
-  quantity: { type: DataTypes.INTEGER, allowNull: false },
-  unitPrice: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
   total: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
   paymentMethod: { type: DataTypes.ENUM('cash', 'card', 'mobile'), defaultValue: 'cash' },
-  cashierId: { type: DataTypes.INTEGER },
-  cashierName: { type: DataTypes.STRING },
-  saleDate: { type: DataTypes.DATEONLY, defaultValue: DataTypes.NOW }
-});
+  notes: { type: DataTypes.TEXT }
+}, { tableName: 'sales' });
+
+const SaleItem = sequelize.define('SaleItem', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  quantity: { type: DataTypes.INTEGER, allowNull: false },
+  unitPrice: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
+  subtotal: { type: DataTypes.DECIMAL(10, 2), allowNull: false }
+}, { tableName: 'sale_items' });
 
 const Expense = sequelize.define('Expense', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   description: { type: DataTypes.STRING, allowNull: false },
   amount: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
-  category: { type: DataTypes.STRING, defaultValue: 'Général' },
+  category: { type: DataTypes.STRING },
   date: { type: DataTypes.DATEONLY, defaultValue: DataTypes.NOW }
-});
+}, { tableName: 'expenses' });
 
-// Auth Middleware
+const StockMovement = sequelize.define('StockMovement', {
+  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+  type: { type: DataTypes.ENUM('in', 'out', 'adjustment'), allowNull: false },
+  quantity: { type: DataTypes.INTEGER, allowNull: false },
+  reason: { type: DataTypes.STRING },
+  previousStock: { type: DataTypes.INTEGER },
+  newStock: { type: DataTypes.INTEGER }
+}, { tableName: 'stock_movements' });
+
+// Associations
+Sale.hasMany(SaleItem, { foreignKey: 'saleId', as: 'items' });
+SaleItem.belongsTo(Sale, { foreignKey: 'saleId' });
+SaleItem.belongsTo(Product, { foreignKey: 'productId' });
+Product.hasMany(SaleItem, { foreignKey: 'productId' });
+StockMovement.belongsTo(Product, { foreignKey: 'productId' });
+Product.hasMany(StockMovement, { foreignKey: 'productId' });
+
+// ─── Auth Middleware ───────────────────────────────────────────────────────────
+const JWT_SECRET = process.env.JWT_SECRET || 'apple-store-kolwezi-secret-2024';
+
 const auth = (req, res, next) => {
   const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Token manquant' });
+  if (!token) return res.status(401).json({ error: 'No token' });
   try {
     req.user = jwt.verify(token, JWT_SECRET);
     next();
-  } catch { res.status(401).json({ error: 'Token invalide' }); }
-};
-
-const adminOnly = (req, res, next) => {
-  if (req.user.role !== 'admin') return res.status(403).json({ error: 'Accès refusé' });
-  next();
-};
-
-// Seed Data
-async function seedData() {
-  const count = await User.count();
-  if (count === 0) {
-    const hash = await bcrypt.hash('admin123', 10);
-    await User.create({ username: 'admin', password: hash, role: 'admin' });
-    const cashHash = await bcrypt.hash('caisse123', 10);
-    await User.create({ username: 'caissier1', password: cashHash, role: 'cashier' });
-
-    const products = [
-      { name: 'iPhone 15 Pro Max 256GB', category: 'iPhone', price: 1299.99, stock: 15, sku: 'IPH15PM256', description: 'Titane naturel, puce A17 Pro' },
-      { name: 'iPhone 15 Pro 128GB', category: 'iPhone', price: 999.99, stock: 20, sku: 'IPH15P128', description: 'Titane noir, puce A17 Pro' },
-      { name: 'iPhone 15 128GB', category: 'iPhone', price: 799.99, stock: 25, sku: 'IPH15128', description: 'Noir, puce A16 Bionic' },
-      { name: 'iPhone 14 128GB', category: 'iPhone', price: 699.99, stock: 10, sku: 'IPH14128', description: 'Minuit, puce A15 Bionic' },
-      { name: 'MacBook Pro 14" M3', category: 'Mac', price: 1999.99, stock: 8, sku: 'MBP14M3', description: 'Puce M3, 8GB RAM, 512GB SSD' },
-      { name: 'MacBook Air 13" M2', category: 'Mac', price: 1299.99, stock: 12, sku: 'MBA13M2', description: 'Puce M2, 8GB RAM, 256GB SSD' },
-      { name: 'iPad Pro 12.9" M2', category: 'iPad', price: 1099.99, stock: 10, sku: 'IPADPRO129M2', description: 'Puce M2, 128GB, WiFi' },
-      { name: 'iPad Air 10.9" M1', category: 'iPad', price: 749.99, stock: 15, sku: 'IPADAIRM1', description: 'Puce M1, 64GB, WiFi' },
-      { name: 'Apple Watch Series 9 45mm', category: 'Watch', price: 429.99, stock: 20, sku: 'AWS945', description: 'Aluminium minuit, GPS' },
-      { name: 'AirPods Pro 2ème gen', category: 'Accessoires', price: 249.99, stock: 30, sku: 'AIRPODSPRO2', description: 'Réduction de bruit active' },
-      { name: 'AirPods 3ème gen', category: 'Accessoires', price: 179.99, stock: 25, sku: 'AIRPODS3', description: 'Audio spatial' },
-      { name: 'Apple TV 4K 3ème gen', category: 'Accessoires', price: 129.99, stock: 18, sku: 'APPLETV4K3', description: 'WiFi + Ethernet, 64GB' }
-    ];
-    await Product.bulkCreate(products);
-
-    // Sample sales for last 7 days
-    const today = new Date();
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const dateStr = d.toISOString().split('T')[0];
-      const numSales = Math.floor(Math.random() * 5) + 2;
-      for (let j = 0; j < numSales; j++) {
-        const prodIdx = Math.floor(Math.random() * products.length);
-        const prod = products[prodIdx];
-        const qty = Math.floor(Math.random() * 3) + 1;
-        const price = parseFloat(prod.price);
-        await Sale.create({
-          productId: prodIdx + 1,
-          productName: prod.name,
-          quantity: qty,
-          unitPrice: price,
-          total: price * qty,
-          paymentMethod: ['cash', 'card', 'mobile'][Math.floor(Math.random() * 3)],
-          cashierId: 1,
-          cashierName: 'admin',
-          saleDate: dateStr
-        });
-      }
-    }
-
-    await Expense.bulkCreate([
-      { description: 'Loyer boutique', amount: 500, category: 'Loyer', date: new Date().toISOString().split('T')[0] },
-      { description: 'Électricité', amount: 120, category: 'Charges', date: new Date().toISOString().split('T')[0] },
-      { description: 'Salaires', amount: 800, category: 'Personnel', date: new Date().toISOString().split('T')[0] }
-    ]);
-
-    console.log('✅ Données de démo créées');
+  } catch {
+    res.status(401).json({ error: 'Invalid token' });
   }
-}
+};
 
-// Routes
-app.get('/api/health', (req, res) => res.json({ status: 'OK', app: 'Apple Store Kolwezi' }));
+// ─── Routes ────────────────────────────────────────────────────────────────────
+
+// Health check
+app.get('/api/health', (req, res) => res.json({ status: 'ok', timestamp: new Date() }));
 
 // Auth
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { username, password } = req.body;
     const user = await User.findOne({ where: { username } });
-    if (!user || !await bcrypt.compare(password, user.password))
-      return res.status(401).json({ error: 'Identifiants incorrects' });
+    if (!user || !await bcrypt.compare(password, user.password)) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
     const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '24h' });
     res.json({ token, user: { id: user.id, username: user.username, role: user.role } });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Products
 app.get('/api/products', auth, async (req, res) => {
-  try { res.json(await Product.findAll({ order: [['category', 'ASC'], ['name', 'ASC']] })); }
-  catch (e) { res.status(500).json({ error: e.message }); }
-});
-
-app.post('/api/products', auth, adminOnly, async (req, res) => {
-  try { res.status(201).json(await Product.create(req.body)); }
-  catch (e) { res.status(400).json({ error: e.message }); }
-});
-
-app.put('/api/products/:id', auth, adminOnly, async (req, res) => {
   try {
-    const p = await Product.findByPk(req.params.id);
-    if (!p) return res.status(404).json({ error: 'Produit non trouvé' });
-    await p.update(req.body);
-    res.json(p);
-  } catch (e) { res.status(400).json({ error: e.message }); }
+    const products = await Product.findAll({ order: [['name', 'ASC']] });
+    res.json(products);
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-app.delete('/api/products/:id', auth, adminOnly, async (req, res) => {
+app.post('/api/products', auth, async (req, res) => {
   try {
-    const p = await Product.findByPk(req.params.id);
-    if (!p) return res.status(404).json({ error: 'Produit non trouvé' });
-    await p.destroy();
-    res.json({ message: 'Produit supprimé' });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+    const product = await Product.create(req.body);
+    res.status(201).json(product);
+  } catch (err) { res.status(400).json({ error: err.message }); }
+});
+
+app.put('/api/products/:id', auth, async (req, res) => {
+  try {
+    const product = await Product.findByPk(req.params.id);
+    if (!product) return res.status(404).json({ error: 'Not found' });
+    await product.update(req.body);
+    res.json(product);
+  } catch (err) { res.status(400).json({ error: err.message }); }
+});
+
+app.delete('/api/products/:id', auth, async (req, res) => {
+  try {
+    const product = await Product.findByPk(req.params.id);
+    if (!product) return res.status(404).json({ error: 'Not found' });
+    await product.destroy();
+    res.json({ message: 'Deleted' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 // Sales
 app.get('/api/sales', auth, async (req, res) => {
   try {
-    const { startDate, endDate, limit } = req.query;
-    const where = {};
-    if (startDate && endDate) {
-      const { Op } = require('sequelize');
-      where.saleDate = { [Op.between]: [startDate, endDate] };
-    }
-    const opts = { where, order: [['createdAt', 'DESC']] };
-    if (limit) opts.limit = parseInt(limit);
-    res.json(await Sale.findAll(opts));
-  } catch (e) { res.status(500).json({ error: e.message }); }
+    const sales = await Sale.findAll({
+      include: [{ model: SaleItem, as: 'items', include: [Product] }],
+      order: [['createdAt', 'DESC']],
+      limit: 100
+    });
+    res.json(sales);
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 app.post('/api/sales', auth, async (req, res) => {
+  const t = await sequelize.transaction();
   try {
-    const { productId, quantity, paymentMethod } = req.body;
-    const product = await Product.findByPk(productId);
-    if (!product) return res.status(404).json({ error: 'Produit non trouvé' });
-    if (product.stock < quantity) return res.status(400).json({ error: 'Stock insuffisant' });
-    const total = parseFloat(product.price) * quantity;
-    const sale = await Sale.create({
-      productId, quantity, paymentMethod,
-      productName: product.name,
-      unitPrice: product.price,
-      total,
-      cashierId: req.user.id,
-      cashierName: req.user.username,
-      saleDate: new Date().toISOString().split('T')[0]
-    });
-    await product.update({ stock: product.stock - quantity });
+    const { items, paymentMethod, notes } = req.body;
+    let total = 0;
+    for (const item of items) {
+      total += item.quantity * item.unitPrice;
+    }
+    const sale = await Sale.create({ total, paymentMethod, notes }, { transaction: t });
+    for (const item of items) {
+      const subtotal = item.quantity * item.unitPrice;
+      await SaleItem.create({ saleId: sale.id, productId: item.productId, quantity: item.quantity, unitPrice: item.unitPrice, subtotal }, { transaction: t });
+      const product = await Product.findByPk(item.productId, { transaction: t });
+      if (product) {
+        const previousStock = product.stock;
+        const newStock = previousStock - item.quantity;
+        await product.update({ stock: newStock }, { transaction: t });
+        await StockMovement.create({ productId: item.productId, type: 'out', quantity: item.quantity, reason: `Sale #${sale.id}`, previousStock, newStock }, { transaction: t });
+      }
+    }
+    await t.commit();
     res.status(201).json(sale);
-  } catch (e) { res.status(400).json({ error: e.message }); }
-});
-
-app.delete('/api/sales/:id', auth, adminOnly, async (req, res) => {
-  try {
-    const s = await Sale.findByPk(req.params.id);
-    if (!s) return res.status(404).json({ error: 'Vente non trouvée' });
-    // Restore stock
-    const product = await Product.findByPk(s.productId);
-    if (product) await product.update({ stock: product.stock + s.quantity });
-    await s.destroy();
-    res.json({ message: 'Vente supprimée' });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (err) {
+    await t.rollback();
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // Expenses
 app.get('/api/expenses', auth, async (req, res) => {
-  try { res.json(await Expense.findAll({ order: [['date', 'DESC']] })); }
-  catch (e) { res.status(500).json({ error: e.message }); }
-});
-
-app.post('/api/expenses', auth, adminOnly, async (req, res) => {
-  try { res.status(201).json(await Expense.create(req.body)); }
-  catch (e) { res.status(400).json({ error: e.message }); }
-});
-
-app.delete('/api/expenses/:id', auth, adminOnly, async (req, res) => {
   try {
-    const e = await Expense.findByPk(req.params.id);
-    if (!e) return res.status(404).json({ error: 'Dépense non trouvée' });
-    await e.destroy();
-    res.json({ message: 'Dépense supprimée' });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+    const expenses = await Expense.findAll({ order: [['date', 'DESC']] });
+    res.json(expenses);
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Dashboard Stats
+app.post('/api/expenses', auth, async (req, res) => {
+  try {
+    const expense = await Expense.create(req.body);
+    res.status(201).json(expense);
+  } catch (err) { res.status(400).json({ error: err.message }); }
+});
+
+app.delete('/api/expenses/:id', auth, async (req, res) => {
+  try {
+    const expense = await Expense.findByPk(req.params.id);
+    if (!expense) return res.status(404).json({ error: 'Not found' });
+    await expense.destroy();
+    res.json({ message: 'Deleted' });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Stock movements
+app.get('/api/stock-movements', auth, async (req, res) => {
+  try {
+    const movements = await StockMovement.findAll({
+      include: [Product],
+      order: [['createdAt', 'DESC']],
+      limit: 200
+    });
+    res.json(movements);
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+app.post('/api/stock-movements', auth, async (req, res) => {
+  const t = await sequelize.transaction();
+  try {
+    const { productId, type, quantity, reason } = req.body;
+    const product = await Product.findByPk(productId, { transaction: t });
+    if (!product) return res.status(404).json({ error: 'Product not found' });
+    const previousStock = product.stock;
+    const newStock = type === 'in' ? previousStock + quantity : previousStock - quantity;
+    await product.update({ stock: newStock }, { transaction: t });
+    const movement = await StockMovement.create({ productId, type, quantity, reason, previousStock, newStock }, { transaction: t });
+    await t.commit();
+    res.status(201).json(movement);
+  } catch (err) {
+    await t.rollback();
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Dashboard stats
 app.get('/api/dashboard', auth, async (req, res) => {
   try {
-    const { Op } = require('sequelize');
-    const today = new Date().toISOString().split('T')[0];
-    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
-    const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
-
-    const [todaySales, weekSales, monthSales, totalProducts, lowStock, allExpenses] = await Promise.all([
-      Sale.findAll({ where: { saleDate: today } }),
-      Sale.findAll({ where: { saleDate: { [Op.between]: [weekAgo, today] } } }),
-      Sale.findAll({ where: { saleDate: { [Op.gte]: monthStart } } }),
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const [totalProducts, lowStockProducts, todaySales, totalExpenses, recentSales] = await Promise.all([
       Product.count(),
-      Product.count({ where: { stock: { [Op.lt]: 5 } } }),
-      Expense.findAll({ where: { date: { [Op.gte]: monthStart } } })
+      Product.count({ where: { stock: { [Sequelize.Op.lte]: sequelize.col('minStock') } } }),
+      Sale.sum('total', { where: { createdAt: { [Sequelize.Op.gte]: today } } }),
+      Expense.sum('amount'),
+      Sale.findAll({ include: [{ model: SaleItem, as: 'items', include: [Product] }], order: [['createdAt', 'DESC']], limit: 5 })
     ]);
-
-    const todayRevenue = todaySales.reduce((s, x) => s + parseFloat(x.total), 0);
-    const weekRevenue = weekSales.reduce((s, x) => s + parseFloat(x.total), 0);
-    const monthRevenue = monthSales.reduce((s, x) => s + parseFloat(x.total), 0);
-    const monthExpenses = allExpenses.reduce((s, x) => s + parseFloat(x.amount), 0);
-
-    // Daily chart data (last 7 days)
-    const chartData = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
-      const dateStr = d.toISOString().split('T')[0];
-      const label = d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric' });
-      const daySales = weekSales.filter(s => s.saleDate === dateStr);
-      chartData.push({ date: dateStr, label, revenue: daySales.reduce((s, x) => s + parseFloat(x.total), 0), count: daySales.length });
-    }
-
-    // Top products
-    const productSales = {};
-    monthSales.forEach(s => {
-      if (!productSales[s.productName]) productSales[s.productName] = { name: s.productName, revenue: 0, qty: 0 };
-      productSales[s.productName].revenue += parseFloat(s.total);
-      productSales[s.productName].qty += s.quantity;
-    });
-    const topProducts = Object.values(productSales).sort((a, b) => b.revenue - a.revenue).slice(0, 5);
-
-    res.json({
-      today: { revenue: todayRevenue, sales: todaySales.length },
-      week: { revenue: weekRevenue, sales: weekSales.length },
-      month: { revenue: monthRevenue, sales: monthSales.length, expenses: monthExpenses, profit: monthRevenue - monthExpenses },
-      inventory: { total: totalProducts, lowStock },
-      chartData,
-      topProducts,
-      recentSales: weekSales.slice(0, 10)
-    });
-  } catch (e) { res.status(500).json({ error: e.message }); }
+    res.json({ totalProducts, lowStockProducts, todaySales: todaySales || 0, totalExpenses: totalExpenses || 0, recentSales });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
-// Users (admin only)
-app.get('/api/users', auth, adminOnly, async (req, res) => {
-  try { res.json(await User.findAll({ attributes: ['id', 'username', 'role', 'createdAt'] })); }
-  catch (e) { res.status(500).json({ error: e.message }); }
-});
-
-app.post('/api/users', auth, adminOnly, async (req, res) => {
-  try {
-    const { username, password, role } = req.body;
-    const hash = await bcrypt.hash(password, 10);
-    const user = await User.create({ username, password: hash, role });
-    res.status(201).json({ id: user.id, username: user.username, role: user.role });
-  } catch (e) { res.status(400).json({ error: e.message }); }
-});
-
-// Start
+// ─── Start ─────────────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
-// Catch-all: serve frontend for any non-API route
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/index.html'));
-});
 
-sequelize.sync({ alter: true }).then(async () => {
-  await seedData();
-  app.listen(PORT, () => console.log(`🍎 Apple Store Kolwezi API running on port ${PORT}`));
-}).catch(err => { console.error('DB Error:', err); process.exit(1); });
+sequelize.authenticate()
+  .then(() => {
+    console.log('Database connected successfully!');
+    return sequelize.sync({ alter: true });
+  })
+  .then(async () => {
+    console.log('Database synced!');
+    // Create default admin if not exists
+    const adminExists = await User.findOne({ where: { username: 'admin' } });
+    if (!adminExists) {
+      const hashedPassword = await bcrypt.hash('admin123', 10);
+      await User.create({ username: 'admin', password: hashedPassword, role: 'admin' });
+      console.log('Default admin created: admin / admin123');
+    }
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch(err => {
+    console.error('DB Error:', err.message);
+    process.exit(1);
+  });
