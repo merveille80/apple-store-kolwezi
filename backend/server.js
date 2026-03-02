@@ -16,15 +16,13 @@ const JWT_SECRET = process.env.JWT_SECRET || 'apple_store_kolwezi_secret_2024';
 // DB Connection
 let sequelize;
 if (process.env.DATABASE_URL) {
+  // Railway internal network doesn't use SSL; only enable SSL for external URLs
+  const isExternalDB = process.env.DATABASE_URL.includes('railway.app') || process.env.DATABASE_URL.includes('amazonaws.com');
+  const dialectOptions = isExternalDB ? { ssl: { require: true, rejectUnauthorized: false } } : {};
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
     logging: false,
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false
-      }
-    },
+    dialectOptions,
     pool: { max: 5, min: 0, acquire: 30000, idle: 10000 }
   });
 } else {
