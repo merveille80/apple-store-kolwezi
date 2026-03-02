@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: apple_store_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: apple_store
+      POSTGRES_USER: apple_user
+      POSTGRES_PASSWORD: apple_pass_2024
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apple_user -d apple_store"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    container_name: apple_store_backend
+    restart: unless-stopped
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: apple_store
+      DB_USER: apple_user
+      DB_PASS: apple_pass_2024
+      JWT_SECRET: apple_store_kolwezi_secret_2024
+      PORT: 3000
+      NODE_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+
+  frontend:
+    build: ./frontend
+    container_name: apple_store_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8080:80"
+
+volumes:
+  pgdata:
