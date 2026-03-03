@@ -10,7 +10,7 @@ import {
   ArrowTrendingDownIcon
 } from '@heroicons/react/24/outline'
 
-const API = import.meta.env.VITE_API_URL || ''
+const API = import.meta.env.VITE_API_URL || 'https://apple-store-kolwezi-production.up.railway.app'
 
 const fmt = (v) => `${Number(v).toLocaleString('fr-CD')} FC`
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const API = import.meta.env.VITE_API_URL || '';
+const API = import.meta.env.VITE_API_URL || 'https://apple-store-kolwezi-production.up.railway.app';
 
 export default function Inventory() {
   const [products, setProducts] = useState([]);

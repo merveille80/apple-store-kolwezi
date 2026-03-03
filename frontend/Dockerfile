@@ -9,9 +9,13 @@ RUN npm ci
 
 COPY . .
 
+# Accept build-time API URL
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
+
 RUN npm run build
 
-# Stage 2: Serve with nginx (no global npm installs needed)
+# Stage 2: Serve with nginx
 FROM nginx:alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
