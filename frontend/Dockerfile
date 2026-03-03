@@ -1,27 +1,31 @@
+# Stage 1: Build
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy frontend package files (build context is repo root)
-COPY frontend/package*.json ./
+COPY package*.json ./
 
 RUN npm ci
 
-# Copy frontend source
-COPY frontend/ .
+COPY . .
 
-# Build the app
 RUN npm run build
 
-# Production stage
-FROM node:20-alpine
+# Stage 2: Serve with nginx (no global npm installs needed)
+FROM nginx:alpine
 
-WORKDIR /app
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-RUN npm install -g serve
-
-COPY --from=builder /app/dist ./dist
+# nginx config to handle React Router (SPA)
+RUN echo 'server { \
+    listen 3000; \
+    root /usr/share/nginx/html; \
+    index index.html; \
+    location / { \
+        try_files $uri $uri/ /index.html; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
 
 EXPOSE 3000
 
-CMD ["serve", "-s", "dist", "-l", "3000"]
+CMD ["nginx", "-g", "daemon off;"]
