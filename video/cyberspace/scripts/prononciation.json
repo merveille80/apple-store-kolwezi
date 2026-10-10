@@ -1,0 +1,15 @@
+{
+  "_note": "Lexique de balisage : chaque terme est réécrit en orthographe phonétique française avant la synthèse vocale. Les tags entre crochets en tête sont des indications de jeu pour eleven_v3 (non prononcées).",
+  "termes": {
+    "CyberSpace": "Saïbeur-Spéïce",
+    "SARL": "èss-a-èr-èl",
+    "IA": "i-a",
+    "WhatsApp": "Ouatsap",
+    "PME": "pé-èm-eu",
+    "cloud": "klaoud",
+    "cyberspacesarl.com": "saïbeur spéïce sarl point com",
+    "+243": "plus deux cent quarante-trois",
+    "h/24": "heures sur vingt-quatre"
+  },
+  "direction": "[warm, confident, natural]"
+}
