@@ -3,20 +3,23 @@ import {useCurrentFrame, useVideoConfig, Img, staticFile, Audio} from 'remotion'
 import {clamp, prog, eo, eo5, eio, eio5, back, lerp, appear, pop, Layer, GridBg, Pill, Center, shadow, shadowSoft} from './ui';
 
 // Pub iPhone 18 Pro Max · Apple Store Kolwezi
-// Tous les horaires sont en secondes absolues : voix Théo (prise 2) décalée de OFF, musique 120 BPM (PHI = 0,12 s).
-export const OFF = 0.35;
-const w = (x) => x + OFF; // temps d'un mot de la prise 2 → temps vidéo
+// Tous les horaires sont en secondes absolues : voix Théo (v2, prise 1) décalée de OFF,
+// musique = le son de merveille dont le grand retour (58,36 s du fichier) tombe sur DROP (voir musique.py).
+export const OFF = 0.36;
+const w = (x) => x + OFF; // temps d'un mot de la prise → temps vidéo
+export const DUR = 48.5;
 const T = {
-  delestage: w(0.089), trois: w(2.063), soiree: w(2.943),
-  s2: 5.12, connait: w(4.836), photos: w(6.216), rame: w(8.783), stockage: w(10.129), sature: w(10.836), pire: w(11.716),
-  s3: 13.05, aider: w(12.796), pas: w(14.436), lacher: w(14.876), gap: 15.62,
-  drop: 16.12, aifone: w(16.076),
-  s5: 17.95, batterie: w(17.658), courant: w(19.75),
-  s6: 21.0, nettes: w(21.518), souvenirs: w(22.698),
-  s7: 25.05, rapide: w(24.878), fluide: w(25.858), place: w(26.491), garder: w(27.606),
-  s8: 28.55, chez: w(28.358), store: w(28.918), original: w(30.5), configure: w(31.686),
-  s9: 33.25, cta: w(33.078), dropFinal: 34.12, dispo: w(34.569), passe: w(35.758), ecris: w(36.878), ouatsap: w(37.425),
-  end: 39.6,
+  delestage: w(0.151), trois: w(2.28), soiree: w(3.467),
+  s2: 5.45, connait: w(5.387), photos: w(7.314), rame: w(9.867), stockage: w(11.04), sature: w(11.667), pire: w(12.453),
+  s3: 13.75, aider: w(13.52), pas: w(15.08), lacher: w(15.64), gap: 16.05,
+  drop: 16.55, aifone: w(16.76),
+  s5: 18.75, batterie: w(18.48), courant: w(20.912),
+  s6: 22.3, nettes: w(22.84), souvenirs: w(24.12),
+  s7: 26.75, rapide: w(26.52), fluide: w(27.54), place: w(28.347), garder: w(29.968),
+  sC: 30.75, noir: w(30.576), argent: w(31.44), glacier: w(32.07), bordeaux: w(32.8), choisis: w(33.56),
+  s8: 34.75, chez: w(34.507), store: w(35.12), original: w(36.871), configure: w(38.208),
+  s9: 39.89, cta: w(39.76), dropFinal: 39.89, dispo: w(41.251), passe: w(42.54), ecris: w(43.72), ouatsap: w(44.267),
+  end: 46.92,
 };
 const BEAT = 0.5;
 
@@ -112,7 +115,7 @@ export const Video = ({vertical = false}) => {
   const s1 = t < T.s2 + 0.4;
   const flash = 1 - eo(prog(t, 0, 0.18));
   const blink = t > T.trois ? (Math.floor((t - T.trois) / 0.25) % 2 === 0 ? 1 : 0.25) : 1;
-  const dieOut = 1 - eio(prog(t, 4.75, 0.3));
+  const dieOut = 1 - eio(prog(t, T.s2 - 0.37, 0.3));
   const toWhite = eio5(prog(t, T.s2 - 0.05, 0.45));
 
   // ---------- Scène 2 : les galères
@@ -209,7 +212,7 @@ export const Video = ({vertical = false}) => {
           {/* batterie */}
           {t > T.s5 && (
             <div style={{position: 'absolute', ...(V ? {left: 0, right: 0, top: 1150 * u, alignItems: 'center'} : {left: 900 * u, top: 0, bottom: 0, justifyContent: 'center'}), display: 'flex', flexDirection: 'column', gap: 26 * u}}>
-              <Words t={t} align={V ? 'center' : 'left'} size={(V ? 88 : 86) * u} items={[['Toute', T.batterie + 0.5], ['ta', T.batterie + 0.75], ['journée.', T.batterie + 0.9]]} />
+              <Words t={t} align={V ? 'center' : 'left'} size={(V ? 88 : 86) * u} items={[["Jusqu'à", T.batterie], ['29 h.', T.batterie + 0.52]]} />
               <Words t={t} align={V ? 'center' : 'left'} size={(V ? 46 : 42) * u} weight={500} color={GRAY} items={[['Même', T.courant - 0.3], ['sans', T.courant - 0.1], ['courant.', T.courant + 0.05]]} />
               <div style={{display: 'flex', alignItems: 'center', gap: 28 * u, marginTop: 20 * u, ...appear(t, T.s5 + 0.3, 0.6, 20 * u)}}>
                 <BatteryIcon width={190 * u} level={1} color={GREEN} stroke={INK} />
@@ -238,7 +241,7 @@ export const Video = ({vertical = false}) => {
       </Layer>
 
       {/* ===== Scène 7 : vitesse et stockage ===== */}
-      <Layer t={t} from={T.s7} to={T.s8} zoomIn={0.4} zoomOut={0.4}>
+      <Layer t={t} from={T.s7} to={T.sC} zoomIn={0.4} zoomOut={0.4}>
         <Center style={{flexDirection: 'column', gap: 46 * u}}>
           <div style={{display: 'grid', gridTemplateColumns: `repeat(${V ? 4 : 6}, ${110 * u}px)`, gap: 26 * u}}>
             {Array.from({length: V ? 12 : 12}).map((_, i) => {
@@ -252,13 +255,36 @@ export const Video = ({vertical = false}) => {
               );
             })}
           </div>
-          <Words t={t} size={(V ? 76 : 72) * u} style={{maxWidth: (V ? 960 : 1700) * u}} items={[['Rapide.', T.rapide], ['Fluide.', T.fluide], ['Assez', T.place, {color: GRAY}], ['de', T.place + 0.25, {color: GRAY}], ['place', T.place + 0.4, {color: GRAY}], ['pour', T.place + 0.6, {color: GRAY}], ['tout.', T.place + 0.8, {color: GRAY}]]} />
+          <Words t={t} size={(V ? 76 : 72) * u} style={{maxWidth: (V ? 960 : 1700) * u}} items={[['Rapide.', T.rapide], ['Fluide.', T.fluide], ["Jusqu'à", T.place + 0.09, {color: GRAY}], ['2 To.', T.place + 0.4, {color: GRAY}]]} />
           <div style={{...appear(t, T.place, 0.5, 14 * u), opacity: (t < T.garder + 0.2 ? 1 : 1 - eo(prog(t, T.garder + 0.2, 0.4))) * clamp(prog(t, T.place, 0.4))}}>
             <Pill kind="light" style={{fontSize: 26 * u, padding: `${12 * u}px ${26 * u}px`, color: RED, position: 'relative'}}>
               Stockage saturé
               <div style={{position: 'absolute', left: 20 * u, top: '52%', height: 3 * u, background: RED, width: `calc(${eo(prog(t, T.garder, 0.35)) * 100}% - ${40 * u}px)`}} />
             </Pill>
           </div>
+        </Center>
+      </Layer>
+
+      {/* ===== Scène couleurs ===== */}
+      <Layer t={t} from={T.sC} to={T.s8} zoomIn={0.45} zoomOut={0.4}>
+        <Center style={{flexDirection: 'column', gap: (V ? 50 : 40) * u}}>
+          <div style={{display: 'grid', gridTemplateColumns: `repeat(${V ? 2 : 4}, auto)`, gap: `${(V ? 50 : 26) * u}px ${(V ? 40 : 34) * u}px`}}>
+            {[['noir', 'Noir', T.noir], ['argent', 'Argent', T.argent], ['glacier', 'Glacier', T.glacier], ['bordeaux', 'Bordeaux', T.bordeaux]].map(([f, name, at], i, all) => {
+              const next = i < 3 ? all[i + 1][2] : T.choisis;
+              const dim = (i < 3 ? eo(prog(t, next, 0.3)) : 0) * (1 - eo(prog(t, T.choisis, 0.35)));
+              const focus = eo(prog(t, at, 0.35)) * (1 - eo(prog(t, next, 0.3)));
+              const p = pop(t, at - 0.08, 0.6);
+              return (
+                <div key={f} style={{...p, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 * u}}>
+                  <div style={{transform: `translateY(${-14 * focus * u}px) scale(${1 + 0.05 * focus})`, opacity: lerp(1, 0.4, dim)}}>
+                    <Photo name={`couleurs/${f}.png`} height={(V ? 500 : 440) * u} t={t} sheenAt={at} />
+                  </div>
+                  <div style={{fontSize: (V ? 44 : 34) * u, fontWeight: 600, color: INK, letterSpacing: -0.6 * u, opacity: lerp(1, 0.4, dim)}}>{name}</div>
+                </div>
+              );
+            })}
+          </div>
+          <Words t={t} size={(V ? 84 : 72) * u} items={[['Choisis', T.choisis], ['le', T.choisis + 0.39], ['tien.', T.choisis + 0.48]]} />
         </Center>
       </Layer>
 
@@ -278,7 +304,7 @@ export const Video = ({vertical = false}) => {
       </Layer>
 
       {/* ===== Scène 9 : appel à l'action ===== */}
-      <Layer t={t} from={T.s9} to={42.6} zoomIn={0.5} zoomOut={0}>
+      <Layer t={t} from={T.s9} to={DUR + 0.1} zoomIn={0.5} zoomOut={0}>
         {(() => {
           const slam = eo5(prog(t, T.dropFinal, 0.9));
           const endT = eio5(prog(t, T.end, 0.9));
