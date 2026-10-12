@@ -104,7 +104,8 @@ const WaIcon = ({size = 26}) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M20 12a8 8 0 0 1-11.8 7L4 20l1.1-4A8 8 0 1 1 20 12z" /><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.4-1.8-.9-.8.8c-.9-.4-1.9-1.4-2.3-2.3l.8-.8-.9-1.8L9 9.5z" /></svg>
 );
 
-export const Video = ({vertical = false}) => {
+// texteFin=false : écran de fin sans ses textes (ils sont refaits en calques texte modifiables dans invideo)
+export const Video = ({vertical = false, texteFin = true}) => {
   const frame = useCurrentFrame();
   const {fps, width, height} = useVideoConfig();
   const t = frame / fps;
@@ -313,7 +314,7 @@ export const Video = ({vertical = false}) => {
               <div style={{transform: `translateY(${lerp(140, 0, slam) * u + Math.sin(t * 1.6) * 8 * u}px) rotate(${lerp(8, -3, slam)}deg) scale(${lerp(0.9, 1, slam) * lerp(1, V ? 0.8 : 0.82, endT)})`, opacity: clamp(slam * 3)}}>
                 <Photo name="dos-et-ecran.png" height={(V ? 820 : 720) * u} t={t} sheenAt={T.dropFinal + 0.2} />
               </div>
-              <div style={{display: 'flex', flexDirection: 'column', alignItems: V ? 'center' : 'flex-start', gap: 18 * u}}>
+              <div style={{display: 'flex', flexDirection: 'column', alignItems: V ? 'center' : 'flex-start', gap: 18 * u, visibility: texteFin ? 'visible' : 'hidden'}}>
                 <div style={{fontSize: (V ? 82 : 80) * u, fontWeight: 700, color: INK, letterSpacing: -2.5 * u, ...appear(t, T.cta, 0.6, 24 * u)}}>iPhone 18 Pro Max</div>
                 <div style={{fontSize: (V ? 48 : 46) * u, fontWeight: 500, color: GRAY, letterSpacing: -1 * u, ...appear(t, T.dispo, 0.6, 18 * u)}}>Disponible maintenant.</div>
                 <div style={{display: 'flex', gap: 16 * u, marginTop: 24 * u, flexDirection: 'row', alignItems: 'center'}}>
