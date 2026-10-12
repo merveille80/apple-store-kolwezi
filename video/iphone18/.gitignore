@@ -3,3 +3,5 @@ out/
 audio/mix.raw.wav
 audio/musique.wav
 audio/musique-v2.wav
+audio/epidemic/*.wav
+audio/pistes/
