@@ -67,9 +67,12 @@ EV = [
     (46.36, 'success', -24, 'peak'),
     (47.9, 'whoosh2', -30, 'start'),
     (49.36, 'swoosh', -29, 'start'),
+    (50.0, 'swipe', -30, 'start'), (51.1, 'swipe', -30, 'start'), (52.56, 'swipe', -30, 'start'),  # bouton qui bascule (v2)
     (50.08, 'tap', -24, 'peak'), (51.18, 'tap', -24, 'peak'), (52.64, 'tap', -24, 'peak'),
     (53.3, 'success', -25, 'peak'),                    # « honnête »
     (54.3, 'whoosh2', -30, 'start'),
+    (54.27, 'impact2', -25, 'peak'),                   # coupe sur l'écran sombre « glitch » (v2)
+    (57.22, 'whoosh2', -28, 'start'),                  # retour au blanc (v2)
     (55.12, 'tap', -25, 'peak'), (56.7, 'tap', -25, 'peak'),
     (57.8, 'swoosh', -28, 'start'),
     (58.95, 'whoosh', -26, 'start'),                   # bascule sur le bleu

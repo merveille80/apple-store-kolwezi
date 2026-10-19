@@ -3,7 +3,7 @@ import {Img, staticFile} from 'remotion';
 
 // Langage visuel de la vidéo de référence : fond blanc, bulles iMessage, surligneur jaune, rouge pour barrer, vert pour valider.
 export const C = {
-  bg: '#FCFCFC',
+  bg: '#FFFFFF',
   ink: '#080808',
   gray: '#7E7D80',
   ghost: '#ADACAF',
@@ -13,6 +13,11 @@ export const C = {
   blue: '#0983FE',
   green: '#2ECC5B',
   night: '#464ADF',
+  // v2 (référence 2) : un seul accent rouge avec halo, vert lumineux pour le positif, écran sombre « glitch »
+  accent: '#E1262A',
+  glow: 'rgba(225,38,42,.55)',
+  lime: '#1FC46A',
+  dark: '#1A1214',
 };
 // Sur le Mac, -apple-system donne San Francisco ; Inter sert de secours dans le cloud.
 export const FONT = "-apple-system, 'SF Pro Display', 'Inter Display', 'Inter', 'Helvetica Neue', sans-serif";
@@ -45,18 +50,43 @@ export const pop = (t, at, dur = 0.45, from = 0.6) => {
   return {opacity: clamp((t - at) / 0.08), transform: `scale(${from + (1 - from) * s})`};
 };
 
-// Calque de scène : entrée rapide floutée, micro-travelling avant permanent, sortie par réduction rapide.
-export const Scene = ({t, from, to, children, bg, push = 0.035, cutIn = false, cutOut = false}) => {
-  if (t < from - 0.001 || t > to + 0.001) return null;
-  const i = cutIn ? 1 : eo(prog(t, from, 0.24));
-  const o = cutOut ? 0 : prog(t, to - 0.12, 0.12) ** 2;
-  const drift = 1 + push * prog(t, from, to - from);
-  const scale = (0.94 + 0.06 * i) * drift * (1 - 0.35 * o);
-  const blur = (1 - i) * 20 + o * 14;
+// Flou de bougé directionnel (filtre SVG, flou horizontal ou vertical seulement)
+export const MotionBlur = ({id, x = 0, y = 0, children, style}) => {
+  const on = x > 0.3 || y > 0.3;
   return (
-    <div style={{position: 'absolute', inset: 0, background: bg, opacity: i * (1 - o), transform: `scale(${scale})`, filter: blur > 0.05 ? `blur(${blur}px)` : undefined}}>
+    <div style={{...style, filter: on ? `url(#${id})` : style && style.filter}}>
+      {on && (
+        <svg width="0" height="0" style={{position: 'absolute'}}>
+          <filter id={id} x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation={`${x} ${y}`} /></filter>
+        </svg>
+      )}
       {children}
     </div>
+  );
+};
+
+// Calque de scène v2 (référence 2) : entrée en « coup de zoom » (1,14 → 1, flou), micro-travelling avant permanent,
+// sortie par glissé latéral avec flou de bougé horizontal (dir = 1 vers la droite, -1 vers la gauche) ou par zoom traversant.
+export const Scene = ({t, from, to, children, bg, push = 0.04, cutIn = false, cutOut = false, out = 'slide', dir = 1, id = 's'}) => {
+  if (t < from - 0.001 || t > to + 0.001) return null;
+  const i = cutIn ? 1 : eo(prog(t, from, 0.26));
+  const o = cutOut ? 0 : eio(prog(t, to - 0.16, 0.16));
+  const drift = 1 + push * prog(t, from, to - from);
+  let scale = (1.14 - 0.14 * i) * drift;
+  let tx = 0, bx = 0, blur = (1 - i) * 16;
+  if (out === 'zoom') {
+    scale *= 1 + 0.45 * o;
+    blur += o * 18;
+  } else {
+    tx = dir * o * 420;
+    bx = Math.sin(Math.PI * Math.min(o, 1)) * 40 + o * 20;
+  }
+  return (
+    <MotionBlur id={`mb-${id}`} x={bx} style={{position: 'absolute', inset: 0, background: bg, opacity: i * (1 - o * o)}}>
+      <div style={{position: 'absolute', inset: 0, transform: `translateX(${tx}px) scale(${scale})`, filter: blur > 0.05 ? `blur(${blur}px)` : undefined}}>
+        {children}
+      </div>
+    </MotionBlur>
   );
 };
 
@@ -74,12 +104,16 @@ export const T = (size, weight = 600, color = C.ink) => ({
 });
 
 // Mots qui apparaissent un à un sur l'attaque de la voix. items : [[mot, instant], …]
-export const Words = ({t, items, style, gap = '0.25em', align = 'center'}) => (
+// v2 : le mot arrive d'en bas en rouge avec halo (flou → net), reste rouge tant qu'il est le dernier dit,
+// puis repasse à la couleur du texte.
+export const Words = ({t, items, style, gap = '0.25em', align = 'center', accent = true}) => (
   <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: align, columnGap: gap, ...style}}>
     {items.map(([w, at], i) => {
-      const x = eo(prog(t, at, 0.16));
+      const x = eo(prog(t, at, 0.2));
+      const next = items[i + 1] ? items[i + 1][1] : at + 0.55;
+      const hot = accent ? 1 - prog(t, Math.max(next, at + 0.16), 0.22) : 0;
       return (
-        <span key={i} style={{display: 'inline-block', opacity: x, transform: `translateY(${(1 - x) * 14}px)`, filter: x < 1 ? `blur(${(1 - x) * 8}px)` : undefined}}>{w}</span>
+        <span key={i} style={{display: 'inline-block', opacity: clamp((t - at) / 0.08), transform: `translateY(${(1 - x) * 0.45}em) scale(${0.82 + 0.18 * x})`, transformOrigin: '50% 100%', filter: x < 1 ? `blur(${(1 - x) * 10}px)` : undefined, color: hot > 0 ? `color-mix(in srgb, ${C.accent} ${Math.round(hot * 100)}%, currentColor)` : undefined, textShadow: hot > 0.02 ? `0 0 ${0.35 * hot}em rgba(225,38,42,${0.55 * hot})` : undefined}}>{w}</span>
       );
     })}
   </div>
@@ -90,18 +124,31 @@ export const Ink = ({t, items}) => (
   <>
     {items.map(([w, at], i) => {
       const x = prog(t, at, 0.1);
+      const next = items[i + 1] ? items[i + 1][1] : at + 0.5;
+      const hot = x > 0 ? 1 - prog(t, Math.max(next, at + 0.14), 0.2) : 0;
+      const base = x >= 1 ? C.ink : x <= 0 ? C.ghost : `rgb(${lerp(173, 8, x)},${lerp(172, 8, x)},${lerp(175, 8, x)})`;
       return (
-        <span key={i} style={{color: x >= 1 ? C.ink : x <= 0 ? C.ghost : `rgb(${lerp(173, 8, x)},${lerp(172, 8, x)},${lerp(175, 8, x)})`}}>{w}{i < items.length - 1 ? ' ' : ''}</span>
+        <span key={i} style={{color: hot > 0 ? `color-mix(in srgb, ${C.accent} ${Math.round(hot * 100)}%, ${base})` : base, textShadow: hot > 0.02 ? `0 0 ${0.3 * hot}em rgba(225,38,42,${0.45 * hot})` : undefined}}>{w}{i < items.length - 1 ? ' ' : ''}</span>
       );
     })}
   </>
 );
 
-// Surligneur jaune qui avance de gauche à droite
+// v2 : sélection de texte iOS (poignées + fond rouge pâle), le mot passe en rouge avec halo
 export const Mark = ({t, at, children, dur = 0.35}) => {
   const p = eo(prog(t, at, dur));
+  const h = spring(t, at, 0.45);
+  const on = t >= at;
+  const Handle = ({top}) => (
+    <span style={{position: 'absolute', [top ? 'left' : 'right']: '-0.06em', top: top ? '-0.08em' : undefined, bottom: top ? undefined : '-0.12em', width: '0.05em', height: '1.18em', background: C.ink, borderRadius: 9, transform: `scaleY(${h})`, transformOrigin: top ? '50% 100%' : '50% 0%'}}>
+      <span style={{position: 'absolute', left: '50%', [top ? 'top' : 'bottom']: '-0.12em', width: '0.17em', height: '0.17em', marginLeft: '-0.085em', borderRadius: '50%', background: C.ink}} />
+    </span>
+  );
   return (
-    <span style={{backgroundImage: `linear-gradient(${C.mark}, ${C.mark})`, backgroundRepeat: 'no-repeat', backgroundPosition: '0 60%', backgroundSize: `${p * 100}% 78%`, padding: '0 0.1em', margin: '0 -0.04em', borderRadius: 6}}>{children}</span>
+    <span style={{position: 'relative', display: 'inline-block', padding: '0 0.06em', margin: '0 0.02em', backgroundImage: 'linear-gradient(rgba(225,38,42,.13), rgba(225,38,42,.13))', backgroundRepeat: 'no-repeat', backgroundSize: `${p * 100}% 100%`, color: on ? `color-mix(in srgb, ${C.accent} ${Math.round(p * 100)}%, currentColor)` : undefined, textShadow: on ? `0 0 ${0.3 * (1 - 0.6 * p)}em rgba(225,38,42,${0.4 * p})` : undefined}}>
+      {children}
+      {on && <><Handle top /><Handle /></>}
+    </span>
   );
 };
 
@@ -111,7 +158,7 @@ export const Strike = ({t, at, children, color = C.red}) => {
   return (
     <span style={{position: 'relative', display: 'inline-block'}}>
       {children}
-      <span style={{position: 'absolute', left: '-3%', top: '52%', height: '0.12em', width: `${p * 106}%`, background: color, borderRadius: 99}} />
+      <span style={{position: 'absolute', left: '-3%', top: '52%', height: '0.1em', width: `${p * 106}%`, background: color, borderRadius: 99, boxShadow: `0 0 0.3em ${C.glow}`}} />
     </span>
   );
 };
@@ -130,13 +177,19 @@ export const Avatar = ({size = 78, emoji = '🙂', bg = '#F3D9BD'}) => (
   <div style={{width: size, height: size, borderRadius: '50%', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: size * 0.6, flexShrink: 0}}>{emoji}</div>
 );
 
-// Bulle de discussion avec avatar ; elle naît d'un pop à ressort depuis l'avatar
-export const Bubble = ({t, at, children, width = 900, size = 56, style}) => {
+// v2 : la bulle devient une carte de message façon notification (en-tête avatar + nom + heure), entrée en pop à ressort
+export const Bubble = ({t, at, children, width = 900, size = 56, style, name = 'Client', time = 'maintenant'}) => {
   const s = t < at ? 0 : spring(t, at, 0.5);
   return (
-    <div style={{display: 'flex', alignItems: 'flex-end', gap: 22, width, opacity: clamp((t - at) / 0.08), ...style}}>
-      <Avatar />
-      <div style={{transformOrigin: '0% 100%', transform: `scale(${0.6 + 0.4 * s})`, background: C.bubble, borderRadius: 54, padding: '32px 44px', ...T(size, 450), lineHeight: 1.24}}>{children}</div>
+    <div style={{width, opacity: clamp((t - at) / 0.08), transform: `translateY(${(1 - s) * 40}px) scale(${0.86 + 0.14 * s})`, filter: s < 0.6 ? `blur(${(0.6 - s) * 20}px)` : undefined, ...style}}>
+      <div style={{background: '#fff', borderRadius: 44, boxShadow: '0 24px 70px rgba(0,0,0,.09), 0 2px 8px rgba(0,0,0,.04)', padding: '34px 44px 40px'}}>
+        <div style={{display: 'flex', alignItems: 'center', gap: 18, marginBottom: 20}}>
+          <Avatar size={64} />
+          <div style={{...T(34, 650)}}>{name}<span style={{color: C.gray, fontWeight: 450}}> · {time}</span></div>
+          <div style={{marginLeft: 'auto', width: 18, height: 18, borderRadius: '50%', background: C.lime, boxShadow: `0 0 16px ${C.lime}`}} />
+        </div>
+        <div style={{...T(size, 500), lineHeight: 1.26}}>{children}</div>
+      </div>
     </div>
   );
 };
@@ -174,3 +227,48 @@ export const Brand = ({size = 120, color = C.ink, oneLine = false}) => (
     Apple Store{oneLine ? ' ' : <br />}Kolwezi
   </div>
 );
+
+// Compteur à rouleaux (référence 2 : $0.14 → $328.00) : chaque caractère qui change roule verticalement avec flou
+export const Roll = ({t, steps, style}) => {
+  // steps : [[texte, instant], …]
+  let k = 0;
+  for (let i = 0; i < steps.length; i++) if (t >= steps[i][1]) k = i;
+  const cur = steps[k][0];
+  const prev = k > 0 ? steps[k - 1][0] : cur;
+  const p = k > 0 ? eo(prog(t, steps[k][1], 0.32)) : 1;
+  const n = Math.max(cur.length, prev.length);
+  return (
+    <span style={{display: 'inline-flex', ...style}}>
+      {Array.from({length: n}).map((_, i) => {
+        const a = prev[i] || '', b = cur[i] || '';
+        if (a === b || p >= 1) return <span key={i} style={{whiteSpace: 'pre'}}>{b}</span>;
+        const d = Math.sin(Math.PI * p) * 6;
+        return (
+          <span key={i} style={{position: 'relative', display: 'inline-block', overflow: 'hidden', whiteSpace: 'pre', verticalAlign: 'top'}}>
+            <span style={{visibility: 'hidden'}}>{b.length >= a.length ? b : a}</span>
+            <span style={{position: 'absolute', left: 0, top: 0, transform: `translateY(${-p * 100}%)`, filter: `blur(${d}px)`, opacity: 1 - p}}>{a}</span>
+            <span style={{position: 'absolute', left: 0, top: 0, transform: `translateY(${(1 - p) * 100}%)`, filter: `blur(${d}px)`}}>{b}</span>
+          </span>
+        );
+      })}
+    </span>
+  );
+};
+
+// Cibles concentriques (référence 2, plan du téléphone) : anneau gris + disque rouge qui naissent d'un point
+export const Rings = ({t, at, size = 700}) => {
+  const a = spring(t, at, 0.7), b = spring(t, at + 0.08, 0.7);
+  if (t < at) return null;
+  return (
+    <div style={{position: 'absolute', left: '50%', top: '50%', width: 0, height: 0}}>
+      <div style={{position: 'absolute', width: size, height: size, left: -size / 2, top: -size / 2, borderRadius: '50%', border: `${size * 0.07}px solid #E2E2E5`, transform: `scale(${a})`, boxShadow: '0 30px 80px rgba(0,0,0,.08)'}} />
+      <div style={{position: 'absolute', width: size * 0.7, height: size * 0.7, left: -size * 0.35, top: -size * 0.35, borderRadius: '50%', border: `${size * 0.11}px solid ${C.accent}`, transform: `scale(${b})`, boxShadow: `0 0 60px ${C.glow}`}} />
+    </div>
+  );
+};
+
+// Texte néon rouge sur fond sombre (référence 2, « Almost gone ») avec léger tremblement
+export const Neon = ({t, children, style}) => {
+  const j = Math.sin(t * 91) * 1.5 + Math.sin(t * 37) * 1.2;
+  return <span style={{color: '#FF3B3B', textShadow: `0 0 0.18em rgba(255,40,40,.9), 0 0 0.6em rgba(255,30,30,.55)`, filter: 'blur(0.6px)', transform: `translate(${j}px, ${-j * 0.6}px)`, display: 'inline-block', ...style}}>{children}</span>;
+};
