@@ -1,11 +1,11 @@
 import React from 'react';
-import {AbsoluteFill, Audio, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
-import {C, T, FONT, Scene, MotionBlur, Roll, Rings, Neon, Center, Words, Ink, Mark, Strike, Card, Pill, Avatar, Bubble, Check, Icon, Phone, Brand, enter, pop, spring, eo, eio, prog, clamp, lerp} from './ui';
+import {AbsoluteFill, Audio, Img, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {C, T, FONT, Scene, MotionBlur, Roll, Rings, LogoReveal, Center, Words, Ink, Mark, Strike, Card, Pill, Avatar, Bubble, Check, Icon, Phone, Brand, enter, pop, spring, eo, eio, prog, clamp, lerp} from './ui';
 
 // Les instants sont ceux de la voix Koraly (transcription mot à mot, audio/voix-mots.json) : la voix démarre à 0 s.
 export const DURATION = 89.5;
 
-// S1 · « Stop… avant d'acheter ton prochain iPhone, écoute ceci. » : mots cinétiques rouges avec halo (référence 2)
+// S1 · « Stop… avant d'acheter ton prochain iPhone, écoute ceci. » : mots cinétiques qui montent, flou → net
 const S1 = ({t, v}) => {
   const stopOut = eio(prog(t, 0.6, 0.14));
   const ph = spring(t, 1.88, 0.8);
@@ -107,13 +107,11 @@ const S4 = ({t, v}) => (
   </Center>
 );
 
-// S5 · les pilules fusionnent → nom de la boutique ; « une nouvelle expérience »
+// S5 · les pilules fusionnent → logo de la boutique ; « une nouvelle expérience »
 const S5 = ({t, v}) => {
   const m = eio(prog(t, 15.1, 0.4));
-  const wash = t >= 15.56 ? 1 - eo(prog(t, 15.56, 0.7)) : 0;
   return (
     <>
-      {wash > 0 && <div style={{position: 'absolute', inset: -200, background: '#F7D3D6', opacity: wash * 0.9}} />}
       {m < 1 && (
         <Center>
           <div style={{display: 'flex', flexDirection: v ? 'column' : 'row', alignItems: 'center', gap: lerp(v ? 44 : 36, -120, m), opacity: 1 - m, transform: `scale(${1 - 0.6 * m})`, filter: `blur(${m * 10}px)`}}>
@@ -123,7 +121,7 @@ const S5 = ({t, v}) => {
       )}
       <Center>
         <div style={{...T(52, 500, C.gray), ...enter(t, 15.3, 0.2), marginBottom: 14}}>chez</div>
-        <div style={{...pop(t, 15.56, 0.6, 0.7), filter: t < 15.7 ? `blur(${(1 - prog(t, 15.56, 0.14)) * 12}px)` : undefined}}><Brand size={v ? 150 : 140} /></div>
+        <LogoReveal t={t} at={15.5} width={v ? 820 : 760} style={{marginTop: 20}} />
         <Words t={t} items={[['on', 16.88], ['veut', 17.02], ['te', 17.18], ['faire', 17.32], ['vivre', 17.5]]} style={{...T(50, 500, C.gray), marginTop: 70}} />
         <div style={{marginTop: 26, ...pop(t, 17.76, 0.45, 0.7)}}>
           <Pill style={{fontSize: 58}}>une nouvelle <Mark t={t} at={18.22} dur={0.45}>expérience</Mark></Pill>
@@ -141,7 +139,7 @@ const S6 = ({t}) => (
   </Center>
 );
 
-// S7 · carte sombre façon « Transaction Fee » (référence 2) : courbe rouge qui monte, étiquettes qui s'allument
+// S7 · carte claire façon « Transaction Fee » : courbe noire qui monte, étiquettes qui s'allument
 const S7 = ({t, v}) => {
   const rows = [['ton budget', 24.3, 0.3], ['ton besoin', 25.36, 0.58], ['ton style de vie', 26.36, 0.86]];
   const W = v ? 860 : 1000, H = v ? 900 : 640;
@@ -155,28 +153,26 @@ const S7 = ({t, v}) => {
       <Words t={t} items={[['On', 22.04], ["t'aide", 22.18], ['à', 22.42], ['choisir', 22.48], ["l'iPhone", 22.86]]} style={{...T(64, 650)}} />
       <Words t={t} items={[['qui', 23.4], ['correspond', 23.58], ['à…', 24.06]]} style={{...T(64, 500, C.gray), marginBottom: 50}} />
       <div style={{...enter(t, 23.7, 0.26, 40), transform: `${enter(t, 23.7, 0.26, 40).transform || ''} scale(${zoom})`}}>
-        <div style={{position: 'relative', width: W, height: H, borderRadius: 54, background: C.dark, overflow: 'hidden', boxShadow: '0 40px 100px rgba(0,0,0,.25)', fontFamily: FONT}}>
+        <div style={{position: 'relative', width: W, height: H, borderRadius: 54, background: C.soft, overflow: 'hidden', boxShadow: '0 40px 100px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.03)', fontFamily: FONT}}>
           <svg width={W} height={H} style={{position: 'absolute', inset: 0}}>
-            {Array.from({length: 14}).map((_, k) => <line key={'v' + k} x1={k * W / 13} y1={0} x2={k * W / 13} y2={H} stroke="rgba(255,255,255,.06)" strokeWidth="2" />)}
-            {Array.from({length: 12}).map((_, k) => <line key={'h' + k} x1={0} y1={k * H / 11} x2={W} y2={k * H / 11} stroke="rgba(255,255,255,.06)" strokeWidth="2" />)}
-            <path d={d} fill="none" stroke={C.accent} strokeWidth="9" strokeLinecap="round" pathLength="1" strokeDasharray="1" strokeDashoffset={1 - draw} style={{filter: 'drop-shadow(0 0 14px rgba(255,40,40,.9))'}} />
+            {Array.from({length: 14}).map((_, k) => <line key={'v' + k} x1={k * W / 13} y1={0} x2={k * W / 13} y2={H} stroke="rgba(0,0,0,.05)" strokeWidth="2" />)}
+            {Array.from({length: 12}).map((_, k) => <line key={'h' + k} x1={0} y1={k * H / 11} x2={W} y2={k * H / 11} stroke="rgba(0,0,0,.05)" strokeWidth="2" />)}
+            <path d={d} fill="none" stroke={C.ink} strokeWidth="7" strokeLinecap="round" strokeLinejoin="round" pathLength="1" strokeDasharray="1" strokeDashoffset={1 - draw} />
           </svg>
-          <div style={{position: 'absolute', left: 54, top: 50, ...T(v ? 50 : 46, 650, '#fff')}}>Ton iPhone idéal</div>
+          <div style={{position: 'absolute', left: 54, top: 50, ...T(v ? 50 : 46, 650)}}>Ton iPhone idéal</div>
           {rows.map(([r, at, x]) => {
             const [px, py] = P(x);
             const s = t < at ? 0 : spring(t, at, 0.45);
             return (
               <div key={r} style={{position: 'absolute', left: px, top: py, opacity: clamp((t - at) / 0.08)}}>
-                <div style={{position: 'absolute', left: -15, top: -15, width: 30, height: 30, borderRadius: '50%', background: '#fff', boxShadow: '0 0 24px rgba(255,255,255,.9)', transform: `scale(${s})`}} />
-                <div style={{position: 'absolute', left: x > 0.7 ? -40 : 30, top: -96, transform: `translate(${x > 0.7 ? '-100%' : 0}, ${(1 - s) * 30}px)`, display: 'flex', alignItems: 'center', gap: 14, whiteSpace: 'nowrap', ...T(v ? 44 : 40, 650, '#fff'), textShadow: '0 0 18px rgba(255,255,255,.55)'}}>
+                <div style={{position: 'absolute', left: -15, top: -15, width: 30, height: 30, borderRadius: '50%', background: C.ink, border: '7px solid #fff', boxSizing: 'border-box', boxShadow: '0 6px 18px rgba(0,0,0,.18)', transform: `scale(${s})`}} />
+                <div style={{position: 'absolute', left: x > 0.7 ? -40 : 30, top: -96, transform: `translate(${x > 0.7 ? '-100%' : 0}, ${(1 - s) * 30}px)`, display: 'flex', alignItems: 'center', gap: 14, whiteSpace: 'nowrap', ...T(v ? 44 : 40, 650)}}>
                   <Check size={v ? 48 : 44} on={s} />{r}
                 </div>
               </div>
             );
           })}
-          <div style={{position: 'absolute', left: 54, bottom: 44, display: 'flex', alignItems: 'center', gap: 14, ...T(34, 600, 'rgba(255,255,255,.85)')}}>
-            <span style={{width: 26, height: 26, borderRadius: '50%', border: `5px solid ${C.accent}`}} />Apple Store Kolwezi
-          </div>
+          <Img src={staticFile('logo.png')} style={{position: 'absolute', left: 54, bottom: 44, height: 64, opacity: 0.9}} />
         </div>
       </div>
     </Center>
@@ -268,8 +264,8 @@ const S9 = ({t, v}) => {
           </MotionBlur>
           {t > 40.78 && (
             <div style={{position: 'absolute', left: 0, right: 0, top: v ? 1480 : 870, display: 'flex', justifyContent: 'center', ...enter(t, 40.86, 0.2)}}>
-              <Pill style={{fontSize: hero ? 64 : 54, padding: hero ? '28px 56px' : undefined, boxShadow: hero ? `0 0 0 4px ${C.accent}, 0 20px 60px ${C.glow}` : undefined}}>
-                iPhone <Roll t={t} steps={PRO.map(([, n, at]) => [n, at - 0.04])} style={{color: hero ? C.accent : C.ink}} /> Pro Max
+              <Pill style={{fontSize: hero ? 64 : 54, padding: hero ? '28px 56px' : undefined, }}>
+                iPhone <Roll t={t} steps={PRO.map(([, n, at]) => [n, at - 0.04])} style={{color: C.ink}} /> Pro Max
               </Pill>
             </div>
           )}
@@ -311,43 +307,45 @@ const S10 = ({t, v}) => {
             );
           })}
         </div>
-        <div style={{marginTop: 54, width: v ? 620 : 560, padding: '30px 0', borderRadius: 99, background: C.accent, textAlign: 'center', ...T(50, 650, '#fff'), transform: `rotate(${sw * -16}deg) translateY(${Math.abs(sw) * 16}px)`, boxShadow: `0 ${18 + Math.abs(sw) * 20}px 50px ${C.glow}`}}>
+        <div style={{marginTop: 54, width: v ? 620 : 560, padding: '30px 0', borderRadius: 99, background: C.ink, textAlign: 'center', ...T(50, 650, '#fff'), transform: `rotate(${sw * -16}deg) translateY(${Math.abs(sw) * 16}px)`, boxShadow: `0 ${18 + Math.abs(sw) * 20}px 50px rgba(0,0,0,.16)`}}>
           {k < 2 ? 'Demander conseil' : 'Passer en boutique'}
         </div>
         <div style={{display: 'flex', gap: 18, marginTop: 50}}>
-          {steps.map(([, at], i) => <div key={i} style={{width: t >= at - 0.06 ? 54 : 18, height: 18, borderRadius: 99, background: t >= at - 0.06 ? C.accent : '#E2E2E5'}} />)}
+          {steps.map(([, at], i) => <div key={i} style={{width: t >= at - 0.06 ? 54 : 18, height: 18, borderRadius: 99, background: t >= at - 0.06 ? C.ink : '#E2E2E5'}} />)}
         </div>
       </div>
     </Center>
   );
 };
 
-// S11 · rupture sombre « glitch » (référence 2, « Almost gone ») : les deux refus en néon rouge barrés,
-// puis retour net au blanc pour « juste une vraie orientation »
+// S11 · les deux refus s'écrivent puis se barrent d'un trait fin et passent en gris ;
+// ils s'effacent vers le haut pour laisser « juste une vraie orientation »
 const S11 = ({t, v}) => {
-  const dark = t < 57.22;
-  const flash = t < 54.42;
   const sz = v ? 76 : 80;
-  if (dark) {
-    return (
-      <AbsoluteFill style={{background: flash ? '#8A8A8A' : C.dark}}>
-        <AbsoluteFill style={{backgroundImage: 'repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 2px, transparent 2px 6px)'}} />
-        <Center style={{gap: 70, padding: '0 70px', textAlign: 'center'}}>
-          <div style={{...T(sz, 650), ...enter(t, 54.42, 0.18)}}><Neon t={t}><Strike t={t} at={55.12} color="#FF3B3B">Pas de pression</Strike></Neon></div>
-          <div style={{...T(sz, 650), ...enter(t, 55.52, 0.18)}}><Neon t={t + 3}><Strike t={t} at={56.7} color="#FF3B3B">Pas de discours compliqué</Strike></Neon></div>
-        </Center>
-      </AbsoluteFill>
-    );
-  }
+  const out = eio(prog(t, 57.0, 0.3));
+  const dim = (at) => {
+    const g = eo(prog(t, at + 0.15, 0.3));
+    return `rgb(${lerp(8, 174, g)},${lerp(8, 174, g)},${lerp(8, 178, g)})`;
+  };
   return (
-    <Center style={{padding: '0 70px', textAlign: 'center'}}>
-      <Words t={t} items={[['Juste', 57.3], ['une', 57.52]]} style={{...T(v ? 84 : 88, 700)}} />
-      <div style={{...T(v ? 96 : 100, 750), marginTop: 10, ...enter(t, 57.7, 0.2)}}><Mark t={t} at={57.8} dur={0.5}>vraie orientation</Mark></div>
-    </Center>
+    <>
+      {out < 1 && (
+        <Center style={{gap: 50, padding: '0 70px', textAlign: 'center', opacity: 1 - out, transform: `translateY(${-out * 140}px) scale(${1 - 0.08 * out})`, filter: out > 0 ? `blur(${out * 12}px)` : undefined}}>
+          <div style={{...T(sz, 650, dim(55.12)), ...enter(t, 54.42, 0.24, 30)}}><Strike t={t} at={55.12} color={C.gray}>Pas de pression</Strike></div>
+          <div style={{...T(sz, 650, dim(56.7)), ...enter(t, 55.52, 0.24, 30)}}><Strike t={t} at={56.7} color={C.gray}>Pas de discours compliqué</Strike></div>
+        </Center>
+      )}
+      {t > 57.2 && (
+        <Center style={{padding: '0 70px', textAlign: 'center'}}>
+          <Words t={t} items={[['Juste', 57.3], ['une', 57.52]]} style={{...T(v ? 84 : 88, 700)}} />
+          <div style={{...T(v ? 96 : 100, 750), marginTop: 10, ...enter(t, 57.7, 0.26, 30)}}><Mark t={t} at={57.8} dur={0.5}>vraie orientation</Mark></div>
+        </Center>
+      )}
+    </>
   );
 };
 
-// S12 · seul plan en couleur pleine : « comme si on conseillait un frère, une sœur, un ami. »
+// S12 · « comme si on conseillait un frère, une sœur, un ami. »
 const S12 = ({t, v}) => {
   const ppl = [['👦🏾', 'un frère', 60.22], ['👧🏾', 'une sœur', 61.0], ['🧑🏾', 'un ami', 61.66]];
   return (
@@ -356,7 +354,7 @@ const S12 = ({t, v}) => {
       <div style={{display: 'flex', gap: v ? 70 : 120}}>
         {ppl.map(([e, l, at]) => (
           <div key={l} style={{display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 26, ...pop(t, at, 0.5, 0.4)}}>
-            <div style={{borderRadius: '50%', boxShadow: t >= at && t < at + 0.6 ? `0 0 0 6px ${C.accent}, 0 0 50px ${C.glow}` : '0 20px 50px rgba(0,0,0,.1)'}}><Avatar size={v ? 200 : 210} emoji={e} bg="#F4F4F6" /></div>
+            <div style={{borderRadius: '50%', boxShadow: '0 20px 50px rgba(0,0,0,.1)'}}><Avatar size={v ? 200 : 210} emoji={e} bg="#F4F4F6" /></div>
             <Words t={t} items={[[l, at]]} style={{...T(52, 650)}} />
           </div>
         ))}
@@ -396,7 +394,7 @@ const S13 = ({t, v}) => {
                 <div style={{...T(40, 450, C.gray), marginBottom: 46}}>Apporte ton ancien iPhone en boutique.</div>
                 <div style={{display: 'flex', gap: 26}}>
                   <div style={{flex: 1, borderRadius: 99, padding: '30px 0', background: C.bubble, ...T(46, 600)}}>Plus tard</div>
-                  <div style={{flex: 1, borderRadius: 99, padding: '30px 0', background: C.accent, ...T(46, 600, '#fff'), transform: press ? 'scale(.97)' : undefined, filter: press ? 'brightness(.85)' : undefined}}>Échanger</div>
+                  <div style={{flex: 1, borderRadius: 99, padding: '30px 0', background: C.ink, ...T(46, 600, '#fff'), transform: press ? 'scale(.97)' : undefined, filter: press ? 'brightness(.85)' : undefined}}>Échanger</div>
                 </div>
               </div>
             ) : null}
@@ -419,14 +417,12 @@ const S13 = ({t, v}) => {
   );
 };
 
-// S14 · rappel des villes en liste profonde rapide, « pense d'abord à » → nom de la boutique avec voile rose (référence 2, nsave)
+// S14 · rappel des villes en liste profonde rapide, « pense d'abord à » → logo de la boutique
 const S14 = ({t, v}) => {
   const times = [72.64, 73.42, 74.34, 75.44];
   const listOut = eio(prog(t, 76.3, 0.3));
-  const wash = t >= 79.38 ? 1 - eo(prog(t, 79.38, 0.8)) : 0;
   return (
     <>
-      {wash > 0 && <div style={{position: 'absolute', inset: -200, background: '#F7D3D6', opacity: wash * 0.9}} />}
       {listOut < 1 && (
         <Center style={{opacity: 1 - listOut, transform: `translateY(${-listOut * 160}px) scale(${1 - 0.15 * listOut})`, filter: listOut > 0 ? `blur(${listOut * 12}px)` : undefined}}>
           <Words t={t} items={[['Alors', 71.6], ['que', 71.9], ['tu', 72.02], ['sois', 72.14], ['à…', 72.34]]} style={{...T(56, 500, C.gray), marginBottom: v ? 40 : 10}} />
@@ -437,7 +433,7 @@ const S14 = ({t, v}) => {
         <Center>
           <Words t={t} items={[['avant', 76.64], ["d'acheter", 76.86], ['ton', 77.2], ['prochain', 77.38], ['iPhone,', 77.76]]} style={{...T(60, 600), maxWidth: 960}} />
           <Words t={t} items={[['pense', 78.56], ["d'abord", 78.78], ['à', 79.2]]} style={{...T(60, 600, C.gray), marginTop: 6, marginBottom: 60}} />
-          <div style={{...pop(t, 79.38, 0.6, 0.7), filter: t < 79.55 ? `blur(${(1 - prog(t, 79.38, 0.16)) * 14}px)` : undefined}}><Brand size={v ? 160 : 150} /></div>
+          <LogoReveal t={t} at={79.32} width={v ? 860 : 780} />
         </Center>
       )}
     </>
@@ -465,17 +461,16 @@ const S15 = ({t, v}) => {
           <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '34px 0 10px', ...enter(t, 83.48, 0.2)}}>
             <div style={{...T(52, 700), lineHeight: 1.3}}>Un bon iPhone acheté<br />au <Mark t={t} at={84.74} dur={0.45}>bon endroit</Mark></div>
             <div style={{display: 'flex', alignItems: 'center', gap: 22}}>
-              <span style={{...T(56, 800), ...pop(t, 86.28, 0.45, 0.5), color: C.accent, textShadow: `0 0 0.35em ${C.glow}`}}>MIEUX</span>
+              <span style={{...T(56, 800), ...pop(t, 86.28, 0.45, 0.5), color: C.ink}}>MIEUX</span>
               <Radio on={sel} />
             </div>
           </div>
         </Card>
       </div>
-      {t >= 87.2 && t < 88.2 && <div style={{position: 'absolute', inset: -200, background: '#F7D3D6', opacity: (1 - eo(prog(t, 87.2, 0.9))) * 0.8}} />}
       {t > 87.2 && (
-        <div style={{position: 'absolute', left: 0, right: 0, top: v ? 1230 : 640, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 30, opacity: end, transform: `translateY(${(1 - end) * 60}px)`}}>
-          <Brand size={v ? 110 : 96} oneLine={!v} />
-          <Words t={t} accent={false} items={[['Kolwezi', 87.5], ['·', 87.6], ['Likasi', 87.7], ['·', 87.8], ['Lubumbashi', 87.9], ['·', 88.0], ['Fungurume', 88.1]]} style={{...T(40, 500, C.gray)}} />
+        <div style={{position: 'absolute', left: 0, right: 0, top: v ? 1230 : 640, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 30, }}>
+          <LogoReveal t={t} at={87.2} width={v ? 700 : 560} />
+          <Words t={t} items={[['Kolwezi', 87.5], ['·', 87.6], ['Likasi', 87.7], ['·', 87.8], ['Lubumbashi', 87.9], ['·', 88.0], ['Fungurume', 88.1]]} style={{...T(40, 500, C.gray)}} />
         </div>
       )}
     </>
@@ -492,8 +487,8 @@ const SCENES = [
   [S7, 21.85, 27.35, {out: 'zoom'}],
   [S8, 27.35, 35.05, {dir: 1}],
   [S9, 35.05, 47.85, {out: 'zoom'}],
-  [S10, 47.85, 54.25, {cutOut: true}],
-  [S11, 54.25, 58.95, {cutIn: true, dir: -1}],
+  [S10, 47.85, 54.25, {out: 'zoom'}],
+  [S11, 54.25, 58.95, {dir: -1}],
   [S12, 58.95, 62.5, {out: 'zoom'}],
   [S13, 62.5, 71.45, {dir: 1}],
   [S14, 71.45, 80.9, {out: 'zoom'}],

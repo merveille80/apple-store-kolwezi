@@ -13,11 +13,12 @@ export const C = {
   blue: '#0983FE',
   green: '#2ECC5B',
   night: '#464ADF',
-  // v2 (référence 2) : un seul accent rouge avec halo, vert lumineux pour le positif, écran sombre « glitch »
-  accent: '#E1262A',
-  glow: 'rgba(225,38,42,.55)',
+  // v3 : plus aucun rouge, UI neutre façon Apple (encre, gris, bleu de sélection iOS)
+  accent: '#1D1D1F',
+  glow: 'rgba(0,0,0,.14)',
   lime: '#1FC46A',
-  dark: '#1A1214',
+  select: '#0071E3',
+  soft: '#F5F5F7',
 };
 // Sur le Mac, -apple-system donne San Francisco ; Inter sert de secours dans le cloud.
 export const FONT = "-apple-system, 'SF Pro Display', 'Inter Display', 'Inter', 'Helvetica Neue', sans-serif";
@@ -104,16 +105,13 @@ export const T = (size, weight = 600, color = C.ink) => ({
 });
 
 // Mots qui apparaissent un à un sur l'attaque de la voix. items : [[mot, instant], …]
-// v2 : le mot arrive d'en bas en rouge avec halo (flou → net), reste rouge tant qu'il est le dernier dit,
-// puis repasse à la couleur du texte.
-export const Words = ({t, items, style, gap = '0.25em', align = 'center', accent = true}) => (
+// v3 : le mot monte d'en bas, flou → net, sans couleur ni halo.
+export const Words = ({t, items, style, gap = '0.25em', align = 'center'}) => (
   <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: align, columnGap: gap, ...style}}>
     {items.map(([w, at], i) => {
-      const x = eo(prog(t, at, 0.2));
-      const next = items[i + 1] ? items[i + 1][1] : at + 0.55;
-      const hot = accent ? 1 - prog(t, Math.max(next, at + 0.16), 0.22) : 0;
+      const x = eo(prog(t, at, 0.24));
       return (
-        <span key={i} style={{display: 'inline-block', opacity: clamp((t - at) / 0.08), transform: `translateY(${(1 - x) * 0.45}em) scale(${0.82 + 0.18 * x})`, transformOrigin: '50% 100%', filter: x < 1 ? `blur(${(1 - x) * 10}px)` : undefined, color: hot > 0 ? `color-mix(in srgb, ${C.accent} ${Math.round(hot * 100)}%, currentColor)` : undefined, textShadow: hot > 0.02 ? `0 0 ${0.35 * hot}em rgba(225,38,42,${0.55 * hot})` : undefined}}>{w}</span>
+        <span key={i} style={{display: 'inline-block', opacity: clamp((t - at) / 0.1), transform: `translateY(${(1 - x) * 0.4}em) scale(${0.9 + 0.1 * x})`, transformOrigin: '50% 100%', filter: x < 1 ? `blur(${(1 - x) * 10}px)` : undefined}}>{w}</span>
       );
     })}
   </div>
@@ -124,41 +122,39 @@ export const Ink = ({t, items}) => (
   <>
     {items.map(([w, at], i) => {
       const x = prog(t, at, 0.1);
-      const next = items[i + 1] ? items[i + 1][1] : at + 0.5;
-      const hot = x > 0 ? 1 - prog(t, Math.max(next, at + 0.14), 0.2) : 0;
       const base = x >= 1 ? C.ink : x <= 0 ? C.ghost : `rgb(${lerp(173, 8, x)},${lerp(172, 8, x)},${lerp(175, 8, x)})`;
       return (
-        <span key={i} style={{color: hot > 0 ? `color-mix(in srgb, ${C.accent} ${Math.round(hot * 100)}%, ${base})` : base, textShadow: hot > 0.02 ? `0 0 ${0.3 * hot}em rgba(225,38,42,${0.45 * hot})` : undefined}}>{w}{i < items.length - 1 ? ' ' : ''}</span>
+        <span key={i} style={{color: base}}>{w}{i < items.length - 1 ? ' ' : ''}</span>
       );
     })}
   </>
 );
 
-// v2 : sélection de texte iOS (poignées + fond rouge pâle), le mot passe en rouge avec halo
+// v3 : sélection de texte iOS standard (poignées bleues + fond bleu pâle), le texte garde sa couleur
 export const Mark = ({t, at, children, dur = 0.35}) => {
   const p = eo(prog(t, at, dur));
   const h = spring(t, at, 0.45);
   const on = t >= at;
   const Handle = ({top}) => (
-    <span style={{position: 'absolute', [top ? 'left' : 'right']: '-0.06em', top: top ? '-0.08em' : undefined, bottom: top ? undefined : '-0.12em', width: '0.05em', height: '1.18em', background: C.ink, borderRadius: 9, transform: `scaleY(${h})`, transformOrigin: top ? '50% 100%' : '50% 0%'}}>
-      <span style={{position: 'absolute', left: '50%', [top ? 'top' : 'bottom']: '-0.12em', width: '0.17em', height: '0.17em', marginLeft: '-0.085em', borderRadius: '50%', background: C.ink}} />
+    <span style={{position: 'absolute', [top ? 'left' : 'right']: '-0.06em', top: top ? '-0.08em' : undefined, bottom: top ? undefined : '-0.12em', width: '0.05em', height: '1.18em', background: C.select, borderRadius: 9, transform: `scaleY(${h})`, transformOrigin: top ? '50% 100%' : '50% 0%'}}>
+      <span style={{position: 'absolute', left: '50%', [top ? 'top' : 'bottom']: '-0.12em', width: '0.17em', height: '0.17em', marginLeft: '-0.085em', borderRadius: '50%', background: C.select}} />
     </span>
   );
   return (
-    <span style={{position: 'relative', display: 'inline-block', padding: '0 0.06em', margin: '0 0.02em', backgroundImage: 'linear-gradient(rgba(225,38,42,.13), rgba(225,38,42,.13))', backgroundRepeat: 'no-repeat', backgroundSize: `${p * 100}% 100%`, color: on ? `color-mix(in srgb, ${C.accent} ${Math.round(p * 100)}%, currentColor)` : undefined, textShadow: on ? `0 0 ${0.3 * (1 - 0.6 * p)}em rgba(225,38,42,${0.4 * p})` : undefined}}>
+    <span style={{position: 'relative', display: 'inline-block', padding: '0 0.06em', margin: '0 0.02em', backgroundImage: 'linear-gradient(rgba(0,113,227,.16), rgba(0,113,227,.16))', backgroundRepeat: 'no-repeat', backgroundSize: `${p * 100}% 100%`, borderRadius: '0.08em'}}>
       {children}
       {on && <><Handle top /><Handle /></>}
     </span>
   );
 };
 
-// Trait rouge qui barre un mot (12 images à 60 i/s ≈ 0,2 s)
-export const Strike = ({t, at, children, color = C.red}) => {
+// Trait fin qui barre un mot (v3 : couleur du texte, sans halo)
+export const Strike = ({t, at, children, color = C.ink}) => {
   const p = eo(prog(t, at, 0.22));
   return (
     <span style={{position: 'relative', display: 'inline-block'}}>
       {children}
-      <span style={{position: 'absolute', left: '-3%', top: '52%', height: '0.1em', width: `${p * 106}%`, background: color, borderRadius: 99, boxShadow: `0 0 0.3em ${C.glow}`}} />
+      <span style={{position: 'absolute', left: '-3%', top: '52%', height: '0.075em', width: `${p * 106}%`, background: color, borderRadius: 99}} />
     </span>
   );
 };
@@ -186,7 +182,7 @@ export const Bubble = ({t, at, children, width = 900, size = 56, style, name = '
         <div style={{display: 'flex', alignItems: 'center', gap: 18, marginBottom: 20}}>
           <Avatar size={64} />
           <div style={{...T(34, 650)}}>{name}<span style={{color: C.gray, fontWeight: 450}}> · {time}</span></div>
-          <div style={{marginLeft: 'auto', width: 18, height: 18, borderRadius: '50%', background: C.lime, boxShadow: `0 0 16px ${C.lime}`}} />
+          <div style={{marginLeft: 'auto', width: 18, height: 18, borderRadius: '50%', background: C.lime}} />
         </div>
         <div style={{...T(size, 500), lineHeight: 1.26}}>{children}</div>
       </div>
@@ -207,7 +203,7 @@ const I = ({d, size, color = C.ink, fill}) => (
   </svg>
 );
 export const Icon = {
-  pin: (s = 44) => <I size={s} fill={C.red} d="M12 2.5a7 7 0 0 0-7 7c0 5.2 7 12 7 12s7-6.8 7-12a7 7 0 0 0-7-7zm0 9.6a2.6 2.6 0 1 1 0-5.2 2.6 2.6 0 0 1 0 5.2z" />,
+  pin: (s = 44) => <I size={s} fill={C.ink} d="M12 2.5a7 7 0 0 0-7 7c0 5.2 7 12 7 12s7-6.8 7-12a7 7 0 0 0-7-7zm0 9.6a2.6 2.6 0 1 1 0-5.2 2.6 2.6 0 0 1 0 5.2z" />,
   bolt: (s = 40) => <I size={s} fill="#FFB800" d="M13.5 2 4.5 13.5h6L9.5 22l9-11.5h-6z" />,
   camera: (s = 40) => <I size={s} d="M4 7.5h3l1.6-2.5h6.8L17 7.5h3a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 20 19.5H4A1.5 1.5 0 0 1 2.5 18V9A1.5 1.5 0 0 1 4 7.5zM12 16.5a3.6 3.6 0 1 0 0-7.2 3.6 3.6 0 0 0 0 7.2z" />,
   battery: (s = 40) => <I size={s} color={C.green} d="M3 8h15a1.5 1.5 0 0 1 1.5 1.5v5A1.5 1.5 0 0 1 18 16H3a1.5 1.5 0 0 1-1.5-1.5v-5A1.5 1.5 0 0 1 3 8zM22 10.5v3M4.5 11v2h9v-2z" />,
@@ -221,7 +217,7 @@ export const Phone = ({src, h, style}) => (
   <Img src={staticFile(src)} style={{height: h, width: 'auto', display: 'block', filter: 'drop-shadow(0 40px 50px rgba(0,0,0,.16)) drop-shadow(0 8px 14px rgba(0,0,0,.08))', ...style}} />
 );
 
-// Nom de la boutique (pas de logo fourni pour l'instant)
+// Nom de la boutique en texte (secours ; le logo officiel est LogoReveal)
 export const Brand = ({size = 120, color = C.ink, oneLine = false}) => (
   <div style={{...T(size, 700, color), letterSpacing: '-0.035em', textAlign: 'center', lineHeight: 1.02}}>
     Apple Store{oneLine ? ' ' : <br />}Kolwezi
@@ -255,20 +251,40 @@ export const Roll = ({t, steps, style}) => {
   );
 };
 
-// Cibles concentriques (référence 2, plan du téléphone) : anneau gris + disque rouge qui naissent d'un point
+// Cibles concentriques (plan du téléphone) : deux anneaux gris clair qui naissent d'un point (v3 : sans rouge)
 export const Rings = ({t, at, size = 700}) => {
   const a = spring(t, at, 0.7), b = spring(t, at + 0.08, 0.7);
   if (t < at) return null;
   return (
     <div style={{position: 'absolute', left: '50%', top: '50%', width: 0, height: 0}}>
-      <div style={{position: 'absolute', width: size, height: size, left: -size / 2, top: -size / 2, borderRadius: '50%', border: `${size * 0.07}px solid #E2E2E5`, transform: `scale(${a})`, boxShadow: '0 30px 80px rgba(0,0,0,.08)'}} />
-      <div style={{position: 'absolute', width: size * 0.7, height: size * 0.7, left: -size * 0.35, top: -size * 0.35, borderRadius: '50%', border: `${size * 0.11}px solid ${C.accent}`, transform: `scale(${b})`, boxShadow: `0 0 60px ${C.glow}`}} />
+      <div style={{position: 'absolute', width: size, height: size, left: -size / 2, top: -size / 2, borderRadius: '50%', border: `${size * 0.035}px solid #E8E8ED`, transform: `scale(${a})`}} />
+      <div style={{position: 'absolute', width: size * 0.7, height: size * 0.7, left: -size * 0.35, top: -size * 0.35, borderRadius: '50%', border: `${size * 0.11}px solid ${C.soft}`, transform: `scale(${b})`, boxShadow: 'inset 0 10px 40px rgba(0,0,0,.04)'}} />
     </div>
   );
 };
 
-// Texte néon rouge sur fond sombre (référence 2, « Almost gone ») avec léger tremblement
-export const Neon = ({t, children, style}) => {
-  const j = Math.sin(t * 91) * 1.5 + Math.sin(t * 37) * 1.2;
-  return <span style={{color: '#FF3B3B', textShadow: `0 0 0.18em rgba(255,40,40,.9), 0 0 0.6em rgba(255,30,30,.55)`, filter: 'blur(0.6px)', transform: `translate(${j}px, ${-j * 0.6}px)`, display: 'inline-block', ...style}}>{children}</span>;
+// Logo officiel (public/logo.png, 1314 × 558, détouré depuis le fichier de merveille) découpé en trois calques :
+// la pomme se pose au centre (échelle + flou), glisse à gauche pendant que le trait se dessine et que le nom se dévoile.
+const LOGO_RATIO = 558 / 1314;
+const PARTS = {mark: [0, 0.255], bar: [0.37, 0.4], text: [0.465, 1]};
+export const LogoReveal = ({t, at, width = 700, style}) => {
+  const h = width * LOGO_RATIO;
+  const m = t < at ? 0 : spring(t, at, 0.7);
+  const mb = 1 - eo(prog(t, at, 0.4));
+  const b = eio(prog(t, at + 0.2, 0.35));
+  const x = eo(prog(t, at + 0.32, 0.7));
+  const settle = 1.05 - 0.05 * eo(prog(t, at, 1.2));
+  const layer = ([l, r], inner, extra = {}) => (
+    <div style={{position: 'absolute', inset: 0, clipPath: `inset(-10% ${(1 - r) * 100}% -10% ${l * 100}%)`, ...extra}}>
+      <Img src={staticFile('logo.png')} style={{position: 'absolute', left: 0, top: 0, width, height: h, ...inner}} />
+    </div>
+  );
+  const [tl, tr] = PARTS.text;
+  return (
+    <div style={{position: 'relative', width, height: h, transform: `translateX(${(1 - eio(prog(t, at + 0.3, 0.75))) * width * 0.373}px) scale(${settle})`, opacity: clamp((t - at) / 0.1), ...style}}>
+      {layer(PARTS.mark, {transform: `scale(${0.7 + 0.3 * m})`, transformOrigin: `${width * 0.127}px 50%`, filter: mb > 0.01 ? `blur(${mb * 14}px)` : undefined})}
+      {layer(PARTS.bar, {transform: `scaleY(${b})`, transformOrigin: '50% 50%'})}
+      {layer([tl, tl + (tr - tl) * x], {transform: `translateX(${(1 - x) * -width * 0.06}px)`, filter: x < 1 ? `blur(${(1 - x) * 8}px)` : undefined, opacity: x})}
+    </div>
+  );
 };
