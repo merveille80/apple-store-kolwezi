@@ -68,16 +68,16 @@
     for (i = 0; i < keys.length - 1; i++) {
       var m = MODES[keys[i][2] || mode || 'out'];
       var a = idx[i], b = idx[i + 1];
-      p.setTemporalEaseAtIndex(a, p.keyInTemporalEase(a), easeArr(n, m[0]));
-      p.setTemporalEaseAtIndex(b, easeArr(n, m[1]), p.keyOutTemporalEase(b));
+      p.setTemporalEaseAtKey(a, p.keyInTemporalEase(a), easeArr(n, m[0]));
+      p.setTemporalEaseAtKey(b, easeArr(n, m[1]), p.keyOutTemporalEase(b));
     }
     if (p.isSpatial) {
       for (i = 0; i < idx.length; i++) {
         try {
-          p.setSpatialAutoBezierAtIndex(idx[i], false);
-          p.setSpatialContinuousAtIndex(idx[i], false);
+          p.setSpatialAutoBezierAtKey(idx[i], false);
+          p.setSpatialContinuousAtKey(idx[i], false);
           var z = []; for (var k = 0; k < p.value.length; k++) z.push(0);
-          p.setSpatialTangentsAtIndex(idx[i], z, z);
+          p.setSpatialTangentsAtKey(idx[i], z, z);
         } catch (e) {}
       }
     }
@@ -376,11 +376,11 @@
       ramp.property('ADBE Ramp-0005').setValue(2);
       var bl = shapeLayer(c4, 'Diaphragme (lamelles)', ix, iy);
       gi = vecGroup(bl, 'Lamelles');
+      addEllipse(bl, gi, R * 2); // le cercle d'abord : Soustraire retire le polygone (ajouté ensuite) du cercle
       var star = vecs(bl, gi).addProperty('ADBE Vector Shape - Star');
       var si = star.propertyIndex;
       vecs(bl, gi).property(si).property('ADBE Vector Star Type').setValue(2);
       vecs(bl, gi).property(si).property('ADBE Vector Star Points').setValue(9);
-      addEllipse(bl, gi, R * 2);
       var mg = vecs(bl, gi).addProperty('ADBE Vector Filter - Merge');
       vecs(bl, gi).property(mg.propertyIndex).property('ADBE Vector Merge Type').setValue(3);
       addFill(bl, gi, rgb('#26262a'));
@@ -430,9 +430,12 @@
         var r = roundRect(c5, 'Fond carte ' + name, x + w / 2, y + hh / 2, w, hh, 3 * u, WHITE);
         shadow(r.layer, 10, 1.5 * u, 5 * u);
         r.layer.parent = n;
-        spring(P(n), t0, [x + w / 2 + from, y + hh / 2], [x + w / 2, y + hh / 2], 0.8, 0.03);
-        spring(SC(n), t0, [92, 92], [100, 100], 0.8, 0.01);
-        return {n: n, cx: x + w / 2, cy: y + hh / 2, parts: [r.layer]};
+        // animé après le rattachement du contenu, sinon le contenu reste décalé
+        function go() {
+          spring(P(n), t0, [x + w / 2 + from, y + hh / 2], [x + w / 2, y + hh / 2], 0.8, 0.03);
+          spring(SC(n), t0, [92, 92], [100, 100], 0.8, 0.01);
+        }
+        return {n: n, cx: x + w / 2, cy: y + hh / 2, parts: [r.layer], go: go};
       }
       var A, B;
       if (!V) { A = card('A20', cx - 50 * u, cy - 13 * u, 32 * u, 26 * u, T.a20 - 0.1, -20 * u); B = card('43 h', cx + 18 * u, cy - 13 * u, 32 * u, 26 * u, T.h43 - 0.1, 20 * u); }
@@ -460,6 +463,7 @@
           if (l.parent === null) l.parent = cards[i][0].n;
           anim(OP(l), [[cards[i][1], 0], [cards[i][1] + 0.25, 100]]);
         }
+        cards[i][0].go();
       }
     })();
 
@@ -507,6 +511,7 @@
       fadeIn(dispo, S.s7 + 0.4, S.s7 + 0.9, 20);
       var a = txt(c7, 'Apple Store', ts, INK, F_SEMI, 'L', 0, ty, -25);
       var b = txt(c7, 'Kolwezi', ts, GREY, F_SEMI, 'L', 0, ty, -25);
+      AN(b).setValue([AN(b).value[0], AN(a).value[1]]); // même ligne de base que « Apple Store »
       var sp = ts * 0.26, tot = width(a) + sp + width(b), x = cx - tot / 2;
       P(a).setValue([x, ty + ts * 0.6]); P(b).setValue([x + width(a) + sp, ty + ts * 0.6]);
       function reveal(l, t0, n) {
