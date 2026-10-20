@@ -117,13 +117,21 @@ def write(path, x, norm=True):
     x = np.clip(x, -1, 1).astype(np.float32)
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'f32le', '-ar', str(SR), '-ac', '2', '-i', '-', raw], input=x.tobytes(), check=True)
     af = 'loudnorm=I=-14:TP=-1.5:LRA=11,aresample=48000' if norm else 'anull'
-    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', raw, '-af', af, '-ar', str(SR), '-c:a', 'pcm_s16le', path], check=True)
+    subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', raw, '-af', af, '-ar', str(SR), '-c:a', 'pcm_s16le' if norm else 'pcm_s24le', path], check=True)
     subprocess.run(['rm', '-f', raw])
 
 write(OUT, mix)
 if STEMS:
-    import os
+    # Pistes séparées (projet After Effects) : même gain que le mix final, pour que leur somme sonne comme lui
+    import os, re
     os.makedirs(STEMS, exist_ok=True)
+    m = np.clip(mix, -1, 1).astype(np.float32).tobytes()
+    log = subprocess.run(['ffmpeg', '-hide_banner', '-f', 'f32le', '-ar', str(SR), '-ac', '2', '-i', '-', '-af', 'ebur128', '-f', 'null', '-'],
+                         input=m, capture_output=True).stderr.decode()
+    lufs = float(re.findall(r'I:\s+(-?[\d.]+) LUFS', log)[-1])
+    g = 10 ** ((-14 - lufs) / 20)
+    g = min(g, 10 ** (-1 / 20) / max(np.abs(voice).max(), np.abs(mus).max(), np.abs(sfx).max()))  # pas d'écrêtage
     for name, x in [('voix', voice), ('musique', mus), ('bruitages', sfx)]:
-        write(f'{STEMS}/{name}.wav', x, norm=False)
+        write(f'{STEMS}/{name}.wav', x * g, norm=False)
+    print('gain des pistes', round(20 * np.log10(g), 2), 'dB')
 print('ok', OUT)
