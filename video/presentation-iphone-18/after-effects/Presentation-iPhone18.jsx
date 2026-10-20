@@ -244,7 +244,7 @@
   function build(V) {
     var W = V ? 2160 : 3840, H = V ? 3840 : 2160;
     var u = Math.min(W, H) / 100, cx = W / 2, cy = H / 2;
-    var tag = V ? '9x16' : '16x9';
+    var tag = V ? '9:16' : '16:9';
     var FOLD = folder(V ? 'Vertical 9:16' : 'Horizontal 16:9', ROOT);
     function sceneComp(name, a, b) {
       var c = proj.items.addComp(name + ' ' + tag, W, H, 1, b - a, FPS);
