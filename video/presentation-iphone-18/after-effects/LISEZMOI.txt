@@ -1,0 +1,26 @@
+Présentation iPhone 18 Pro Max · projet After Effects éditable
+================================================================
+
+Presentation-iPhone18.aep (After Effects 2026)
+  Présentation iPhone 18 Pro Max 16:9 et 9:16 : compositions principales (3840×2160 et 2160×3840, 60 i/s, 35,5 s)
+  Une composition par scène dans « Horizontal 16:9 » et « Vertical 9:16 » :
+    01-02 Titre et cascade · 03 Couleurs · 04 Caméra ouverture variable · 05 Puce A20 Pro et autonomie · 06 Stockage · 07 Apple Store Kolwezi
+  Les repères de la composition principale indiquent le début de chaque scène.
+
+Ce qui s'édite facilement
+  - Textes : calques texte (double-clic). Police : Helvetica Neue (SF Pro et Inter ne sont pas installées).
+  - Titre de la scène 1 : le calque nul « Titre » déplace et redimensionne les trois mots ensemble.
+  - Couleurs de la scène 3 : le calque nul « Carrousel » fait défiler les iPhone.
+  - Compteur « 43 h » : expression dans le texte source (début, fin et valeur finale en tête de l'expression).
+  - « Apple Store Kolwezi » : animateur « Dévoilement lettre par lettre » (propriété Début du sélecteur), reflet CC Light Sweep, trait animé en échelle.
+  - Puces ƒ et stockage : la couleur de sélection est sur le remplissage de la forme (bleu #0071e3).
+  - Flou de bougé : activé sur les compositions et les calques qui bougent.
+
+Son
+  Voix Hugo, Musique, Bruitages : pistes séparées, alignées sur l'image, au même gain (environ 4 dB sous le mix livré, sans limiteur).
+  Mix final (coupé) : le son exact de la vidéo livrée ; activer son haut-parleur et couper les trois autres pour l'utiliser.
+
+Dossiers images/ et audio/ : à garder à côté du .aep (ou utiliser Fichier > Dépendances > Réunir les fichiers).
+Le script Presentation-iPhone18.jsx reconstruit le projet à partir de ces dossiers (Fichier > Scripts > Exécuter le fichier de script).
+
+Presentation-iPhone18-9x16.aep : le même projet réduit au seul format vertical 9:16, qui s'ouvre directement dessus.
