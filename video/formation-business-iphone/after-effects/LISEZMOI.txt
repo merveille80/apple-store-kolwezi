@@ -1,0 +1,22 @@
+Formation business iPhone · projets After Effects éditables
+============================================================
+
+Formation-Business-iPhone-9x16.aep : vertical 2160×3840 (TikTok, Reels), composition « 9:16 »
+Formation-Business-iPhone-16x9.aep : horizontal 3840×2160, composition « 16:9 »
+60 i/s, 40,95 s. Les repères de la composition donnent le début de chaque scène (01 à 12).
+
+Calques, de haut en bas
+  - B-roll · 01 à 12 : les cartes UI animées, une coupe par scène (vidéo ProRes 4444 avec transparence).
+    On peut les déplacer, les redimensionner, décaler leur timing ou en retirer une.
+  - Cache avatar (forme arrondie) : le cadre arrondi de l'avatar, animé (plein écran, carte, bulle).
+  - Avatar (vidéo HeyGen) : la vidéo d'origine ; position et échelle animées en même temps que le cache.
+  - Cadre avatar (ombre) : l'ombre douce sous le cadre.
+  - Fond blanc.
+
+Son
+  - Voix de l'avatar, Musique « Moving Up » (Epidemic Sound) : pistes séparées.
+  - Un calque par bruitage (« SFX nom · instant »), au niveau du mix.
+  - Mix final (coupé) : le son exact de la vidéo livrée ; activer son haut-parleur et couper les autres pour l'utiliser.
+
+Les textes des cartes sont dans la vidéo B-roll (non modifiables en calques texte).
+Garder les dossiers video/ et audio/ à côté des .aep (ou Fichier > Dépendances > Réunir les fichiers).
