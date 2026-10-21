@@ -1,9 +1,11 @@
 import React from 'react';
 import {AbsoluteFill, Audio, Img, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {toOld, NEW_DURATION} from './timing';
 import {C, T, FONT, Scene, MotionBlur, Roll, Rings, LogoReveal, Center, Words, Ink, Mark, Strike, Card, Pill, Avatar, Bubble, Check, Icon, Phone, Brand, enter, pop, spring, eo, eio, prog, clamp, lerp} from './ui';
 
 // Les instants sont ceux de la voix Koraly (transcription mot à mot, audio/voix-mots.json) : la voix démarre à 0 s.
-export const DURATION = 89.5;
+export const DURATION = 89.5; // durée de l'animation d'origine (voix Koraly)
+export const VIDEO_DURATION = NEW_DURATION; // durée de la vidéo v5 (voix French Darling)
 
 // S1 · « Stop… avant d'acheter ton prochain iPhone, écoute ceci. » : mots cinétiques qui montent, flou → net
 const S1 = ({t, v}) => {
@@ -89,7 +91,7 @@ const CityList = ({t, times, v, speed = 0.42}) => {
                 <div style={{...T(v ? 32 : 28, 450, C.gray)}}>{REGION[c]}</div>
               </div>
               <div style={{marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 14, ...T(v ? 32 : 28, 600, C.lime), opacity: act}}>
-                <span style={{width: 16, height: 16, borderRadius: '50%', background: C.lime, boxShadow: `0 0 14px ${C.lime}`}} />conseil
+                <span style={{width: 16, height: 16, borderRadius: '50%', background: C.lime, }} />conseil
               </div>
             </div>
           </div>
@@ -478,27 +480,27 @@ const S15 = ({t, v}) => {
 };
 
 const SCENES = [
-  [S1, 0, 3.6, {cutOut: true}],
-  [S2, 3.6, 7.3, {dir: 1}],
+  [S1, 0, 3.6, {first: true}],
+  [S2, 3.6, 7.3],
   [S3, 7.3, 10.95, {out: 'zoom'}],
-  [S4, 10.95, 15.1, {cutOut: true}],
-  [S5, 15.1, 19.25, {cutIn: true, dir: -1}],
+  [S4, 10.95, 15.1],
+  [S5, 15.1, 19.25],
   [S6, 19.25, 21.85, {out: 'zoom'}],
   [S7, 21.85, 27.35, {out: 'zoom'}],
-  [S8, 27.35, 35.05, {dir: 1}],
+  [S8, 27.35, 35.05],
   [S9, 35.05, 47.85, {out: 'zoom'}],
   [S10, 47.85, 54.25, {out: 'zoom'}],
-  [S11, 54.25, 58.95, {dir: -1}],
+  [S11, 54.25, 58.95],
   [S12, 58.95, 62.5, {out: 'zoom'}],
-  [S13, 62.5, 71.45, {dir: 1}],
+  [S13, 62.5, 71.45],
   [S14, 71.45, 80.9, {out: 'zoom'}],
-  [S15, 80.9, DURATION, {cutOut: true}],
+  [S15, 80.9, DURATION, {last: true}],
 ];
 
 export const Video = ({vertical}) => {
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
-  const t = frame / fps;
+  const t = toOld(frame / fps);
   const v = vertical;
   return (
     <AbsoluteFill style={{background: C.bg, fontFamily: FONT, overflow: 'hidden'}}>

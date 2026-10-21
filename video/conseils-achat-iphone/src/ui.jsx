@@ -34,14 +34,14 @@ export const spring = (t, at, dur = 0.5) => {
   const x = (t - at) / dur;
   if (x <= 0) return 0;
   if (x >= 1) return 1;
-  return 1 - Math.exp(-6 * x) * Math.cos(7.5 * x);
+  return 1 - Math.exp(-6.5 * x) * Math.cos(5.2 * x); // v5 : ressort plus amorti, façon iOS (≈ 3 % de dépassement)
 };
 
 // Entrée de carte de la référence : flou 24→0, fondu, échelle 0,9→1 (cubic-bezier(.22,1,.36,1) ≈ eo)
 export const enter = (t, at, dur = 0.24, dy = 0) => {
-  const x = eo(prog(t, at, dur));
+  const x = eo(prog(t, at, dur * 1.4));
   if (x >= 1) return {};
-  return {opacity: x, transform: `translateY(${(1 - x) * dy}px) scale(${0.9 + 0.1 * x})`, filter: `blur(${(1 - x) * 24}px)`};
+  return {opacity: x, transform: `translateY(${(1 - x) * (dy || 24)}px) scale(${0.95 + 0.05 * x})`, filter: `blur(${(1 - x) * 14}px)`};
 };
 
 // Pop à ressort (bulles, pilules, coches)
@@ -66,28 +66,30 @@ export const MotionBlur = ({id, x = 0, y = 0, children, style}) => {
   );
 };
 
-// Calque de scène v2 (référence 2) : entrée en « coup de zoom » (1,14 → 1, flou), micro-travelling avant permanent,
-// sortie par glissé latéral avec flou de bougé horizontal (dir = 1 vers la droite, -1 vers la gauche) ou par zoom traversant.
-export const Scene = ({t, from, to, children, bg, push = 0.04, cutIn = false, cutOut = false, out = 'slide', dir = 1, id = 's'}) => {
-  if (t < from - 0.001 || t > to + 0.001) return null;
-  const i = cutIn ? 1 : eo(prog(t, from, 0.26));
-  const o = cutOut ? 0 : eio(prog(t, to - 0.16, 0.16));
+// Calque de scène v5 : transitions façon keynote Apple, toujours en fondu enchaîné (plus aucune coupe sèche).
+// Entrée : la scène monte légèrement, de 0,97 à 1, en sortant du flou. Sortie : elle continue de monter et
+// s'efface pendant que la suivante arrive (chevauchement de 0,3 s). out = 'zoom' : sortie en avançant vers la caméra.
+const OVER = 0.3;
+export const Scene = ({t, from, to, children, bg, push = 0.035, out = 'rise', first = false, last = false, id = 's'}) => {
+  const end = last ? to : to + OVER;
+  if (t < from - 0.001 || t > end + 0.001) return null;
+  const i = first ? 1 : eio(prog(t, from, 0.5));
+  const o = last ? 0 : eio(prog(t, to - 0.05, OVER + 0.05));
   const drift = 1 + push * prog(t, from, to - from);
-  let scale = (1.14 - 0.14 * i) * drift;
-  let tx = 0, bx = 0, blur = (1 - i) * 16;
+  let scale = (0.97 + 0.03 * i) * drift, ty = (1 - i) * 40, blur = (1 - i) * 10;
   if (out === 'zoom') {
-    scale *= 1 + 0.45 * o;
-    blur += o * 18;
+    scale *= 1 + 0.12 * o;
+    blur += o * 12;
   } else {
-    tx = dir * o * 420;
-    bx = Math.sin(Math.PI * Math.min(o, 1)) * 40 + o * 20;
+    ty -= o * 60;
+    blur += o * 8;
   }
   return (
-    <MotionBlur id={`mb-${id}`} x={bx} style={{position: 'absolute', inset: 0, background: bg, opacity: i * (1 - o * o)}}>
-      <div style={{position: 'absolute', inset: 0, transform: `translateX(${tx}px) scale(${scale})`, filter: blur > 0.05 ? `blur(${blur}px)` : undefined}}>
+    <div style={{position: 'absolute', inset: 0, background: bg, opacity: i * (1 - o)}}>
+      <div style={{position: 'absolute', inset: 0, transform: `translateY(${ty}px) scale(${scale})`, filter: blur > 0.05 ? `blur(${blur}px)` : undefined}}>
         {children}
       </div>
-    </MotionBlur>
+    </div>
   );
 };
 
@@ -109,9 +111,9 @@ export const T = (size, weight = 600, color = C.ink) => ({
 export const Words = ({t, items, style, gap = '0.25em', align = 'center'}) => (
   <div style={{display: 'flex', flexWrap: 'wrap', justifyContent: align, columnGap: gap, ...style}}>
     {items.map(([w, at], i) => {
-      const x = eo(prog(t, at, 0.24));
+      const x = eo(prog(t, at - 0.04, 0.34));
       return (
-        <span key={i} style={{display: 'inline-block', opacity: clamp((t - at) / 0.1), transform: `translateY(${(1 - x) * 0.4}em) scale(${0.9 + 0.1 * x})`, transformOrigin: '50% 100%', filter: x < 1 ? `blur(${(1 - x) * 10}px)` : undefined}}>{w}</span>
+        <span key={i} style={{display: 'inline-block', opacity: eo(prog(t, at - 0.04, 0.2)), transform: `translateY(${(1 - x) * 0.3}em) scale(${0.94 + 0.06 * x})`, transformOrigin: '50% 100%', filter: x < 1 ? `blur(${(1 - x) * 7}px)` : undefined}}>{w}</span>
       );
     })}
   </div>
@@ -121,7 +123,7 @@ export const Words = ({t, items, style, gap = '0.25em', align = 'center'}) => (
 export const Ink = ({t, items}) => (
   <>
     {items.map(([w, at], i) => {
-      const x = prog(t, at, 0.1);
+      const x = eio(prog(t, at - 0.02, 0.18));
       const base = x >= 1 ? C.ink : x <= 0 ? C.ghost : `rgb(${lerp(173, 8, x)},${lerp(172, 8, x)},${lerp(175, 8, x)})`;
       return (
         <span key={i} style={{color: base}}>{w}{i < items.length - 1 ? ' ' : ''}</span>

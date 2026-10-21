@@ -1,17 +1,25 @@
-"""Mix de la pub « Conseils d'achat iPhone » : voix Koraly, musique « A Step Ahead » (Experia) et bruitages Epidemic Sound.
+"""Mix de la pub « Conseils d'achat iPhone » v5 : voix « French Darling », musique « An Elevated State of Mind » (Imprismed) et bruitages Epidemic Sound.
 
 Usage : python3 mix.py [sortie.wav] [dossier des pistes séparées]
 Les sons Epidemic sont dans audio/epidemic/ (non versionnés, identifiants dans audio/SOURCES.md).
-Les instants sont ceux de la voix (elle démarre à 0 s, comme dans src/Video.jsx).
-Musique très basse sous la voix ; si les stems existent, la mélodie n'entre qu'à 71,7 s (« Alors… ») pour la montée de fin.
+Les instants de EV sont ceux de l'animation d'origine (89,5 s) ; ils sont recalés sur la voix v5
+par les ancres de src/timing.json, comme l'image (src/timing.js).
 """
 import json, os, subprocess, sys, random, wave
 import numpy as np
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else 'public/mix.wav'
 STEMS = sys.argv[2] if len(sys.argv) > 2 else None
-SR, DUR = 48000, 89.5
-MUSIC_DB, DUCK_DB, FINALE = -21.0, 6.0, 71.7
+T = json.load(open('src/timing.json'))
+ANC = np.array(T['anchors'])
+SR, DUR = 48000, T['duration']
+MUSIC_DB, DUCK_DB = -20.0, 6.0
+
+def new_t(t):
+    """instant de l'animation d'origine -> instant de la vidéo v5"""
+    return float(np.interp(t, ANC[:, 0], ANC[:, 1]))
+
+FINALE = new_t(71.7)
 S = 'audio/epidemic/'
 random.seed(19)
 
@@ -95,7 +103,30 @@ EV = [
     (86.28, 'tap', -21, 'peak'),
     (86.3, 'success', -21, 'peak'),                    # « MIEUX »
     (87.2, 'whoosh', -28, 'start'),                    # écran de fin
+    # v5 : un son par élément animé
+    (0.0, 'trans', -30, 'start'),                      # ouverture
+    (1.9, 'shimmer', -31, 'peak'),                     # le 18 Pro Max se redresse
+    (3.6, 'trans', -32, 'peak'), (7.3, 'trans', -32, 'peak'), (10.95, 'trans', -32, 'peak'),
+    (15.1, 'trans', -32, 'peak'), (19.25, 'trans', -32, 'peak'), (21.85, 'trans', -32, 'peak'),
+    (27.35, 'trans', -32, 'peak'), (35.05, 'trans', -32, 'peak'), (47.85, 'trans', -32, 'peak'),
+    (54.25, 'trans', -32, 'peak'), (58.95, 'trans', -32, 'peak'), (62.5, 'trans', -32, 'peak'),
+    (71.45, 'trans', -32, 'peak'), (80.9, 'trans', -32, 'peak'),
+    (4.9, 'tick', -32, 'peak'), (5.6, 'tick', -33, 'peak'), (6.2, 'tick', -33, 'peak'),     # mots qui noircissent
+    (10.0, 'select', -28, 'peak'),                     # sélection « au bon endroit »
+    (17.6, 'select', -28, 'peak'),                     # pilule « nouvelle expérience »
+    (23.75, 'slide', -30, 'start'),                    # carte « Ton iPhone idéal »
+    (36.3, 'slide', -31, 'start'),                     # pilules caméra / autonomie
+    (46.3, 'shimmer', -27, 'peak'),                    # 18 Pro Max au centre
+    (48.6, 'slide', -31, 'start'),                     # phrases qui roulent
+    (58.4, 'select', -28, 'peak'),                     # « Juste une vraie orientation »
+    (65.7, 'slide', -30, 'start'),                     # alerte iOS
+    (70.0, 'shimmer', -28, 'peak'),                    # métamorphose en 18 Pro Max
+    (76.5, 'tick', -31, 'peak'), (77.4, 'tick', -31, 'peak'), (78.3, 'tick', -31, 'peak'),  # « avant d'acheter… »
+    (84.3, 'select', -27, 'peak'),                     # « au bon endroit » sélectionné
+    (87.6, 'tick', -30, 'peak'), (88.0, 'tick', -31, 'peak'), (88.4, 'tick', -31, 'peak'),  # apple store kolwezi mot à mot
+    (88.9, 'shimmer', -29, 'peak'),                    # écran final
 ]
+EV = [(new_t(t), nm, g, a) for t, nm, g, a in EV]
 
 n = int(DUR * SR)
 names = sorted({e[1] for e in EV})
@@ -121,7 +152,7 @@ for t0, name, g, anchor in EV:
     sfx[start:end] += y[: end - start]
     placed.append({'debut_s': round(start / SR, 3), 'son': name, 'gain_db': round(gdb, 1)})
 
-vo = load('audio/voix-koraly.mp3', 'highpass=f=70,acompressor=threshold=-22dB:ratio=2.5:attack=8:release=120:makeup=2')
+vo = load('audio/voix-v5.wav', 'highpass=f=70,acompressor=threshold=-22dB:ratio=2.5:attack=8:release=120:makeup=2')
 voice = np.zeros((n, 2))
 voice[: min(n, len(vo))] = vo[:n]
 
@@ -129,15 +160,15 @@ def fit(x):
     return x[:n] if len(x) >= n else np.concatenate([x, np.zeros((n - len(x), 2))])
 
 tt = np.arange(n) / SR
-stems = {k: S + 'musique-stem-' + k + '.mp3' for k in ('drums', 'bass', 'instruments', 'melody')}
+stems = {k: S + 'musique-v5-stem-' + k + '.mp3' for k in ('drums', 'bass', 'instruments', 'melody')}
 if all(os.path.exists(p) for p in stems.values()):
     base = sum(fit(load(stems[k])) for k in ('drums', 'bass', 'instruments'))
     mel = fit(load(stems['melody']))
     rise = np.clip((tt - FINALE + 1.0) / 2.0, 0, 1)[:, None]
     mus = base + mel * (0.25 + 0.75 * rise)
 else:
-    mus = fit(load(S + 'musique-full.wav'))
-mus *= np.clip(tt / 1.0, 0, 1)[:, None]
+    mus = fit(load(S + 'musique-v5.wav'))
+mus *= np.clip(tt / 1.0, 0, 1)[:, None] * np.clip((DUR - tt) / 2.5, 0, 1)[:, None]
 
 lvl = np.sqrt(np.convolve((voice ** 2).mean(1), np.ones(int(0.05 * SR)) / int(0.05 * SR), 'same'))
 active = (lvl > 10 ** (-38 / 20)).astype(float)

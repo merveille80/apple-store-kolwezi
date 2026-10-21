@@ -1,0 +1,1587 @@
+{
+"voix": "French Darling - For Commercials (eleven_v4, prise 3) avec silences ajoutés aux changements de scène",
+"silences": [
+[
+3.44,
+0.388
+],
+[
+7.216,
+0.292
+],
+[
+8.627,
+0.063
+],
+[
+10.507,
+0.402
+],
+[
+14.494,
+0.251
+],
+[
+18.332,
+0.306
+],
+[
+20.609,
+0.251
+],
+[
+23.614,
+0.25
+],
+[
+25.772,
+0.348
+],
+[
+29.81,
+0.05
+],
+[
+33.12,
+0.457
+],
+[
+37.389,
+0.36
+],
+[
+39.527,
+0.154
+],
+[
+40.56,
+0.168
+],
+[
+41.674,
+0.182
+],
+[
+42.72,
+0.182
+],
+[
+44.64,
+0.5
+],
+[
+48.328,
+0.194
+],
+[
+50.395,
+0.363
+],
+[
+51.309,
+0.25
+],
+[
+52.56,
+0.348
+],
+[
+54.251,
+0.25
+],
+[
+57.361,
+0.5
+],
+[
+60.32,
+0.361
+],
+[
+61.68,
+0.223
+],
+[
+65.218,
+0.5
+],
+[
+67.92,
+0.222
+],
+[
+69.76,
+0.32
+],
+[
+71.532,
+0.21
+],
+[
+73.766,
+0.292
+],
+[
+75.693,
+0.265
+],
+[
+78.081,
+0.154
+]
+],
+"words": [
+{
+"text": "Stop.",
+"type": "word",
+"start": 0,
+"end": 0.72
+},
+{
+"text": "Avant",
+"type": "word",
+"start": 0.8,
+"end": 0.96
+},
+{
+"text": "d'acheter",
+"type": "word",
+"start": 0.987,
+"end": 1.28
+},
+{
+"text": "ton",
+"type": "word",
+"start": 1.36,
+"end": 1.44
+},
+{
+"text": "prochain",
+"type": "word",
+"start": 1.52,
+"end": 1.76
+},
+{
+"text": "iPhone,",
+"type": "word",
+"start": 2,
+"end": 2.48
+},
+{
+"text": "écoute",
+"type": "word",
+"start": 2.64,
+"end": 2.8
+},
+{
+"text": "ceci.",
+"type": "word",
+"start": 2.84,
+"end": 3.828
+},
+{
+"text": "Aujourd'hui,",
+"type": "word",
+"start": 3.881,
+"end": 4.548
+},
+{
+"text": "acheter",
+"type": "word",
+"start": 4.628,
+"end": 4.868
+},
+{
+"text": "un",
+"type": "word",
+"start": 4.908,
+"end": 4.948
+},
+{
+"text": "iPhone,",
+"type": "word",
+"start": 5.028,
+"end": 5.588
+},
+{
+"text": "ce",
+"type": "word",
+"start": 5.668,
+"end": 5.708
+},
+{
+"text": "n'est",
+"type": "word",
+"start": 5.748,
+"end": 5.908
+},
+{
+"text": "plus",
+"type": "word",
+"start": 6.028,
+"end": 6.148
+},
+{
+"text": "seulement",
+"type": "word",
+"start": 6.188,
+"end": 6.468
+},
+{
+"text": "choisir",
+"type": "word",
+"start": 6.508,
+"end": 6.788
+},
+{
+"text": "un",
+"type": "word",
+"start": 6.868,
+"end": 6.948
+},
+{
+"text": "modèle.",
+"type": "word",
+"start": 7.028,
+"end": 7.588
+},
+{
+"text": "La",
+"type": "word",
+"start": 7.961,
+"end": 8.041
+},
+{
+"text": "vraie",
+"type": "word",
+"start": 8.121,
+"end": 8.281
+},
+{
+"text": "question,",
+"type": "word",
+"start": 8.361,
+"end": 8.921
+},
+{
+"text": "c'est",
+"type": "word",
+"start": 8.961,
+"end": 9.161
+},
+{
+"text": ":",
+"type": "word",
+"start": 9.464,
+"end": 9.491
+},
+{
+"text": "est-ce",
+"type": "word",
+"start": 9.517,
+"end": 9.624
+},
+{
+"text": "que",
+"type": "word",
+"start": 9.704,
+"end": 9.744
+},
+{
+"text": "tu",
+"type": "word",
+"start": 9.784,
+"end": 9.864
+},
+{
+"text": "achètes",
+"type": "word",
+"start": 9.944,
+"end": 10.264
+},
+{
+"text": "au",
+"type": "word",
+"start": 10.344,
+"end": 10.424
+},
+{
+"text": "bon",
+"type": "word",
+"start": 10.504,
+"end": 10.584
+},
+{
+"text": "endroit",
+"type": "word",
+"start": 10.664,
+"end": 10.904
+},
+{
+"text": "?",
+"type": "word",
+"start": 11.224,
+"end": 11.653
+},
+{
+"text": "Que",
+"type": "word",
+"start": 11.679,
+"end": 11.706
+},
+{
+"text": "tu",
+"type": "word",
+"start": 11.786,
+"end": 11.866
+},
+{
+"text": "sois",
+"type": "word",
+"start": 11.946,
+"end": 12.106
+},
+{
+"text": "à",
+"type": "word",
+"start": 12.159,
+"end": 12.213
+},
+{
+"text": "Kolwézi,",
+"type": "word",
+"start": 12.266,
+"end": 12.986
+},
+{
+"text": "Likasi,",
+"type": "word",
+"start": 13.066,
+"end": 13.786
+},
+{
+"text": "Loubounbachi",
+"type": "word",
+"start": 13.866,
+"end": 14.586
+},
+{
+"text": "ou",
+"type": "word",
+"start": 14.666,
+"end": 14.746
+},
+{
+"text": "Foungouroumé,",
+"type": "word",
+"start": 14.826,
+"end": 15.626
+},
+{
+"text": "chez",
+"type": "word",
+"start": 15.957,
+"end": 16.037
+},
+{
+"text": "Apple",
+"type": "word",
+"start": 16.197,
+"end": 16.357
+},
+{
+"text": "Store",
+"type": "word",
+"start": 16.437,
+"end": 16.597
+},
+{
+"text": "Kolwézi,",
+"type": "word",
+"start": 16.677,
+"end": 17.317
+},
+{
+"text": "on",
+"type": "word",
+"start": 17.357,
+"end": 17.397
+},
+{
+"text": "veut",
+"type": "word",
+"start": 17.477,
+"end": 17.557
+},
+{
+"text": "te",
+"type": "word",
+"start": 17.637,
+"end": 17.717
+},
+{
+"text": "faire",
+"type": "word",
+"start": 17.757,
+"end": 17.957
+},
+{
+"text": "vivre",
+"type": "word",
+"start": 18.037,
+"end": 18.197
+},
+{
+"text": "une",
+"type": "word",
+"start": 18.317,
+"end": 18.437
+},
+{
+"text": "nouvelle",
+"type": "word",
+"start": 18.49,
+"end": 18.677
+},
+{
+"text": "expérience.",
+"type": "word",
+"start": 18.757,
+"end": 19.717
+},
+{
+"text": "Ici,",
+"type": "word",
+"start": 20.103,
+"end": 20.503
+},
+{
+"text": "on",
+"type": "word",
+"start": 20.543,
+"end": 20.583
+},
+{
+"text": "ne",
+"type": "word",
+"start": 20.623,
+"end": 20.663
+},
+{
+"text": "te",
+"type": "word",
+"start": 20.703,
+"end": 20.743
+},
+{
+"text": "vend",
+"type": "word",
+"start": 20.823,
+"end": 20.983
+},
+{
+"text": "pas",
+"type": "word",
+"start": 21.063,
+"end": 21.143
+},
+{
+"text": "seulement",
+"type": "word",
+"start": 21.183,
+"end": 21.463
+},
+{
+"text": "un",
+"type": "word",
+"start": 21.503,
+"end": 21.543
+},
+{
+"text": "téléphone,",
+"type": "word",
+"start": 21.583,
+"end": 22.263
+},
+{
+"text": "on",
+"type": "word",
+"start": 22.594,
+"end": 22.754
+},
+{
+"text": "t'aide",
+"type": "word",
+"start": 22.794,
+"end": 22.994
+},
+{
+"text": "à",
+"type": "word",
+"start": 23.021,
+"end": 23.047
+},
+{
+"text": "choisir",
+"type": "word",
+"start": 23.074,
+"end": 23.474
+},
+{
+"text": "l'iPhone",
+"type": "word",
+"start": 23.514,
+"end": 24.034
+},
+{
+"text": "qui",
+"type": "word",
+"start": 24.114,
+"end": 24.194
+},
+{
+"text": "correspond",
+"type": "word",
+"start": 24.274,
+"end": 24.674
+},
+{
+"text": "à",
+"type": "word",
+"start": 24.754,
+"end": 24.834
+},
+{
+"text": "ton",
+"type": "word",
+"start": 24.914,
+"end": 24.994
+},
+{
+"text": "budget,",
+"type": "word",
+"start": 25.154,
+"end": 25.554
+},
+{
+"text": "à",
+"type": "word",
+"start": 25.844,
+"end": 25.884
+},
+{
+"text": "ton",
+"type": "word",
+"start": 25.964,
+"end": 26.124
+},
+{
+"text": "besoin",
+"type": "word",
+"start": 26.204,
+"end": 26.764
+},
+{
+"text": "et",
+"type": "word",
+"start": 26.804,
+"end": 26.844
+},
+{
+"text": "à",
+"type": "word",
+"start": 26.924,
+"end": 26.964
+},
+{
+"text": "ton",
+"type": "word",
+"start": 27.004,
+"end": 27.084
+},
+{
+"text": "style",
+"type": "word",
+"start": 27.244,
+"end": 27.404
+},
+{
+"text": "de",
+"type": "word",
+"start": 27.444,
+"end": 27.484
+},
+{
+"text": "vie.",
+"type": "word",
+"start": 27.564,
+"end": 27.964
+},
+{
+"text": "Tu",
+"type": "word",
+"start": 28.391,
+"end": 28.471
+},
+{
+"text": "veux",
+"type": "word",
+"start": 28.511,
+"end": 28.631
+},
+{
+"text": "un",
+"type": "word",
+"start": 28.671,
+"end": 28.711
+},
+{
+"text": "iPhone",
+"type": "word",
+"start": 28.791,
+"end": 29.111
+},
+{
+"text": "simple,",
+"type": "word",
+"start": 29.191,
+"end": 29.751
+},
+{
+"text": "fiable",
+"type": "word",
+"start": 29.791,
+"end": 30.151
+},
+{
+"text": "pour",
+"type": "word",
+"start": 30.231,
+"end": 30.311
+},
+{
+"text": "WhatsApp,",
+"type": "word",
+"start": 30.391,
+"end": 31.031
+},
+{
+"text": "photos",
+"type": "word",
+"start": 31.231,
+"end": 31.431
+},
+{
+"text": "et",
+"type": "word",
+"start": 31.471,
+"end": 31.511
+},
+{
+"text": "réseaux",
+"type": "word",
+"start": 31.591,
+"end": 31.831
+},
+{
+"text": "sociaux",
+"type": "word",
+"start": 31.951,
+"end": 32.151
+},
+{
+"text": "?",
+"type": "word",
+"start": 32.441,
+"end": 32.494
+},
+{
+"text": "On",
+"type": "word",
+"start": 32.548,
+"end": 32.601
+},
+{
+"text": "peut",
+"type": "word",
+"start": 32.628,
+"end": 32.681
+},
+{
+"text": "t'orienter",
+"type": "word",
+"start": 32.721,
+"end": 33.161
+},
+{
+"text": "vers",
+"type": "word",
+"start": 33.241,
+"end": 33.321
+},
+{
+"text": "l'iPhone",
+"type": "word",
+"start": 33.361,
+"end": 33.721
+},
+{
+"text": "onze,",
+"type": "word",
+"start": 33.881,
+"end": 34.441
+},
+{
+"text": "douze",
+"type": "word",
+"start": 34.481,
+"end": 34.681
+},
+{
+"text": "ou",
+"type": "word",
+"start": 34.921,
+"end": 35.081
+},
+{
+"text": "treize.",
+"type": "word",
+"start": 35.161,
+"end": 36.178
+},
+{
+"text": "Tu",
+"type": "word",
+"start": 36.218,
+"end": 36.258
+},
+{
+"text": "veux",
+"type": "word",
+"start": 36.338,
+"end": 36.418
+},
+{
+"text": "un",
+"type": "word",
+"start": 36.458,
+"end": 36.498
+},
+{
+"text": "iPhone",
+"type": "word",
+"start": 36.578,
+"end": 36.898
+},
+{
+"text": "plus",
+"type": "word",
+"start": 36.978,
+"end": 37.218
+},
+{
+"text": "puissant,",
+"type": "word",
+"start": 37.258,
+"end": 37.778
+},
+{
+"text": "avec",
+"type": "word",
+"start": 37.898,
+"end": 38.018
+},
+{
+"text": "une",
+"type": "word",
+"start": 38.098,
+"end": 38.178
+},
+{
+"text": "caméra",
+"type": "word",
+"start": 38.258,
+"end": 38.498
+},
+{
+"text": "premium",
+"type": "word",
+"start": 38.658,
+"end": 39.058
+},
+{
+"text": "et",
+"type": "word",
+"start": 39.138,
+"end": 39.218
+},
+{
+"text": "une",
+"type": "word",
+"start": 39.338,
+"end": 39.458
+},
+{
+"text": "meilleure",
+"type": "word",
+"start": 39.498,
+"end": 39.698
+},
+{
+"text": "autonomie",
+"type": "word",
+"start": 39.778,
+"end": 40.178
+},
+{
+"text": "?",
+"type": "word",
+"start": 40.418,
+"end": 40.445
+},
+{
+"text": "On",
+"type": "word",
+"start": 40.831,
+"end": 40.858
+},
+{
+"text": "peut",
+"type": "word",
+"start": 40.938,
+"end": 41.018
+},
+{
+"text": "te",
+"type": "word",
+"start": 41.098,
+"end": 41.178
+},
+{
+"text": "conseiller",
+"type": "word",
+"start": 41.258,
+"end": 41.658
+},
+{
+"text": "le",
+"type": "word",
+"start": 41.698,
+"end": 41.738
+},
+{
+"text": "quatorze",
+"type": "word",
+"start": 41.818,
+"end": 42.178
+},
+{
+"text": "Pro",
+"type": "word",
+"start": 42.218,
+"end": 42.378
+},
+{
+"text": "Max,",
+"type": "word",
+"start": 42.458,
+"end": 42.938
+},
+{
+"text": "quinze",
+"type": "word",
+"start": 43.172,
+"end": 43.332
+},
+{
+"text": "Pro",
+"type": "word",
+"start": 43.412,
+"end": 43.572
+},
+{
+"text": "Max,",
+"type": "word",
+"start": 43.732,
+"end": 44.132
+},
+{
+"text": "seize",
+"type": "word",
+"start": 44.381,
+"end": 44.541
+},
+{
+"text": "Pro",
+"type": "word",
+"start": 44.621,
+"end": 44.781
+},
+{
+"text": "Max,",
+"type": "word",
+"start": 44.861,
+"end": 45.341
+},
+{
+"text": "dix-sept",
+"type": "word",
+"start": 45.603,
+"end": 45.923
+},
+{
+"text": "Pro",
+"type": "word",
+"start": 46.003,
+"end": 46.083
+},
+{
+"text": "Max,",
+"type": "word",
+"start": 46.163,
+"end": 46.825
+},
+{
+"text": "ou",
+"type": "word",
+"start": 46.905,
+"end": 46.985
+},
+{
+"text": "même",
+"type": "word",
+"start": 47.065,
+"end": 47.225
+},
+{
+"text": "le",
+"type": "word",
+"start": 47.305,
+"end": 47.385
+},
+{
+"text": "dix-huit",
+"type": "word",
+"start": 47.545,
+"end": 47.865
+},
+{
+"text": "Pro",
+"type": "word",
+"start": 47.945,
+"end": 48.025
+},
+{
+"text": "Max.",
+"type": "word",
+"start": 48.105,
+"end": 48.745
+},
+{
+"text": "Et",
+"type": "word",
+"start": 49.285,
+"end": 49.325
+},
+{
+"text": "le",
+"type": "word",
+"start": 49.405,
+"end": 49.485
+},
+{
+"text": "plus",
+"type": "word",
+"start": 49.565,
+"end": 49.645
+},
+{
+"text": "important",
+"type": "word",
+"start": 49.725,
+"end": 50.205
+},
+{
+"text": ":",
+"type": "word",
+"start": 50.445,
+"end": 50.498
+},
+{
+"text": "tu",
+"type": "word",
+"start": 50.552,
+"end": 50.605
+},
+{
+"text": "peux",
+"type": "word",
+"start": 50.645,
+"end": 50.765
+},
+{
+"text": "poser",
+"type": "word",
+"start": 50.885,
+"end": 51.005
+},
+{
+"text": "tes",
+"type": "word",
+"start": 51.085,
+"end": 51.165
+},
+{
+"text": "questions,",
+"type": "word",
+"start": 51.245,
+"end": 51.885
+},
+{
+"text": "comparer",
+"type": "word",
+"start": 51.965,
+"end": 52.285
+},
+{
+"text": "les",
+"type": "word",
+"start": 52.325,
+"end": 52.365
+},
+{
+"text": "modèles",
+"type": "word",
+"start": 52.445,
+"end": 52.925
+},
+{
+"text": "et",
+"type": "word",
+"start": 53.159,
+"end": 53.199
+},
+{
+"text": "recevoir",
+"type": "word",
+"start": 53.279,
+"end": 53.679
+},
+{
+"text": "un",
+"type": "word",
+"start": 53.759,
+"end": 53.839
+},
+{
+"text": "conseil",
+"type": "word",
+"start": 53.959,
+"end": 54.239
+},
+{
+"text": "honnête.",
+"type": "word",
+"start": 54.479,
+"end": 55.079
+},
+{
+"text": "Pas",
+"type": "word",
+"start": 55.562,
+"end": 55.642
+},
+{
+"text": "de",
+"type": "word",
+"start": 55.682,
+"end": 55.722
+},
+{
+"text": "pression,",
+"type": "word",
+"start": 55.962,
+"end": 56.442
+},
+{
+"text": "pas",
+"type": "word",
+"start": 56.732,
+"end": 56.772
+},
+{
+"text": "de",
+"type": "word",
+"start": 56.852,
+"end": 56.892
+},
+{
+"text": "discours",
+"type": "word",
+"start": 56.932,
+"end": 57.252
+},
+{
+"text": "compliqué,",
+"type": "word",
+"start": 57.332,
+"end": 58.319
+},
+{
+"text": "juste",
+"type": "word",
+"start": 58.399,
+"end": 58.639
+},
+{
+"text": "une",
+"type": "word",
+"start": 58.719,
+"end": 58.799
+},
+{
+"text": "vraie",
+"type": "word",
+"start": 58.879,
+"end": 59.119
+},
+{
+"text": "orientation,",
+"type": "word",
+"start": 59.439,
+"end": 59.999
+},
+{
+"text": "comme",
+"type": "word",
+"start": 60.289,
+"end": 60.409
+},
+{
+"text": "si",
+"type": "word",
+"start": 60.489,
+"end": 60.569
+},
+{
+"text": "on",
+"type": "word",
+"start": 60.609,
+"end": 60.649
+},
+{
+"text": "conseillait",
+"type": "word",
+"start": 60.729,
+"end": 61.129
+},
+{
+"text": "un",
+"type": "word",
+"start": 61.209,
+"end": 61.289
+},
+{
+"text": "frère,",
+"type": "word",
+"start": 61.369,
+"end": 61.849
+},
+{
+"text": "une",
+"type": "word",
+"start": 61.929,
+"end": 62.009
+},
+{
+"text": "sœur,",
+"type": "word",
+"start": 62.089,
+"end": 62.649
+},
+{
+"text": "un",
+"type": "word",
+"start": 62.689,
+"end": 62.729
+},
+{
+"text": "ami.",
+"type": "word",
+"start": 62.809,
+"end": 63.369
+},
+{
+"text": "Même",
+"type": "word",
+"start": 63.909,
+"end": 64.029
+},
+{
+"text": "si",
+"type": "word",
+"start": 64.109,
+"end": 64.189
+},
+{
+"text": "tu",
+"type": "word",
+"start": 64.269,
+"end": 64.349
+},
+{
+"text": "as",
+"type": "word",
+"start": 64.429,
+"end": 64.509
+},
+{
+"text": "déjà",
+"type": "word",
+"start": 64.589,
+"end": 64.749
+},
+{
+"text": "un",
+"type": "word",
+"start": 64.829,
+"end": 64.909
+},
+{
+"text": "ancien",
+"type": "word",
+"start": 64.989,
+"end": 65.229
+},
+{
+"text": "iPhone,",
+"type": "word",
+"start": 65.309,
+"end": 65.949
+},
+{
+"text": "viens",
+"type": "word",
+"start": 66.029,
+"end": 66.189
+},
+{
+"text": "avec.",
+"type": "word",
+"start": 66.389,
+"end": 67.189
+},
+{
+"text": "L'échange",
+"type": "word",
+"start": 67.229,
+"end": 67.669
+},
+{
+"text": "est",
+"type": "word",
+"start": 67.749,
+"end": 67.829
+},
+{
+"text": "possible.",
+"type": "word",
+"start": 68.069,
+"end": 68.773
+},
+{
+"text": "Ton",
+"type": "word",
+"start": 68.853,
+"end": 68.933
+},
+{
+"text": "ancien",
+"type": "word",
+"start": 69.013,
+"end": 69.173
+},
+{
+"text": "téléphone",
+"type": "word",
+"start": 69.253,
+"end": 69.733
+},
+{
+"text": "peut",
+"type": "word",
+"start": 69.813,
+"end": 69.973
+},
+{
+"text": "devenir",
+"type": "word",
+"start": 70.013,
+"end": 70.293
+},
+{
+"text": "le",
+"type": "word",
+"start": 70.373,
+"end": 70.533
+},
+{
+"text": "début",
+"type": "word",
+"start": 70.613,
+"end": 70.933
+},
+{
+"text": "de",
+"type": "word",
+"start": 70.973,
+"end": 71.013
+},
+{
+"text": "ton",
+"type": "word",
+"start": 71.093,
+"end": 71.253
+},
+{
+"text": "nouvel",
+"type": "word",
+"start": 71.333,
+"end": 71.573
+},
+{
+"text": "iPhone.",
+"type": "word",
+"start": 71.813,
+"end": 72.293
+},
+{
+"text": "Alors,",
+"type": "word",
+"start": 72.873,
+"end": 73.353
+},
+{
+"text": "que",
+"type": "word",
+"start": 73.393,
+"end": 73.433
+},
+{
+"text": "tu",
+"type": "word",
+"start": 73.513,
+"end": 73.673
+},
+{
+"text": "sois",
+"type": "word",
+"start": 73.713,
+"end": 73.833
+},
+{
+"text": "à",
+"type": "word",
+"start": 73.886,
+"end": 73.94
+},
+{
+"text": "Kolwézi,",
+"type": "word",
+"start": 73.993,
+"end": 74.713
+},
+{
+"text": "Likasi,",
+"type": "word",
+"start": 74.833,
+"end": 75.735
+},
+{
+"text": "Loubounbachi",
+"type": "word",
+"start": 75.775,
+"end": 76.535
+},
+{
+"text": "ou",
+"type": "word",
+"start": 76.575,
+"end": 76.615
+},
+{
+"text": "Foungouroumé,",
+"type": "word",
+"start": 76.775,
+"end": 77.895
+},
+{
+"text": "avant",
+"type": "word",
+"start": 77.975,
+"end": 78.135
+},
+{
+"text": "d'acheter",
+"type": "word",
+"start": 78.162,
+"end": 78.455
+},
+{
+"text": "ton",
+"type": "word",
+"start": 78.535,
+"end": 78.615
+},
+{
+"text": "prochain",
+"type": "word",
+"start": 78.695,
+"end": 78.935
+},
+{
+"text": "iPhone,",
+"type": "word",
+"start": 79.015,
+"end": 79.655
+},
+{
+"text": "pense",
+"type": "word",
+"start": 79.945,
+"end": 80.105
+},
+{
+"text": "d'abord",
+"type": "word",
+"start": 80.145,
+"end": 80.585
+},
+{
+"text": "à",
+"type": "word",
+"start": 80.665,
+"end": 80.825
+},
+{
+"text": "Apple",
+"type": "word",
+"start": 80.945,
+"end": 81.065
+},
+{
+"text": "Store",
+"type": "word",
+"start": 81.145,
+"end": 81.385
+},
+{
+"text": "Kolwézi.",
+"type": "word",
+"start": 81.438,
+"end": 82.105
+},
+{
+"text": "Parce",
+"type": "word",
+"start": 82.477,
+"end": 82.584
+},
+{
+"text": "qu'un",
+"type": "word",
+"start": 82.61,
+"end": 82.797
+},
+{
+"text": "bon",
+"type": "word",
+"start": 82.877,
+"end": 82.957
+},
+{
+"text": "iPhone,",
+"type": "word",
+"start": 83.197,
+"end": 83.677
+},
+{
+"text": "c'est",
+"type": "word",
+"start": 83.73,
+"end": 83.837
+},
+{
+"text": "bien.",
+"type": "word",
+"start": 83.917,
+"end": 84.317
+},
+{
+"text": "Mais",
+"type": "word",
+"start": 84.662,
+"end": 84.742
+},
+{
+"text": "un",
+"type": "word",
+"start": 84.822,
+"end": 84.982
+},
+{
+"text": "bon",
+"type": "word",
+"start": 85.062,
+"end": 85.142
+},
+{
+"text": "iPhone",
+"type": "word",
+"start": 85.382,
+"end": 85.622
+},
+{
+"text": "acheté",
+"type": "word",
+"start": 85.702,
+"end": 86.022
+},
+{
+"text": "au",
+"type": "word",
+"start": 86.102,
+"end": 86.182
+},
+{
+"text": "bon",
+"type": "word",
+"start": 86.262,
+"end": 86.342
+},
+{
+"text": "endroit,",
+"type": "word",
+"start": 86.422,
+"end": 86.982
+},
+{
+"text": "c'est",
+"type": "word",
+"start": 87.216,
+"end": 87.456
+},
+{
+"text": "encore",
+"type": "word",
+"start": 87.536,
+"end": 87.776
+},
+{
+"text": "mieux.",
+"type": "word",
+"start": 87.856,
+"end": 88.256
+}
+]
+}

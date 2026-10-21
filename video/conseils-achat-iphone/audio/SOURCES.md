@@ -22,3 +22,17 @@
 | sfx-confirm.mp3 | 998fe887-42ea-4d38-9fd2-f430d8475bb1 |
 
 Copie de tous ces fichiers dans le projet invideo https://invideo.io/@merveille-6429/conseils-achat-iphone-audio (séquences seq-1.1 à seq-19.1).
+
+## v5 (2026-10-21)
+
+- Voix off : `voix-french-darling.mp3` (ElevenLabs, « French Darling - For Commercials », prise 3 brute) ; `voix-v5.wav` = la même avec respirations ajoutées entre les phrases ; mots horodatés : `voix-mots-v5.json`. Le recalage de l'animation est dans `src/timing.json`.
+- Musique : `musique-v5.wav` = edit 491ac352-72da-4c1e-8b41-c2590c870d17 de « An Elevated State of Mind » (Imprismed, 4823e6a7-5d6e-3fac-abcf-9c80c28b0bbe), 91,3 s.
+- Bruitages ajoutés :
+
+| Fichier | Id Epidemic |
+|---|---|
+| sfx-trans.mp3 | 36d506f7-b031-4bf5-8b50-cad859dde276 |
+| sfx-tick.mp3 | 9da883ac-6b03-4df0-b8e6-cd85c7c926a5 |
+| sfx-select.mp3 | f9350eed-4fb6-4b72-ab4b-16d5e1a7cc60 |
+| sfx-slide.mp3 | 6f0a003f-a238-4717-b1a1-2514201f0af4 |
+| sfx-shimmer.mp3 | bf81899c-45a9-4b6f-a006-11c32d2040fd |
