@@ -84,13 +84,16 @@
     layer.property('ADBE Transform Group').property('ADBE Position').setValue([0, 0]);
     return rc;
   }
-  var rcF = roundRect(frame, [1, 1, 1]), rcM = roundRect(mat, [1, 1, 1]);
+  roundRect(frame, [1, 1, 1]); roundRect(mat, [1, 1, 1]);
+  // Les objets Property deviennent invalides quand on ajoute ou déplace des calques : on les relit à chaque usage
+  function rectOfLayer(layer) { return layer.property('ADBE Root Vectors Group').property(1).property('ADBE Vectors Group').property('ADBE Vector Shape - Rect'); }
   var av = comp.layers.add(AVATAR); av.name = 'Avatar (vidéo HeyGen)';
   av.audioEnabled = false;
   mat.moveBefore(av);
   frame.moveAfter(av);
 
-  function setRect(rc, t, r) {
+  function setRect(layer, t, r) {
+    var rc = rectOfLayer(layer);
     rc.property('ADBE Vector Rect Size').setValueAtTime(t, [r[2], r[3]]);
     rc.property('ADBE Vector Rect Position').setValueAtTime(t, [r[0] + r[2] / 2, r[1] + r[3] / 2]);
     rc.property('ADBE Vector Rect Roundness').setValueAtTime(t, r[4]);
@@ -104,19 +107,20 @@
     for (i = 0; i < SCENES.length; i++) {
       var cur = rectOf(SCENES[i][2]), prev = rectOf((SCENES[i - 1] || SCENES[i])[2]);
       var t0 = Math.max(0, SCENES[i][1] - 0.05), t1 = SCENES[i][1] + 0.65;
-      if (i === 0) { setRect(rcM, 0, cur); setRect(rcF, 0, cur); setAv(0, cur); continue; }
+      if (i === 0) { setRect(mat, 0, cur); setRect(frame, 0, cur); setAv(0, cur); continue; }
       if (SCENES[i][2] === SCENES[i - 1][2]) continue;
-      setRect(rcM, t0, prev); setRect(rcF, t0, prev); setAv(t0, prev);
-      setRect(rcM, t1, cur); setRect(rcF, t1, cur); setAv(t1, cur);
+      setRect(mat, t0, prev); setRect(frame, t0, prev); setAv(t0, prev);
+      setRect(mat, t1, cur); setRect(frame, t1, cur); setAv(t1, cur);
     }
   } else {
     var r = rectOf('card');
-    setRect(rcM, 0, r); setRect(rcF, 0, r);
+    setRect(mat, 0, r); setRect(frame, 0, r);
     var c = cover(r);
     av.property('ADBE Transform Group').property('ADBE Position').setValue(c.pos);
     av.property('ADBE Transform Group').property('ADBE Scale').setValueAtTime(0, c.scale);
     av.property('ADBE Transform Group').property('ADBE Scale').setValueAtTime(DUR, [c.scale[0] * 1.04, c.scale[1] * 1.04]);
   }
+  var rcM = rectOfLayer(mat), rcF = rectOfLayer(frame);
   var props = [rcM.property('ADBE Vector Rect Size'), rcM.property('ADBE Vector Rect Position'), rcM.property('ADBE Vector Rect Roundness'),
     rcF.property('ADBE Vector Rect Size'), rcF.property('ADBE Vector Rect Position'), rcF.property('ADBE Vector Rect Roundness'),
     av.property('ADBE Transform Group').property('ADBE Position'), av.property('ADBE Transform Group').property('ADBE Scale')];
