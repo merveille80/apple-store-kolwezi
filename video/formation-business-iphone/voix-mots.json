@@ -1,0 +1,567 @@
+[
+{
+"text": "Tu",
+"start": 0.1,
+"end": 0.16
+},
+{
+"text": "veux",
+"start": 0.2,
+"end": 0.3
+},
+{
+"text": "te",
+"start": 0.36,
+"end": 0.44
+},
+{
+"text": "lancer",
+"start": 0.46,
+"end": 0.74
+},
+{
+"text": "sérieusement",
+"start": 0.78,
+"end": 1.3
+},
+{
+"text": "dans",
+"start": 1.34,
+"end": 1.44
+},
+{
+"text": "le",
+"start": 1.48,
+"end": 1.54
+},
+{
+"text": "business",
+"start": 1.62,
+"end": 2.02
+},
+{
+"text": "d'iPhone",
+"start": 2.04,
+"end": 2.54
+},
+{
+"text": "en",
+"start": 2.7,
+"end": 2.8
+},
+{
+"text": "RDC,",
+"start": 2.92,
+"end": 3.34
+},
+{
+"text": "mais",
+"start": 3.54,
+"end": 3.7
+},
+{
+"text": "tu",
+"start": 3.74,
+"end": 3.82
+},
+{
+"text": "ne",
+"start": 3.9,
+"end": 3.98
+},
+{
+"text": "sais",
+"start": 4.08,
+"end": 4.28
+},
+{
+"text": "pas",
+"start": 4.3,
+"end": 4.42
+},
+{
+"text": "vraiment",
+"start": 4.56,
+"end": 5.0
+},
+{
+"text": "par",
+"start": 5.04,
+"end": 5.18
+},
+{
+"text": "où",
+"start": 5.22,
+"end": 5.32
+},
+{
+"text": "commencer",
+"start": 5.36,
+"end": 5.78
+},
+{
+"text": "?",
+"start": 5.8,
+"end": 5.8
+},
+{
+"text": "Avec",
+"start": 6.5,
+"end": 6.7
+},
+{
+"text": "seulement",
+"start": 6.76,
+"end": 7.08
+},
+{
+"text": "cent",
+"start": 7.2,
+"end": 7.32
+},
+{
+"text": "cinquante",
+"start": 7.36,
+"end": 7.72
+},
+{
+"text": "mille",
+"start": 7.76,
+"end": 7.94
+},
+{
+"text": "francs,",
+"start": 7.98,
+"end": 8.18
+},
+{
+"text": "tu",
+"start": 8.32,
+"end": 8.38
+},
+{
+"text": "accèdes",
+"start": 8.48,
+"end": 8.74
+},
+{
+"text": "à",
+"start": 8.8,
+"end": 8.82
+},
+{
+"text": "la",
+"start": 8.86,
+"end": 8.96
+},
+{
+"text": "formation",
+"start": 9.0,
+"end": 9.44
+},
+{
+"text": "complète",
+"start": 9.56,
+"end": 10.02
+},
+{
+"text": "Se",
+"start": 10.4,
+"end": 10.52
+},
+{
+"text": "lancer",
+"start": 10.56,
+"end": 10.84
+},
+{
+"text": "dans",
+"start": 10.88,
+"end": 10.96
+},
+{
+"text": "le",
+"start": 11.0,
+"end": 11.06
+},
+{
+"text": "business",
+"start": 11.16,
+"end": 11.58
+},
+{
+"text": "d'iPhone.",
+"start": 11.84,
+"end": 12.34
+},
+{
+"text": "Dans",
+"start": 12.62,
+"end": 12.7
+},
+{
+"text": "cette",
+"start": 12.74,
+"end": 12.9
+},
+{
+"text": "formation,",
+"start": 12.94,
+"end": 13.32
+},
+{
+"text": "tu",
+"start": 13.42,
+"end": 13.48
+},
+{
+"text": "vas",
+"start": 13.54,
+"end": 13.64
+},
+{
+"text": "apprendre",
+"start": 13.68,
+"end": 14.06
+},
+{
+"text": "où",
+"start": 14.38,
+"end": 14.54
+},
+{
+"text": "acheter",
+"start": 14.6,
+"end": 14.88
+},
+{
+"text": "tes",
+"start": 14.94,
+"end": 15.1
+},
+{
+"text": "iPhones",
+"start": 15.16,
+"end": 15.56
+},
+{
+"text": "sans",
+"start": 15.78,
+"end": 15.88
+},
+{
+"text": "te",
+"start": 15.92,
+"end": 16.04
+},
+{
+"text": "faire",
+"start": 16.1,
+"end": 16.219
+},
+{
+"text": "escroquer,",
+"start": 16.26,
+"end": 16.78
+},
+{
+"text": "comment",
+"start": 17.42,
+"end": 17.78
+},
+{
+"text": "calculer",
+"start": 17.82,
+"end": 18.34
+},
+{
+"text": "ta",
+"start": 18.36,
+"end": 18.46
+},
+{
+"text": "rentabilité",
+"start": 18.5,
+"end": 19.32
+},
+{
+"text": "et",
+"start": 19.4,
+"end": 19.46
+},
+{
+"text": "fixer",
+"start": 19.68,
+"end": 20.02
+},
+{
+"text": "tes",
+"start": 20.06,
+"end": 20.2
+},
+{
+"text": "prix,",
+"start": 20.24,
+"end": 20.42
+},
+{
+"text": "quel",
+"start": 21.04,
+"end": 21.22
+},
+{
+"text": "modèle",
+"start": 21.26,
+"end": 21.54
+},
+{
+"text": "choisir",
+"start": 21.62,
+"end": 22.08
+},
+{
+"text": "en",
+"start": 22.24,
+"end": 22.34
+},
+{
+"text": "fonction",
+"start": 22.38,
+"end": 22.7
+},
+{
+"text": "de",
+"start": 22.72,
+"end": 22.84
+},
+{
+"text": "ton",
+"start": 22.86,
+"end": 22.98
+},
+{
+"text": "budget",
+"start": 23.04,
+"end": 23.36
+},
+{
+"text": "et",
+"start": 23.96,
+"end": 24.06
+},
+{
+"text": "comment",
+"start": 24.12,
+"end": 24.44
+},
+{
+"text": "vendre",
+"start": 24.48,
+"end": 24.92
+},
+{
+"text": "rapidement",
+"start": 25.04,
+"end": 25.56
+},
+{
+"text": "grâce",
+"start": 25.66,
+"end": 25.88
+},
+{
+"text": "à",
+"start": 25.94,
+"end": 26.0
+},
+{
+"text": "WhatsApp,",
+"start": 26.04,
+"end": 26.5
+},
+{
+"text": "Facebook",
+"start": 26.74,
+"end": 27.28
+},
+{
+"text": "et",
+"start": 27.32,
+"end": 27.38
+},
+{
+"text": "TikTok.",
+"start": 27.46,
+"end": 27.92
+},
+{
+"text": "L'objectif",
+"start": 28.3,
+"end": 28.78
+},
+{
+"text": "est",
+"start": 28.82,
+"end": 28.92
+},
+{
+"text": "simple,",
+"start": 29.0,
+"end": 29.24
+},
+{
+"text": "que",
+"start": 29.64,
+"end": 29.7
+},
+{
+"text": "tu",
+"start": 29.78,
+"end": 29.84
+},
+{
+"text": "puisses",
+"start": 29.92,
+"end": 30.16
+},
+{
+"text": "démarrer",
+"start": 30.22,
+"end": 30.62
+},
+{
+"text": "ton",
+"start": 30.66,
+"end": 30.78
+},
+{
+"text": "business",
+"start": 30.82,
+"end": 31.22
+},
+{
+"text": "d'iPhone",
+"start": 31.26,
+"end": 31.68
+},
+{
+"text": "avec",
+"start": 31.88,
+"end": 32.18
+},
+{
+"text": "une",
+"start": 32.439,
+"end": 32.619
+},
+{
+"text": "vraie",
+"start": 32.68,
+"end": 32.86
+},
+{
+"text": "méthode",
+"start": 32.9,
+"end": 33.28
+},
+{
+"text": "claire,",
+"start": 33.88,
+"end": 34.2
+},
+{
+"text": "concrète",
+"start": 34.52,
+"end": 35.06
+},
+{
+"text": "et",
+"start": 35.26,
+"end": 35.32
+},
+{
+"text": "rentable.",
+"start": 35.38,
+"end": 35.86
+},
+{
+"text": "Clique",
+"start": 36.4,
+"end": 36.58
+},
+{
+"text": "maintenant",
+"start": 36.62,
+"end": 36.92
+},
+{
+"text": "sur",
+"start": 36.98,
+"end": 37.08
+},
+{
+"text": "le",
+"start": 37.12,
+"end": 37.2
+},
+{
+"text": "lien",
+"start": 37.24,
+"end": 37.38
+},
+{
+"text": "du",
+"start": 37.4,
+"end": 37.52
+},
+{
+"text": "site",
+"start": 37.58,
+"end": 37.8
+},
+{
+"text": "pour",
+"start": 37.84,
+"end": 38.0
+},
+{
+"text": "voir",
+"start": 38.04,
+"end": 38.18
+},
+{
+"text": "le",
+"start": 38.22,
+"end": 38.32
+},
+{
+"text": "programme",
+"start": 38.36,
+"end": 38.7
+},
+{
+"text": "complet",
+"start": 38.84,
+"end": 39.3
+},
+{
+"text": "et",
+"start": 39.34,
+"end": 39.44
+},
+{
+"text": "t'inscrire",
+"start": 39.48,
+"end": 40.12
+},
+{
+"text": "dès",
+"start": 40.2,
+"end": 40.36
+},
+{
+"text": "aujourd'hui.",
+"start": 40.4,
+"end": 40.88
+}
+]
