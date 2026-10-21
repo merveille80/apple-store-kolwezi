@@ -459,7 +459,7 @@ const S15 = ({t, v}) => {
             <div style={{display: 'flex', alignItems: 'center', gap: 22, ...T(48, 500, C.gray)}}><span style={enter(t, 82.62, 0.2)}>c'est bien</span><Radio on={0} /></div>
           </div>
           <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '34px 0 10px', ...enter(t, 83.48, 0.2)}}>
-            <div style={{...T(52, 700), lineHeight: 1.3}}>Un bon iPhone acheté<br />au <Mark t={t} at={84.74} dur={0.45}>bon endroit</Mark></div>
+            <div style={{...T(v ? 48 : 52, 700), lineHeight: 1.3, marginRight: 30}}>Un bon iPhone {v ? <br /> : null}acheté{v ? ' ' : <br />}au <Mark t={t} at={84.74} dur={0.45}>bon endroit</Mark></div>
             <div style={{display: 'flex', alignItems: 'center', gap: 22}}>
               <span style={{...T(56, 800), ...pop(t, 86.28, 0.45, 0.5), color: C.ink}}>mieux</span>
               <Radio on={sel} />
