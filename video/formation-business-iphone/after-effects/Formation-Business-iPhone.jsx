@@ -19,6 +19,9 @@
   // Cadres de l'avatar en 9:16, dans l'espace 540×960 de Remotion (×4 pour la 4K)
   var AV = {full: [0, 0, 540, 960, 0, 50], card: [24, 520, 492, 380, 30, 18], bubble: [404, 750, 112, 150, 24, 15]};
 
+  var LOG = new File(BASE.fsName + '/erreur-' + FMT + '.txt'); if (LOG.exists) LOG.remove();
+  app.beginSuppressDialogs();
+  try {
   app.beginUndoGroup('Formation business iPhone ' + FMT);
   app.newProject();
   var proj = app.project;
@@ -166,4 +169,9 @@
   app.endUndoGroup();
   var out = new File(BASE.fsName + '/Formation-Business-iPhone-' + FMT + '.aep');
   proj.save(out);
+  } catch (err) {
+    LOG.encoding = 'UTF-8'; LOG.open('w'); LOG.write(err.toString() + ' (ligne ' + err.line + ')'); LOG.close();
+  } finally {
+    app.endSuppressDialogs(false);
+  }
 })();

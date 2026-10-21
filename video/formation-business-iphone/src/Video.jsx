@@ -73,7 +73,7 @@ const Brand = ({x, y, s = 15, center, t, t0}) => (
     apple store <span style={{color: GRAY}}>kolwezi</span>
   </T>
 );
-const Num = ({n}) => <>{Math.round(n).toLocaleString('fr-FR').replace(/ | /g, ' ')}</>;
+const Num = ({n}) => <>{String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0')}</>;
 
 // En-tête de rubrique (01 Où acheter / sous-titre)
 const Head = ({t, num, title, sub, t0, t1}) => (
