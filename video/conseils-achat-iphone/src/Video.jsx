@@ -172,7 +172,7 @@ const S7 = ({t, v}) => {
               </div>
             );
           })}
-          <Img src={staticFile('logo.png')} style={{position: 'absolute', left: 54, bottom: 44, height: 64, opacity: 0.9}} />
+          <div style={{position: 'absolute', left: 54, bottom: 50, ...T(30, 600, C.gray), letterSpacing: '-0.01em'}}>apple store <span style={{fontWeight: 400}}>kolwezi</span></div>
         </div>
       </div>
     </Center>
@@ -461,7 +461,7 @@ const S15 = ({t, v}) => {
           <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '34px 0 10px', ...enter(t, 83.48, 0.2)}}>
             <div style={{...T(52, 700), lineHeight: 1.3}}>Un bon iPhone acheté<br />au <Mark t={t} at={84.74} dur={0.45}>bon endroit</Mark></div>
             <div style={{display: 'flex', alignItems: 'center', gap: 22}}>
-              <span style={{...T(56, 800), ...pop(t, 86.28, 0.45, 0.5), color: C.ink}}>MIEUX</span>
+              <span style={{...T(56, 800), ...pop(t, 86.28, 0.45, 0.5), color: C.ink}}>mieux</span>
               <Radio on={sel} />
             </div>
           </div>

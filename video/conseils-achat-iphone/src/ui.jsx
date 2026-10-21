@@ -263,28 +263,19 @@ export const Rings = ({t, at, size = 700}) => {
   );
 };
 
-// Logo officiel (public/logo.png, 1314 × 558, détouré depuis le fichier de merveille) découpé en trois calques :
-// la pomme se pose au centre (échelle + flou), glisse à gauche pendant que le trait se dessine et que le nom se dévoile.
-const LOGO_RATIO = 558 / 1314;
-const PARTS = {mark: [0, 0.255], bar: [0.37, 0.4], text: [0.465, 1]};
+// Nom de la boutique en petit texte, minuscules, façon Apple (v4 : remplace le logo image).
+// Chaque mot sort du flou en montant légèrement ; l'interlettrage se resserre pendant l'entrée.
 export const LogoReveal = ({t, at, width = 700, style}) => {
-  const h = width * LOGO_RATIO;
-  const m = t < at ? 0 : spring(t, at, 0.7);
-  const mb = 1 - eo(prog(t, at, 0.4));
-  const b = eio(prog(t, at + 0.2, 0.35));
-  const x = eo(prog(t, at + 0.32, 0.7));
-  const settle = 1.05 - 0.05 * eo(prog(t, at, 1.2));
-  const layer = ([l, r], inner, extra = {}) => (
-    <div style={{position: 'absolute', inset: 0, clipPath: `inset(-10% ${(1 - r) * 100}% -10% ${l * 100}%)`, ...extra}}>
-      <Img src={staticFile('logo.png')} style={{position: 'absolute', left: 0, top: 0, width, height: h, ...inner}} />
-    </div>
-  );
-  const [tl, tr] = PARTS.text;
+  const size = Math.round(width * 0.085);
+  const words = [['apple', 600, C.ink], ['store', 600, C.ink], ['kolwezi', 400, C.gray]];
   return (
-    <div style={{position: 'relative', width, height: h, transform: `translateX(${(1 - eio(prog(t, at + 0.3, 0.75))) * width * 0.373}px) scale(${settle})`, opacity: clamp((t - at) / 0.1), ...style}}>
-      {layer(PARTS.mark, {transform: `scale(${0.7 + 0.3 * m})`, transformOrigin: `${width * 0.127}px 50%`, filter: mb > 0.01 ? `blur(${mb * 14}px)` : undefined})}
-      {layer(PARTS.bar, {transform: `scaleY(${b})`, transformOrigin: '50% 50%'})}
-      {layer([tl, tl + (tr - tl) * x], {transform: `translateX(${(1 - x) * -width * 0.06}px)`, filter: x < 1 ? `blur(${(1 - x) * 8}px)` : undefined, opacity: x})}
+    <div style={{display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: size * 0.28, whiteSpace: 'nowrap', ...style}}>
+      {words.map(([w, wt, col], i) => {
+        const p = eo(prog(t, at + i * 0.12, 0.7));
+        return (
+          <span key={w} style={{...T(size, wt, col), letterSpacing: `${0.06 * (1 - p) - 0.01}em`, opacity: p, transform: `translateY(${(1 - p) * size * 0.4}px)`, filter: p < 1 ? `blur(${(1 - p) * 10}px)` : undefined, display: 'inline-block'}}>{w}</span>
+        );
+      })}
     </div>
   );
 };
