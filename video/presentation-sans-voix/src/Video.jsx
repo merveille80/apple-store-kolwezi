@@ -256,30 +256,45 @@ const S4 = ({t, W, H, v, u}) => {
   );
 };
 
-// 5 · Puce A20 Pro
+// 5 · Puce A20 Pro : la vraie puce (tracé Apple) en 3D, épaisseur métal, traits qui s'allument, reflet qui balaie
 const S5 = ({t, W, H, v, u}) => {
   const cx = W / 2, cy = v ? H * 0.4 : H * 0.36;
-  const sq = spring(t, B(22.5), 0.6, 0.3);
   const out = blurOut(t, B(27) - 0.05, 0.3, {s1: 0.9, dy: -60 * u});
-  const lines = lerp(t, B(23), B(23.8), 0, 1);
-  const breath = 0.75 + 0.25 * Math.sin((t - B(22.5)) * 3.2);
-  const s = 420 * u;
-  const pins = [30, 42, 54, 66];
+  const t0 = B(22.5);
+  const rise = lerp(t, t0, t0 + 0.9, 0, 1);                  // arrivée inclinée → presque à plat
+  const drift = lerp(t, t0 + 0.9, B(27), 0, 1, Easing.linear); // dérive lente ensuite
+  const rx = 66 - 40 * rise - 8 * drift, rz = -30 + 22 * rise + 6 * drift, ry = -10 * (1 - rise) + 4 * Math.sin((t - t0) * 1.3);
+  const sc = 0.62 + 0.38 * spring(t, t0, 0.8, 0.12);
+  const lift = (1 - rise) * 260 * u;
+  const op = lerp(t, t0, t0 + 0.25, 0, 1, Easing.linear);
+  const bl = (1 - lerp(t, t0, t0 + 0.5, 0, 1)) * 22;
+  const s = (v ? 560 : 470) * u, depth = 44 * u, N = 22;
+  const trace = lerp(t, B(23), B(24.3), 0, 1, io);           // les traits s'allument en diagonale
+  const glint = lerp(t, B(25), B(26.3), -0.3, 1.3, io);      // reflet qui balaie la puce
+  const breath = 0.75 + 0.25 * Math.sin((t - t0) * 3.2);
+  const sweep = (p, w) => `linear-gradient(135deg, transparent ${(p - w) * 100}%, #000 ${p * 100}%, transparent ${(p + w) * 100}%)`;
+  const face = {position: 'absolute', inset: 0, borderRadius: 6 * u, backgroundSize: 'cover'};
+  const rot = `scale(${sc}) rotateX(${rx}deg) rotateY(${ry}deg) rotateZ(${rz}deg)`;
   return (
     <AbsoluteFill style={fx(out)}>
-      <Glow x={cx} y={cy} r={340 * u} color="rgba(0,113,227,.22)" op={lerp(t, B(23), B(24), 0, 1) * breath} />
-      <Abs x={cx} y={cy} style={{opacity: Math.min(1, sq * 1.5), filter: sq < 0.9 ? `blur(${(1 - Math.min(sq, 1)) * 20}px)` : undefined}}>
-        <div style={{width: s, height: s, transform: `scale(${0.4 + 0.6 * sq})`, borderRadius: 96 * u, background: 'linear-gradient(#1c1c1e,#0b0b0c)', boxShadow: `0 ${30 * u}px ${80 * u}px rgba(0,0,0,.3)`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 18 * u}}>
-          <svg width={170 * u} height={170 * u} viewBox="0 0 100 100">
-            <rect x="22" y="22" width="56" height="56" rx="10" fill="none" stroke="#5ab0ff" strokeWidth="4" pathLength={1} strokeDasharray={1} strokeDashoffset={1 - lines} />
-            {pins.map((p) => (
-              <g key={p} stroke="#5ab0ff" strokeWidth="3" opacity={lines}>
-                <line x1={p} y1="8" x2={p} y2="20" /><line x1={p} y1="80" x2={p} y2="92" /><line x1="8" y1={p} x2="20" y2={p} /><line x1="80" y1={p} x2="92" y2={p} />
-              </g>
-            ))}
-            <text x="50" y="57" textAnchor="middle" fontFamily={FONT} fontWeight="700" fontSize="17" fill="#fff" opacity={lerp(t, B(23.5), B(23.5) + 0.3, 0, 1)}>A20</text>
-          </svg>
-          <Txt size={40 * u} color="#5ab0ff" style={{opacity: lerp(t, B(23.5), B(23.5) + 0.3, 0, 1)}}>A20 Pro</Txt>
+      <Glow x={cx} y={cy} r={360 * u} color="rgba(0,113,227,.18)" op={lerp(t, B(23), B(24), 0, 1) * breath} />
+      {/* Ombre portée au sol */}
+      <Abs x={cx} y={cy + s * 0.18 + lift * 0.3} style={{width: s * 1.05 * sc, height: s * 0.5 * sc, borderRadius: '50%', background: 'rgba(0,0,0,.42)', filter: `blur(${46 * u}px)`, opacity: op * (0.35 + 0.65 * rise)}} />
+      <Abs x={cx} y={cy - lift} style={{perspective: 1700 * u, opacity: op, filter: bl > 0.3 ? `blur(${bl}px)` : undefined}}>
+        <div style={{width: s, height: s, position: 'relative'}}>
+          {/* Épaisseur : tranches de métal brossé, chacune avec la transformation 3D complète (de la plus profonde à la face) */}
+          {Array.from({length: N}, (_, k) => N - 1 - k).map((i) => (
+            <div key={i} style={{...face, transform: `${rot} translateZ(${-depth * (i + 1) / N}px)`, background: `linear-gradient(135deg, #d1d1d6, #6e6e73 40%, #2c2c2e 70%, #8e8e93)`, filter: `brightness(${1 - i * 0.025})`}} />
+          ))}
+          <div style={{...face, transform: rot}}>
+            {/* Face : le vrai tracé de la puce, d'abord éteint puis allumé par la diagonale */}
+            <div style={{...face, backgroundImage: `url(${staticFile('a20-puce.png')})`, filter: 'brightness(.32)'}} />
+            <div style={{...face, backgroundImage: `url(${staticFile('a20-puce.png')})`, WebkitMaskImage: `linear-gradient(135deg, #000 ${trace * 140 - 20}%, transparent ${trace * 140}%)`}} />
+            <div style={{...face, backgroundImage: `url(${staticFile('a20-traits.png')})`, opacity: 0.9 * (1 - Math.abs(trace - 0.5) * 2), WebkitMaskImage: sweep(trace * 1.2 - 0.1, 0.12), mixBlendMode: 'screen'}} />
+            <div style={{...face, backgroundImage: `url(${staticFile('a20-traits.png')})`, opacity: glint > -0.2 && glint < 1.2 ? 1 : 0, WebkitMaskImage: sweep(glint, 0.16), mixBlendMode: 'screen'}} />
+            {/* Vernis : reflet doux qui suit l'inclinaison */}
+            <div style={{...face, background: `linear-gradient(${120 + rz}deg, rgba(255,255,255,${0.10 + 0.08 * (1 - rise)}), rgba(255,255,255,0) 45%)`}} />
+          </div>
         </div>
       </Abs>
       <Abs x={cx} y={v ? H * 0.62 : H * 0.72}><Words t={t} size={76 * u} words={[{s: 'Puce', t: B(24)}, {s: 'A20 Pro.', t: B(24.5)}]} /></Abs>
