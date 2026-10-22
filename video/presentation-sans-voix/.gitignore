@@ -1,0 +1,8 @@
+node_modules/
+out/
+audio/epidemic/
+audio/pistes/
+*.raw.wav
+public/mix.wav
+after-effects/audio/
+after-effects/*.aep
