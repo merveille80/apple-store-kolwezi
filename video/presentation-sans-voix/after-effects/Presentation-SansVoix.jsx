@@ -493,21 +493,21 @@
     var sh = circle(c, 'Ombre au sol', cx, cy + sz * 0.18, 100, [0, 0, 0]);
     SC(sh.layer).setValue([sz * 1.05, sz * 0.5]); blurP(sh.layer).setValue(px(46));
     anim(OP(sh.layer), [[t0, 0], [t0 + 0.9, 42]]);
-    // Caméra centrée sur la puce (perspective identique à la vidéo)
+    // Caméra (une caméra AE vise toujours le centre de la composition)
     var cam = c.layers.addCamera('Caméra', [px(cx), px(cy)]);
     cam.property('ADBE Camera Options Group').property('ADBE Camera Zoom').setValue(px(1700));
-    T_(cam).property('ADBE Position').setValue([px(cx), px(cy), -px(1700)]);
-    T_(cam).property('ADBE Anchor Point').setValue([px(cx), px(cy), 0]);
+    T_(cam).property('ADBE Position').setValue([W / 2, H / 2, -px(1700)]);
+    T_(cam).property('ADBE Anchor Point').setValue([W / 2, H / 2, 0]);
     // Deux nuls 3D : inclinaison (X, Y, montée, échelle) puis rotation à plat (Z). Mouvement piloté par expressions.
-    var R = 'var t0 = ' + (t0 - a).toFixed(3) + ', rise = ease(time, t0, t0 + 0.9, 0, 1), drift = linear(time, t0 + 0.9, ' + (B(27) - a).toFixed(3) + ', 0, 1);\n';
+    var R = 'var t0 = ' + (t0 - a).toFixed(3) + ', rise = easeOut(time, t0, t0 + 0.9, 0, 1), drift = linear(time, t0 + 0.9, ' + (B(27) - a).toFixed(3) + ', 0, 1);\n';
     var tilt = nul(c, 'Puce 3D · inclinaison (déplacer ici)', cx, cy); tilt.threeDLayer = true;
     P(tilt).expression = R + 'value - [0, (1 - rise) * ' + px(260) + ', 0]';
     T_(tilt).property('ADBE Rotate X').expression = R + '-(66 - 40 * rise - 8 * drift)';
     T_(tilt).property('ADBE Rotate Y').expression = R + '10 * (1 - rise) - 4 * Math.sin((time - t0) * 1.3)';
     spring(SC(tilt), t0, [62, 62, 62], [100, 100, 100], 0.8, 0.04);
-    var spin = nul(c, 'Puce 3D · rotation', 0, 0); spin.threeDLayer = true; spin.parent = tilt; P(spin).setValue([0, 0, 0]);
+    var spin = nul(c, 'Puce 3D · rotation', 0, 0); spin.threeDLayer = true; spin.setParentWithJump(tilt); P(spin).setValue([0, 0, 0]);
     RO(spin).expression = R + '-30 + 22 * rise + 6 * drift';
-    function in3D(l, z) { l.threeDLayer = true; l.parent = spin; P(l).setValue([0, 0, px(z)]); return l; }
+    function in3D(l, z) { l.threeDLayer = true; l.setParentWithJump(spin); P(l).setValue([0, 0, px(z)]); return l; }
     var parts = [];
     // Épaisseur : tranches de métal (de la plus profonde à la face)
     for (i = N - 1; i >= 0; i--) {
@@ -524,12 +524,12 @@
     var lit = face('Puce A20 Pro (allumée)'); parts.push(lit);
     // Les traits s'allument en diagonale
     var lw = fx(lit, 'ADBE Linear Wipe');
-    byType(lw, PropertyValueType.OneD, 1).setValue(225);
+    byType(lw, PropertyValueType.OneD, 1).setValue(315);
     byType(lw, PropertyValueType.OneD, 2).setValue(360);
     anim(byType(lw, PropertyValueType.OneD, 0), [[B(23), 100, 'io'], [B(24.3), 0]]);
     // Reflet qui balaie la puce
     try {
-      var sw = fx(lit, 'CC Light Sweep');
+      var sw = fx(lit, 'CC Light Sweep'); sw.property('CC Light Sweep-0002').setValue(45);
       anim(byType(sw, PropertyValueType.TwoD_SPATIAL), [[B(25), [-400, -400], 'io'], [B(26.3), [1840, 1840]]]);
     } catch (e) {}
     for (i = 0; i < parts.length; i++) {
