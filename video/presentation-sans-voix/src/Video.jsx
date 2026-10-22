@@ -98,28 +98,60 @@ const Glow = ({x, y, r, color, op = 1}) => (
 
 // ───────────────────────── Scènes ─────────────────────────
 
-// 1 · Hook : point bleu → Dynamic Island
+// 1 · Accroche : notification iOS dès la 1re image, puis « Il est arrivé. » lettre par lettre, poussée vers le drop
+// Lettres qui arrivent une par une (floues → nettes, de bas en haut)
+const Chars = ({t, t0, text, size, w = 700, color = INK, stagger = 0.022, ls = -0.035}) => (
+  <div style={{display: 'flex', fontFamily: FONT, fontSize: size, fontWeight: w, color, letterSpacing: `${ls}em`, lineHeight: 1.1, whiteSpace: 'pre'}}>
+    {[...text].map((c, i) => {
+      const a = blurIn(t, t0 + i * stagger, 0.42, {dy: size * 0.32, s0: 1, blur: 16});
+      return <span key={i} style={{display: 'inline-block', ...fx(a)}}>{c === ' ' ? '\u00a0' : c}</span>;
+    })}
+  </div>
+);
+
 const S1 = ({t, W, H, v, u}) => {
-  const cx = W / 2, cy = v ? H * 0.47 : H * 0.52;
-  const grow = lerp(t, B(1), B(1) + 0.5, 0, 1);
-  const dot = blurIn(t, 0.05, 0.45, {s0: 0.2, blur: 30});
-  const pw = 70 * u + (760 - 70) * u * grow, ph = 70 * u + (150 - 70) * u * grow;
-  const content = blurIn(t, B(1) + 0.25, 0.35, {blur: 14, s0: 0.95});
-  const out = blurOut(t, B(5), 0.32, {s1: 0.4, dy: -H * 0.18, blur: 16});
-  const title = blurOut(t, B(4.75), 0.28, {dy: -40 * u});
+  const cx = W / 2;
+  const ny = v ? H * 0.27 : H * 0.3, hy = v ? H * 0.47 : H * 0.58, hs = (v ? 172 : 128) * u;
+  const cw = (v ? 900 : 860) * u, ch = 176 * u, ic = 112 * u;
+  // Notification : tombe du haut avec un léger rebond, visible dès la première image
+  const drop = spring(t, -0.16, 0.6, 0.18);
+  const nIn = {op: Math.min(1, t / 0.1 + 0.6), blur: Math.max(0, 1 - drop) * 12, s: 0.95 + 0.05 * Math.min(1, drop), x: 0, y: (1 - drop) * -80 * u};
+  // Teasing : le haut du téléphone bordeaux monte flou depuis le bas, puis replonge juste avant le drop
+  const ph = v ? 1080 * u : 640 * u;
+  const peek = lerp(t, B(1.75), B(5), 0, 1, Easing.bezier(0.3, 0, 0.2, 1)) * (1 - lerp(t, B(5), B(5) + 0.35, 0, 1, easeIn));
+  const back = 0.86 + 0.14 * lerp(t, 0.15, 0.6, 0, 1); // carte arrière de la pile
+  const nOut = blurOut(t, B(5), 0.3, {dy: -140 * u, s1: 0.96, blur: 24});
+  // Poussée lente vers le drop, puis sortie en zoom à travers le titre
+  const push = lerp(t, B(2.5), B(5), 1, 1.06, Easing.bezier(0.4, 0, 0.6, 1));
+  const hOut = blurOut(t, B(5), 0.32, {s1: 1.3, blur: 30});
+  const k = ic / 400;
   return (
     <AbsoluteFill>
-      <Abs x={cx} y={cy - 190 * u}><div style={fx(title)}><Words t={t} size={64 * u} w={600} color={GREY} words={[{s: 'Il est', t: B(2)}, {s: 'arrivé.', t: B(2.5)}]} /></div></Abs>
-      <Abs x={cx} y={cy}><div style={fx(out)}>
-        <div style={{...fx(dot), width: pw, height: ph, borderRadius: ph / 2, background: grow > 0.02 ? '#0b0b0c' : BLUE, boxShadow: `0 ${30 * u}px ${70 * u}px rgba(0,0,0,${0.25 * grow})`, display: 'flex', alignItems: 'center', padding: `0 ${26 * u}px`, gap: 26 * u, overflow: 'hidden'}}>
-          <div style={{...fx(content), display: 'flex', alignItems: 'center', gap: 26 * u, width: '100%'}}>
-            <Phone c="bordeaux" h={104 * u} style={{filter: 'none'}} />
-            <div style={{flex: 1}}>
-              <Txt size={30 * u} w={500} color="#8e8e93" ls={0}>Nouveau</Txt>
-              <Txt size={46 * u} w={600} color="#fff" ls={-0.02}>iPhone 18 Pro Max</Txt>
-            </div>
-            <div style={{width: 64 * u, height: 64 * u, borderRadius: '50%', background: BLUE, boxShadow: `0 0 ${30 * u}px rgba(0,113,227,.85)`, transform: `scale(${1 + 0.08 * Math.sin(t * 9)})`}} />
+      <Abs x={cx} y={H + ph / 2 - peek * (v ? H * 0.16 : H * 0.15)} style={{opacity: Math.min(1, peek * 3), filter: `blur(${(30 - 18 * peek) * u}px)`, transform: `translate(-50%,-50%) rotate(-9deg)`}}>
+        <Phone c="bordeaux" h={ph} />
+      </Abs>
+      <Abs x={cx} y={ny}><div style={fx(nIn, nOut)}>
+        {/* Pile de notifications : une carte derrière, plus petite */}
+        <div style={{position: 'absolute', left: cw * 0.04, right: cw * 0.04, top: ch * 0.22, height: ch, borderRadius: 40 * u, background: '#ebebef', transform: `translateY(${22 * u * back}px) scale(${0.96 * back + 0.04})`, opacity: 0.9, boxShadow: `0 ${16 * u}px ${40 * u}px rgba(0,0,0,.07)`}} />
+        <div style={{position: 'relative', width: cw, height: ch, borderRadius: 44 * u, background: '#f5f5f7', border: `${1.5 * u}px solid rgba(0,0,0,.05)`, boxShadow: `0 ${24 * u}px ${70 * u}px rgba(0,0,0,.12), 0 ${2 * u}px ${6 * u}px rgba(0,0,0,.04)`, display: 'flex', alignItems: 'center', gap: 28 * u, padding: `0 ${30 * u}px`, boxSizing: 'border-box'}}>
+          {/* Icône : gros plan réel du bloc caméra bordeaux */}
+          <div style={{width: ic, height: ic, borderRadius: ic * 0.225, overflow: 'hidden', position: 'relative', flexShrink: 0, boxShadow: `inset 0 0 0 ${1 * u}px rgba(0,0,0,.08)`}}>
+            <Img src={staticFile('bordeaux-dos.png')} style={{position: 'absolute', width: 825 * k, height: 1730 * k, left: -60 * k, top: -50 * k}} />
           </div>
+          <div style={{flex: 1, minWidth: 0}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'baseline'}}>
+              <Txt size={25 * u} w={600} color={GREY} ls={0.04}>APPLE STORE KOLWEZI</Txt>
+              <Txt size={25 * u} w={500} color={GREY} ls={0}>maintenant</Txt>
+            </div>
+            <Txt size={38 * u} w={700} ls={-0.02} style={{marginTop: 6 * u}}>iPhone 18 Pro Max</Txt>
+            <Txt size={31 * u} w={500} color="#3a3a3c" ls={-0.01} style={{marginTop: 2 * u}}>Nouveau. Disponible en boutique.</Txt>
+          </div>
+        </div>
+      </div></Abs>
+      <Abs x={cx} y={hy}><div style={{...fx(hOut), transform: `${fx(hOut).transform} scale(${push})`}}>
+        <div style={{display: 'flex', flexDirection: v ? 'column' : 'row', alignItems: 'center', gap: v ? 0 : hs * 0.24}}>
+          <Chars t={t} t0={B(0.75)} text="Il est" size={hs} />
+          <Chars t={t} t0={B(1.75)} text="arrivé." size={hs} />
         </div>
       </div></Abs>
     </AbsoluteFill>

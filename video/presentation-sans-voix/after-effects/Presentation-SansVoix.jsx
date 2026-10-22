@@ -302,34 +302,63 @@
   var cx = W0 / 2;
   var built = [];
 
-  // 1 · Hook : point bleu → Dynamic Island
+  // 1 · Accroche : notification iOS dès la 1re image, « Il est arrivé. » lettre par lettre, teasing de l'iPhone
   (function () {
-    var a = 0, b = B(5) + 0.4, c = sceneComp('1 · Il est arrivé', a, b);
-    var cy = V ? H0 * 0.47 : H0 * 0.52;
-    var t1 = words(c, [['Il est', B(2)], ['arrivé.', B(2.5)]], 64, GREY, F_SEMI, cx, cy - 190);
-    blurOut(t1, B(4.75), 0.28, {dy: -40});
-    var g = nul(c, 'Pastille (déplacer ici)', cx, cy);
-    var pill = roundRect(c, 'Dynamic Island', 0, 0, 760, 150, 75, BLACK);
-    pill.layer.parent = g; P(pill.layer).setValue([0, 0]);
-    var size = vecs(pill.layer, pill.gi).property(1).property('ADBE Vector Rect Size');
-    var rnd = vecs(pill.layer, pill.gi).property(1).property('ADBE Vector Rect Roundness');
-    anim(size, [[B(1), pt(70, 70)], [B(1) + 0.5, pt(760, 150)]]);
-    anim(rnd, [[B(1), px(35)], [B(1) + 0.5, px(75)]]);
-    hold(pill.fill, [[0, BLUE], [B(1) + 0.02, BLACK]]);
-    shadow(pill.layer, 25, 30, 70);
-    blurIn(pill.layer, 0.05, 0.45, {s0: 0.2, blur: 30});
-    var th = phone(c, 'bordeaux', -380 + 26 + 25, 0, 104); th.parent = g; P(th).setValue(pt(-380 + 26 + 25, 0));
-    th.property('ADBE Effect Parade').property(1).remove();
-    var l1 = txt(c, 'Nouveau', 30, GREY2, F_MED, -380 + 26 + 50 + 26, -22, 'L', 0); l1.parent = g; P(l1).setValue(pt(-380 + 102, -22));
-    var l2 = txt(c, 'iPhone 18 Pro Max', 46, WHITE, F_SEMI, 0, 18, 'L', -20); l2.parent = g; P(l2).setValue(pt(-380 + 102, 18));
-    var dot = circle(c, 'Point bleu', 0, 0, 64, BLUE); dot.layer.parent = g; P(dot.layer).setValue(pt(380 - 26 - 32, 0));
-    shadow(dot.layer, 85, 0, 30, BLUE);
-    SC(dot.layer).expression = 'var s = 100 + 8 * Math.sin(time * 9); [s, s]';
-    var content = [th, l1, l2, dot.layer];
-    blurIn(content, B(1) + 0.25, 0.35, {blur: 14, s0: 0.95, noMove: true});
-    blurOut([pill.layer].concat(content), B(5), 0.32, {noMove: true, blur: 16});
-    anim(SC(g), [[B(5), [100, 100], 'in'], [B(5) + 0.32, [40, 40]]]);
-    anim(P(g), [[B(5), pt(cx, cy), 'in'], [B(5) + 0.32, pt(cx, cy - H0 * 0.18)]]);
+    var a = 0, b = B(5) + 0.4, c = sceneComp('1 · Il est arrivé', a, b), i;
+    var ny = V ? H0 * 0.27 : H0 * 0.3, hy = V ? H0 * 0.47 : H0 * 0.58, hs = V ? 172 : 128;
+    var cw = V ? 900 : 860, ch = 176, ic = 112;
+    // Teasing : le haut de l'iPhone bordeaux monte flou depuis le bas, puis replonge juste avant le drop
+    var ph = V ? 1080 : 640, py0 = H0 + ph / 2, py1 = py0 - (V ? H0 * 0.16 : H0 * 0.15);
+    var tz = phone(c, 'bordeaux', cx, py0, ph); tz.name = 'iPhone bordeaux (teasing)'; RO(tz).setValue(-9);
+    anim(P(tz), [[B(1.75), pt(cx, py0), 'io'], [B(5), pt(cx, py1), 'in'], [B(5) + 0.35, pt(cx, py0)]]);
+    anim(OP(tz), [[B(1.75), 0], [B(1.75) + 0.6, 100]], 'soft');
+    anim(blurP(tz), [[B(1.75), px(30)], [B(5), px(12), 'in'], [B(5) + 0.35, px(30)]]);
+    // Notification (groupe piloté par un nul)
+    var g = nul(c, 'Notification (déplacer ici)', cx, ny);
+    function inG(l, x, y) { l.parent = g; P(l).setValue(pt(x, y)); return l; }
+    var back = roundRect(c, 'Notification (carte arrière)', 0, 0, cw * 0.92, ch, 40, rgb('#ebebef')); inG(back.layer, 0, ch * 0.22 + 22);
+    shadow(back.layer, 7, 16, 40);
+    anim(P(back.layer), [[0.15, pt(0, ch * 0.22 + 19)], [0.6, pt(0, ch * 0.22 + 22)]]);
+    var card = roundRect(c, 'Notification (carte)', 0, 0, cw, ch, 44, rgb('#f5f5f7')); inG(card.layer, 0, 0);
+    addStroke(card.layer, card.gi, [0, 0, 0], 1.5).property('ADBE Vector Stroke Opacity').setValue(5);
+    shadow(card.layer, 12, 24, 70);
+    // Icône : gros plan réel du bloc caméra bordeaux, coins arrondis par un masque
+    var icx = -cw / 2 + 30 + ic / 2, icon = c.layers.add(IMG.bordeaux); icon.name = 'Icône (bloc caméra)';
+    AN(icon).setValue([260, 250]); var isc = ic / 400 * K * 100; SC(icon).setValue([isc, isc]); inG(icon, icx, 0);
+    var mk = icon.property('ADBE Mask Parade').addProperty('ADBE Mask Atom'), r = 90, kp = r * 0.4477;
+    var x0 = 60, y0 = 50, x1 = 460, y1 = 450, ms = new Shape();
+    ms.vertices = [[x0 + r, y0], [x1 - r, y0], [x1, y0 + r], [x1, y1 - r], [x1 - r, y1], [x0 + r, y1], [x0, y1 - r], [x0, y0 + r]];
+    ms.inTangents = [[-kp, 0], [0, 0], [0, -kp], [0, 0], [kp, 0], [0, 0], [0, kp], [0, 0]];
+    ms.outTangents = [[0, 0], [kp, 0], [0, 0], [0, kp], [0, 0], [-kp, 0], [0, 0], [0, -kp]];
+    ms.closed = true; mk.property('ADBE Mask Shape').setValue(ms);
+    var tx = -cw / 2 + 30 + ic + 28;
+    var l1 = inG(txt(c, 'APPLE STORE KOLWEZI', 25, GREY, F_SEMI, 0, 0, 'L', 40), tx, -42);
+    var l2 = inG(txt(c, 'maintenant', 25, GREY, F_MED, 0, 0, 'R', 0), cw / 2 - 30, -42);
+    var l3 = inG(txt(c, 'iPhone 18 Pro Max', 38, INK, F_BOLD, 0, 0, 'L', -20), tx, -1);
+    var l4 = inG(txt(c, 'Nouveau. Disponible en boutique.', 31, rgb('#3a3a3c'), F_MED, 0, 0, 'L', -10), tx, 38);
+    var nl = [back.layer, card.layer, icon, l1, l2, l3, l4];
+    for (i = 0; i < nl.length; i++) {
+      anim(OP(nl[i]), [[0, 60], [0.1, 100]], 'soft');
+      anim(blurP(nl[i]), [[0, px(10)], [0.3, 0]]);
+    }
+    spring(P(g), 0, pt(cx, ny - 50), pt(cx, ny), 0.5, 0.04);
+    anim(SC(g), [[0, [95, 95]], [0.35, [100, 100]]]);
+    blurOut(nl, B(5), 0.3, {noMove: true, blur: 24});
+    anim(P(g), [[B(5), pt(cx, ny), 'in'], [B(5) + 0.3, pt(cx, ny - 140)]]);
+    anim(SC(g), [[B(5), [100, 100], 'in'], [B(5) + 0.3, [96, 96]]]);
+    // Titre : un seul calque texte, lettres révélées par un animateur (Position, Opacité, Flou + sélecteur de plage)
+    var hl = txt(c, V ? 'Il est\rarrivé.' : 'Il est arrivé.', hs, INK, F_BOLD, cx, hy, 'C', -35); hl.name = 'Titre « Il est arrivé. »';
+    var an = hl.property('ADBE Text Properties').property('ADBE Text Animators').addProperty('ADBE Text Animator');
+    an.name = 'Lettres une par une';
+    var ap = an.property('ADBE Text Animator Properties');
+    ap.addProperty('ADBE Text Position 3D').setValue([0, px(hs * 0.32), 0]);
+    ap.addProperty('ADBE Text Opacity').setValue(0);
+    ap.addProperty('ADBE Text Blur').setValue([px(16), px(16)]);
+    var sel = an.property('ADBE Text Selectors').addProperty('ADBE Text Selector');
+    // « Il est » puis « arrivé. » : le début de la sélection avance de gauche à droite (lisse à 100 %)
+    anim(sel.property('ADBE Text Percent Start'), [[B(0.75), 0, 'lin'], [B(0.75) + 0.5, 50, 'lin'], [B(1.75), 50, 'lin'], [B(1.75) + 0.55, 100]]);
+    anim(SC(hl), [[B(2.5), [100, 100], 'io'], [B(5), [106, 106]]]);
+    blurOut(hl, B(5), 0.32, {s1: 1.3, blur: 30});
     built.push([c, a, b, '1 · Il est arrivé']);
   })();
 

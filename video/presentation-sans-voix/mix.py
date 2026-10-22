@@ -61,9 +61,10 @@ CL = {k: clip(k) for k in ['click', 'tick', 'whoosh', 'riser', 'impact', 'chime'
 CL.update({k: clip(k, 'mp3') for k in ['pop', 'glasspop', 'shimmer']})
 CLICK3 = [B(10.5), B(11.5), B(12.5), B(13.5)]
 EV = [
-    # 1 · Dynamic Island
-    (0.12, 'pop', -24), (B(1) + 0.2, 'whoosh', -27), (B(1) + 0.3, 'glasspop', -27),
-    (B(2) + 0.1, 'tick', -31), (B(2.5) + 0.1, 'tick', -31), (B(5) + 0.15, 'whoosh', -26),
+    # 1 · Accroche : notification (carillon), « Il est » / « arrivé. », téléphone qui monte, sortie
+    (0.06, 'chime', -25), (0.14, 'glasspop', -28),
+    (B(0.75) + 0.06, 'tick', -29), (B(1.75) + 0.06, 'tick', -28), (B(1.75) + 0.2, 'whoosh', -31),
+    (B(5) + 0.15, 'whoosh', -26),
     # 2 · Révélation : riser coupé avant le drop, impact sur le drop
     (B(6) - 0.32, 'riser', -20), (B(6) + 0.02, 'impact', -8),
     (B(7) + 0.1, 'tick', -29), (B(7.5) + 0.1, 'tick', -29), (B(8) + 0.1, 'tick', -29), (B(8.5) + 0.1, 'tick', -28),
