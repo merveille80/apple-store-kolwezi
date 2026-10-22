@@ -1,0 +1,27 @@
+Présentation iPhone 18 Pro Max sans voix · projets After Effects éditables
+=========================================================================
+
+Presentation-SansVoix-9x16.aep  : format vertical TikTok / Reels (2160×3840, 60 i/s, 26 s)
+Presentation-SansVoix-16x9.aep  : format horizontal (3840×2160, 60 i/s, 26 s)
+
+Chaque projet contient :
+  - la composition principale « Présentation sans voix 9:16 » (ou 16:9), à la racine du panneau Projet ;
+  - le dossier « Scènes » : une composition par scène (1 · Il est arrivé … 9 · apple store kolwezi) ;
+  - des repères sur la composition principale au début de chaque scène.
+
+Ce qui s'édite facilement
+  - Textes : calques texte (double-clic). Police Inter Display (fournie dans fonts/), sinon Helvetica Neue.
+  - Scène 1 : notification iOS (nul « Notification (déplacer ici) »), titre « Il est arrivé. » révélé lettre par lettre par l'animateur « Lettres une par une » (modifier le texte directement), iPhone bordeaux en teasing.
+  - Scène 5 : la puce A20 Pro est en 3D (calques 3D + caméra) ; « Puce 3D · inclinaison » et « Puce 3D · rotation » pilotent son mouvement (expressions modifiables).
+  - Groupes (pastille, carte, puce, bulle, lignes de stockage) : un calque nul « … (déplacer ici) » les déplace ensemble.
+  - Caméra : le curseur ƒ suit l'effet « Progression » du calque « Contrôle ouverture » (0 à 100).
+  - Compteur 43 h : effet « Heures » sur le calque « Compteur heures ».
+  - Couleurs des iPhone : photos officielles Apple dans images/.
+  - Toutes les animations sont des images clés natives (flou + échelle + opacité), flou de bougé activé.
+
+Son
+  « Musique · Hotshot (oomiee) » et « Bruitages (Epidemic Sound) » : pistes séparées, au même gain que la vidéo livrée.
+  « Mix final (coupé) » : le son exact de la vidéo livrée, à activer à la place des deux autres si besoin.
+
+Les dossiers images/, audio/ et fonts/ doivent rester à côté des .aep.
+Pour reconstruire un projet : Construire-9x16.jsx ou Construire-16x9.jsx (Fichier > Scripts > Exécuter le fichier de script…).
