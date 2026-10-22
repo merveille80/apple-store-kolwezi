@@ -125,7 +125,8 @@
       var q = l.property('ADBE Effect Parade').property(i);
       if (q.matchName === 'ADBE Gaussian Blur 2') return q.property('ADBE Gaussian Blur 2-0001');
     }
-    var e = fx(l, 'ADBE Gaussian Blur 2');
+    // Un flou neuf d'AE 2026 démarre à 25 avec « Recopier les pixels du contour » : tout remettre à 0
+    var e = fx(l, 'ADBE Gaussian Blur 2'); e.property('ADBE Gaussian Blur 2-0003').setValue(0); e.property('ADBE Gaussian Blur 2-0001').setValue(0);
     return e.property('ADBE Gaussian Blur 2-0001');
   }
   function px(v) { return v * K; }
@@ -152,11 +153,11 @@
     try { d.resetCharStyle(); d.resetParagraphStyle(); } catch (e) {}
     d.font = font; d.fontSize = px(size); d.applyFill = true; d.fillColor = color; d.applyStroke = false;
     d.tracking = track === undefined ? -25 : track;
-    d.justification = just === 'L' ? ParagraphJustification.LEFT_JUSTIFY : just === 'R' ? ParagraphJustification.RIGHT_JUSTIFY : ParagraphJustification.CENTER_JUSTIFY;
+    d.justification = ParagraphJustification.CENTER_JUSTIFY; if (just === 'L') d.justification = ParagraphJustification.LEFT_JUSTIFY; if (just === 'R') d.justification = ParagraphJustification.RIGHT_JUSTIFY;
     p.setValue(d);
     l.name = str;
     // Ancre calculée en direct : le rectangle lu par script juste après setValue est périmé
-    AN(l).expression = 'var r = sourceRectAtTime(time, false); [r.left + r.width * ' + (just === 'L' ? 0 : just === 'R' ? 1 : 0.5) + ', r.top + r.height / 2]';
+    AN(l).expression = 'var r = sourceRectAtTime(time, false); [r.left + r.width * ' + (just === 'L' ? 0 : (just === 'R' ? 1 : 0.5)) + ', r.top + r.height / 2]';
     P(l).setValue(pt(x, y)); l.motionBlur = true;
     return l;
   }
