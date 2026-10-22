@@ -126,7 +126,6 @@
       if (q.matchName === 'ADBE Gaussian Blur 2') return q.property('ADBE Gaussian Blur 2-0001');
     }
     var e = fx(l, 'ADBE Gaussian Blur 2');
-    try { e.property('ADBE Gaussian Blur 2-0003').setValue(1); } catch (er) {}
     return e.property('ADBE Gaussian Blur 2-0001');
   }
   function px(v) { return v * K; }
@@ -156,13 +155,12 @@
     d.justification = just === 'L' ? ParagraphJustification.LEFT_JUSTIFY : just === 'R' ? ParagraphJustification.RIGHT_JUSTIFY : ParagraphJustification.CENTER_JUSTIFY;
     p.setValue(d);
     l.name = str;
-    var r = l.sourceRectAtTime(0, false);
-    var ax = just === 'L' ? r.left : just === 'R' ? r.left + r.width : r.left + r.width / 2;
-    AN(l).setValue([ax, r.top + r.height / 2]);
+    // Ancre calculée en direct : le rectangle lu par script juste après setValue est périmé
+    AN(l).expression = 'var r = sourceRectAtTime(time, false); [r.left + r.width * ' + (just === 'L' ? 0 : just === 'R' ? 1 : 0.5) + ', r.top + r.height / 2]';
     P(l).setValue(pt(x, y)); l.motionBlur = true;
     return l;
   }
-  function tw(l) { return l.sourceRectAtTime(0, false).width / K; }
+  function q(str) { return '"' + str.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"'; }
   function vecGroup(l, name) { var g = l.property('ADBE Root Vectors Group').addProperty('ADBE Vector Group'); g.name = name; return g.propertyIndex; }
   function vecs(l, gi) { return l.property('ADBE Root Vectors Group').property(gi).property('ADBE Vectors Group'); }
   function addRect(l, gi, w, h, r) {
@@ -248,7 +246,7 @@
       var l = ls[i];
       var op = OP(l).numKeys ? OP(l).keyValue(OP(l).numKeys) : OP(l).value;
       anim(OP(l), [[t0, op], [t0 + d, 0]], 'in');
-      if (bl) anim(blurP(l), [[t0, 0], [t0 + d, px(bl)]], 'in');
+      if (bl) { var bp = blurP(l), b0 = bp.numKeys ? bp.keyValue(bp.numKeys) : bp.value; anim(bp, [[t0, b0], [t0 + d, b0 + px(bl)]], 'in'); }
       if (!o.noMove) {
         var s = SC(l).numKeys ? SC(l).keyValue(SC(l).numKeys) : SC(l).value;
         var p = P(l).numKeys ? P(l).keyValue(P(l).numKeys) : P(l).value;
@@ -259,16 +257,18 @@
   }
   // Mots qui arrivent un par un, centrés sur (cx, cy)
   function words(comp, list, size, color, font, cx, cy) {
-    var ls = [], ws = [], gap = size * 0.26, total = 0, i;
+    var ls = [], names = [], gap = size * 0.26, i;
     for (i = 0; i < list.length; i++) {
       var l = txt(comp, list[i][0], size, list[i][2] || color, font, 0, cy, 'L');
-      ls.push(l); ws.push(tw(l)); total += ws[i];
+      l.name = 'Mot · ' + list[i][0]; ls.push(l); names.push(q(l.name));
     }
-    total += gap * (list.length - 1);
-    var x = cx - total / 2;
     for (i = 0; i < ls.length; i++) {
-      P(ls[i]).setValue(pt(x, cy)); x += ws[i] + gap;
+      P(ls[i]).setValue(pt(0, cy));
       blurIn(ls[i], list[i][1], 0.4, {dy: size * 0.35, s0: 0.9, blur: 18});
+      // Mots centrés ensemble sur cx, largeurs mesurées en direct (modifier un mot recentre le titre)
+      P(ls[i]).expression = 'var n = [' + names.join(', ') + '], g = ' + px(gap) + ', w = [], t = 0, i;\n' +
+        'for (i = 0; i < n.length; i++) { var r = thisComp.layer(n[i]).sourceRectAtTime(0, false); w.push(r.width); t += r.width; }\n' +
+        'var x = ' + px(cx) + ' - (t + g * (n.length - 1)) / 2;\nfor (i = 0; i < ' + i + '; i++) x += w[i] + g;\nvalue + [x, 0]';
     }
     return ls;
   }
@@ -423,21 +423,17 @@
     var s = px(camH) / IMG_H * 100; SC(p).setValue([s, s]); AN(p).setValue([0, 0]);
     var x0 = (V ? -0.04 : -0.08) * box[2], y0 = -camH * 0.02;
     anim(P(p), [[B(16), pt(x0, y0), 'lin'], [B(22), pt(x0 - 30, y0 - 20)]]);
-    var bc = fx(p, 'ADBE Brightness & Contrast 2');
-    var br = byType(bc, PropertyValueType.OneD, 0);
-    // Masque rectangulaire : le gros plan occupe le haut (9:16) ou la gauche (16:9)
+    fx(p, 'ADBE Brightness & Contrast 2');
+    // Masque : le gros plan occupe le haut (9:16) ou la gauche (16:9), bord intérieur fondu vers le blanc
+    // (contour progressif ; les autres bords dépassent du cadre)
     var m = p.property('ADBE Mask Parade').addProperty('ADBE Mask Atom');
-    var ms = new Shape(), sc = 100 / s;
-    ms.vertices = [[0, 0], [box[2] * K * sc, 0], [box[2] * K * sc, box[3] * K * sc], [0, box[3] * K * sc]]; ms.closed = true;
+    var ms = new Shape(), sc = 100 / s, fe = (V ? box[3] : box[2]) * 0.3, mg = fe + 120;
+    function lp(x, y) { return [(x - x0) * K * sc, (y - y0) * K * sc]; }
+    var x1 = V ? W0 + mg : box[2] - fe / 2, y1 = V ? box[3] - fe / 2 : H0 + mg;
+    ms.vertices = [lp(-mg, -mg), lp(x1, -mg), lp(x1, y1), lp(-mg, y1)]; ms.closed = true;
     m.property('ADBE Mask Shape').setValue(ms);
-    // Fondu vers le blanc sur le bord intérieur
-    var fade = c.layers.addSolid(WHITE, 'Fondu vers le blanc', V ? W : Math.round(px(box[2] * 0.3)), V ? Math.round(px(box[3] * 0.3)) : H, 1, b - a);
-    P(fade).setValue(V ? [W / 2, px(box[3] * 0.85)] : [px(box[2] * 0.85), H / 2]);
-    var lw = fx(fade, 'ADBE Linear Wipe');
-    byType(lw, PropertyValueType.OneD, 0).setValue(50);
-    byType(lw, PropertyValueType.OneD, 1).setValue(V ? 0 : 270);
-    byType(lw, PropertyValueType.OneD, 2).setValue(px(V ? box[3] * 0.15 : box[2] * 0.15));
-    blurIn([p, fade], B(15.8), 0.45, {s0: 1.25, blur: 30, noMove: true});
+    m.property('ADBE Mask Feather').setValue([px(fe) * sc, px(fe) * sc]);
+    blurIn(p, B(15.8), 0.45, {s0: 1.25, blur: 30, noMove: true});
     // Carte noire
     var cw = 900, ch = 560, ccx = V ? cx : W0 * 0.74, ccy = V ? H0 * 0.74 : H0 * 0.5;
     var g = nul(c, 'Carte (déplacer ici)', ccx, ccy);
@@ -477,11 +473,11 @@
     var e1 = inCard(txt(c, 'ƒ/1,48', 30, GREY2, F_MED, 0, 0, 'L', 0), 70, ch - 58);
     var e2 = inCard(txt(c, 'ƒ/4,0', 30, GREY2, F_MED, 0, 0, 'R', 0), cw - 70, ch - 58);
     anim(OP(e1), [[B(17), 0], [B(17.8), 100]]); anim(OP(e2), [[B(17), 0], [B(17.8), 100]]);
-    anim(br, [[ST[0], 0], [ST[3], -22]]);
+    anim(byType(p.property('ADBE Effect Parade').property('ADBE Brightness & Contrast 2'), PropertyValueType.OneD, 0), [[ST[0], 0], [ST[3], -22]]);
     var cardLs = [card.layer, t1, t2, arcBg, arc, knob.layer, e1, e2];
     blurIn(cardLs, B(16.5), 0.5, {noMove: true});
     anim(P(g), [[B(16.5), pt(ccx, ccy + 160)], [B(17), pt(ccx, ccy)]]);
-    blurOut(cardLs.concat([p, fade, vals[3]]), B(22) - 0.05, 0.3, {noMove: true});
+    blurOut(cardLs.concat([p, vals[3]]), B(22) - 0.05, 0.3, {noMove: true});
     anim(SC(g), [[B(22) - 0.05, [100, 100], 'in'], [B(22) + 0.25, [110, 110]]]);
     built.push([c, a, b, '4 · Caméra Fusion 48 MP, ouverture variable']);
   })();
@@ -498,7 +494,7 @@
     shadow(sq.layer, 30, 30, 80);
     var chip = shapeLayer(c, 'Puce dessinée', 0, 0); chip.parent = g; P(chip).setValue(pt(0, -30));
     var cg = vecGroup(chip, 'Contour'); addRect(chip, cg, 95, 95, 17); addStroke(chip, cg, SKY, 6.8);
-    var trimC = addTrim(chip, cg);
+    anim(addTrim(chip, cg), [[B(23), 0], [B(23.8), 100]]);
     var pg = vecGroup(chip, 'Broches'), q = [30, 42, 54, 66], i, sc = 1.7;
     for (i = 0; i < 4; i++) {
       var o = (q[i] - 50) * sc;
@@ -506,7 +502,6 @@
       addPath(chip, pg, [[-42 * sc, o], [-30 * sc, o]]); addPath(chip, pg, [[30 * sc, o], [42 * sc, o]]);
     }
     addStroke(chip, pg, SKY, 5.1);
-    anim(trimC, [[B(23), 0], [B(23.8), 100]]);
     var a20 = txt(c, 'A20', 29, WHITE, F_BOLD, 0, 0, 'C', 0); a20.parent = g; P(a20).setValue(pt(0, -30));
     var lab = txt(c, 'A20 Pro', 40, SKY, F_SEMI, 0, 0, 'C'); lab.parent = g; P(lab).setValue(pt(0, 120));
     anim(OP(a20), [[B(23.5), 0], [B(23.5) + 0.3, 100]]); anim(OP(lab), [[B(23.5), 0], [B(23.5) + 0.3, 100]]);
@@ -592,7 +587,7 @@
         anim(r.fill, [[CLK, WHITE], [CLK + 0.15, PALE]], 'lin');
         var bs = addStroke(r.layer, r.gi, BLUE, 4); bs.property('ADBE Vector Stroke Opacity').setValue(0);
         anim(bs.property('ADBE Vector Stroke Opacity'), [[CLK, 0], [CLK + 0.15, 100]], 'lin');
-        hold(ring.fill, [[0, WHITE], [CLK + 0.08, BLUE]]); hold(rs.property('ADBE Vector Stroke Color'), [[0, RING], [CLK + 0.08, BLUE]]);
+        hold(vecs(ring.layer, ring.gi).property('ADBE Vector Graphic - Fill').property('ADBE Vector Fill Color'), [[0, WHITE], [CLK + 0.08, BLUE]]); hold(rs.property('ADBE Vector Stroke Color'), [[0, RING], [CLK + 0.08, BLUE]]);
         var tf = fx(lab, 'ADBE Fill'); var fc = byType(tf, PropertyValueType.COLOR); fc.setValue(INK); hold(fc, [[0, INK], [CLK + 0.08, BLUE]]);
         anim(SC(g), [[CLK, [100, 100], 'io'], [CLK + 0.1, [105, 105], 'io'], [CLK + 0.28, [100, 100]]]);
       }
@@ -633,8 +628,10 @@
     anim(OP(gl), [[t0, 0], [t0 + 0.4, 12]]);
     var g = nul(c, 'Bulle (déplacer ici)', cx, cy);
     var name = txt(c, 'apple store kolwezi', 56, WHITE, F_SEMI, 0, 0, 'C', -10); name.parent = g; P(name).setValue([0, 0]);
-    var w = tw(name) + 116, h = 56 * 1.1 + 60;
-    var bub = roundRect(c, 'Bulle bleue', 0, 0, w, h, h / 2, BLUE); bub.layer.parent = g; P(bub.layer).setValue([0, 0]);
+    var h = 56 * 1.1 + 60;
+    var bub = roundRect(c, 'Bulle bleue', 0, 0, 560, h, h / 2, BLUE); bub.layer.parent = g; P(bub.layer).setValue([0, 0]);
+    vecs(bub.layer, bub.gi).property(1).property('ADBE Vector Rect Size').expression =
+      'var r = thisComp.layer("apple store kolwezi").sourceRectAtTime(0, false); [r.width + ' + px(116) + ', value[1]]';
     shadow(bub.layer, 30, 20, 50, BLUE);
     var tail = shapeLayer(c, 'Pointe de la bulle', 0, 0); tail.parent = g; P(tail).setValue(pt(0, -h / 2 + 2));
     var tg = vecGroup(tail, 'Pointe'); addPath(tail, tg, [[-22, 0], [0, -24], [22, 0]], null, null, true); addFill(tail, tg, BLUE);
@@ -642,8 +639,8 @@
     try {
       var sw = fx(name, 'CC Light Sweep');
       var ctr = byType(sw, PropertyValueType.TwoD_SPATIAL);
-      var rr = name.sourceRectAtTime(0, false);
-      anim(ctr, [[B(45.6), [rr.left - px(120), rr.top + rr.height / 2]], [B(46.8), [rr.left + rr.width + px(120), rr.top + rr.height / 2]]], 'io');
+      ctr.expression = 'var r = sourceRectAtTime(0, false), e = ' + px(120) + ', k = ease(time, ' + (B(45.6) - a).toFixed(3) + ', ' + (B(46.8) - a).toFixed(3) + ', 0, 1);\n' +
+        '[r.left - e + (r.width + 2 * e) * k, r.top + r.height / 2]';
     } catch (e) {}
     spring(SC(g), t0, [30, 30], [100, 100], 0.5, 0.08);
     var ls = [name, bub.layer, tail];
