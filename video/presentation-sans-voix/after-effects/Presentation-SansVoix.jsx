@@ -219,7 +219,7 @@
   }
   function glow(comp, name, x, y, r, color, op) {
     var g = circle(comp, name, x, y, r * 2, color);
-    var b = blurP(g.layer); b.setValue(px(r * 0.45));
+    var b = blurP(g.layer); b.setValue(px(r * 0.9));
     OP(g.layer).setValue(op);
     g.layer.motionBlur = false;
     return g.layer;
@@ -312,7 +312,7 @@
     var tz = phone(c, 'bordeaux', cx, py0, ph); tz.name = 'iPhone bordeaux (teasing)'; RO(tz).setValue(-9);
     anim(P(tz), [[B(1.75), pt(cx, py0), 'io'], [B(5), pt(cx, py1), 'in'], [B(5) + 0.35, pt(cx, py0)]]);
     anim(OP(tz), [[B(1.75), 0], [B(1.75) + 0.6, 100]], 'soft');
-    anim(blurP(tz), [[B(1.75), px(30)], [B(5), px(12), 'in'], [B(5) + 0.35, px(30)]]);
+    anim(blurP(tz), [[B(1.75), px(90)], [B(5), px(36), 'in'], [B(5) + 0.35, px(90)]]); // le flou gaussien d'AE est ~3× plus léger que blur() CSS
     // Notification (groupe piloté par un nul)
     var g = nul(c, 'Notification (déplacer ici)', cx, ny);
     function inG(l, x, y) { l.parent = g; P(l).setValue(pt(x, y)); return l; }
@@ -356,7 +356,9 @@
     ap.addProperty('ADBE Text Blur').setValue([px(16), px(16)]);
     var sel = an.property('ADBE Text Selectors').addProperty('ADBE Text Selector');
     // « Il est » puis « arrivé. » : le début de la sélection avance de gauche à droite (lisse à 100 %)
-    anim(sel.property('ADBE Text Percent Start'), [[B(0.75), 0, 'lin'], [B(0.75) + 0.5, 50, 'lin'], [B(1.75), 50, 'lin'], [B(1.75) + 0.55, 100]]);
+    // Un sélecteur par mot pilote la quantité (AE ne compte pas le retour à la ligne : coupure à 6/13 en 9:16)
+    sel.property('ADBE Text Percent End').setValue(V ? 600 / 13 : 50); anim(sel.property('ADBE Text Range Advanced').property('ADBE Text Selector Max Amount'), [[B(0.75), 100], [B(0.75) + 0.5, 0]]);
+    var sel2 = an.property('ADBE Text Selectors').addProperty('ADBE Text Selector'); sel2.property('ADBE Text Percent Start').setValue(V ? 600 / 13 : 50); anim(sel2.property('ADBE Text Range Advanced').property('ADBE Text Selector Max Amount'), [[B(1.75), 100], [B(1.75) + 0.55, 0]]);
     anim(SC(hl), [[B(2.5), [100, 100], 'io'], [B(5), [106, 106]]]);
     blurOut(hl, B(5), 0.32, {s1: 1.3, blur: 30});
     built.push([c, a, b, '1 · Il est arrivé']);
@@ -487,7 +489,7 @@
     var arc = shapeLayer(c, 'Arc (progression)', 0, 0); arc.parent = g; P(arc).setValue([0, 0]);
     var bg = vecGroup(arc, 'Arc'); addPath(arc, bg, verts); addStroke(arc, bg, SKY, 22, true);
     var te = addTrim(arc, bg); te.expression = 'thisComp.layer("Contrôle ouverture").effect("Progression")(1)';
-    shadow(arc, 80, 0, 12, SKY);
+    shadow(arc, 100, 0, 16, SKY);
     var knob = circle(c, 'Bouton', 0, 0, 68, BLUE); knob.layer.parent = g;
     addStroke(knob.layer, knob.gi, WHITE, 9);
     P(knob.layer).expression = 'var p = thisComp.layer("Contrôle ouverture").effect("Progression")(1) / 100;\n' +
@@ -528,7 +530,8 @@
     T_(cam).property('ADBE Position').setValue([W / 2, H / 2, -px(1700)]);
     T_(cam).property('ADBE Anchor Point').setValue([W / 2, H / 2, 0]);
     // Deux nuls 3D : inclinaison (X, Y, montée, échelle) puis rotation à plat (Z). Mouvement piloté par expressions.
-    var R = 'var t0 = ' + (t0 - a).toFixed(3) + ', rise = easeOut(time, t0, t0 + 0.9, 0, 1), drift = linear(time, t0 + 0.9, ' + (B(27) - a).toFixed(3) + ', 0, 1);\n';
+    // rise suit exactement la courbe de la vidéo : cubic-bezier(0.16, 1, 0.3, 1)
+    var R = 'var t0 = ' + (t0 - a).toFixed(3) + ', bz = function (x) { var lo = 0, hi = 1, m, X, i; for (i = 0; i < 24; i++) { m = (lo + hi) / 2; X = 3 * m * (1 - m) * (1 - m) * 0.16 + 3 * m * m * (1 - m) * 0.3 + m * m * m; if (X < x) lo = m; else hi = m; } m = (lo + hi) / 2; return 3 * m * (1 - m) * (1 - m) + 3 * m * m * (1 - m) + m * m * m; }, rise = bz(clamp((time - t0) / 0.9, 0, 1)), drift = linear(time, t0 + 0.9, ' + (B(27) - a).toFixed(3) + ', 0, 1);\n';
     var tilt = nul(c, 'Puce 3D · inclinaison (déplacer ici)', cx, cy); tilt.threeDLayer = true;
     P(tilt).expression = R + 'value - [0, (1 - rise) * ' + px(260) + ', 0]';
     T_(tilt).property('ADBE Rotate X').expression = R + '-(66 - 40 * rise - 8 * drift)';
@@ -667,8 +670,8 @@
       var p = phone(c, lay[i][0], x, y, ph); ps.push(p);
       spring(P(p), t0, pt(x, y + H0 * 0.5), pt(x, y), 0.6, 0.05);
       anim(RO(p), [[t0, 0], [t0 + 0.6, lay[i][2]]]);
-      anim(OP(p), [[t0, 0], [t0 + 0.3, 100]], 'soft');
-      anim(blurP(p), [[t0, px(24)], [t0 + 0.5, 0]]);
+      anim(OP(p), [[t0, 0], [t0 + 0.1, 100]], 'lin');
+      anim(blurP(p), [[t0, px(24)], [t0 + 0.25, 0]]);
     }
     var ty = V ? H0 * 0.77 : H0 * 0.83;
     var tl = words(c, [['iPhone', B(41)], ['18', B(41.25)], ['Pro', B(41.5)], ['Max', B(41.75)]], V ? 104 : 84, INK, F_BOLD, cx, ty);
