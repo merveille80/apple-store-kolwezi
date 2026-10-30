@@ -25,7 +25,7 @@ export const E = {
   outro: 17.11, lock: 17.32, sous: 17.55, cta: 17.9,
 };
 
-const C = {noir: '#000000', blanc: '#FFFFFF', orange: '#FF5A00', peach: '#F5C4A0', grille: '#E8E8E8', fond: '#F2F2F2', beige: '#EDE6D9', encre: '#111111', gris: '#8A8A8A'};
+const C = {papier: '#FAFAFA', noir: '#000000', blanc: '#FFFFFF', orange: '#FF5A00', peach: '#F5C4A0', grille: '#E8E8E8', fond: '#F2F2F2', beige: '#EDE6D9', encre: '#111111', gris: '#8A8A8A'};
 const SANS = 'InterCS';
 const MONO = 'JBMono';
 
@@ -43,6 +43,9 @@ const pop = (t, t0, d = 0.32, over = 0.16) => {
   if (x >= 1.4) return 1;
   return 1 - Math.exp(-5.5 * x) * Math.cos(x * Math.PI * (0.5 + over * 4));
 };
+
+// Entrée douce : léger flou qui se dissipe pendant le pop (rendu plus « premium »)
+const soft = (p, px = 10) => (p < 0.98 ? {filter: `blur(${(1 - Math.min(1, p)) * px}px)`} : {});
 
 // Générateur pseudo-aléatoire stable
 const rnd = (i) => {
@@ -73,7 +76,7 @@ const PIECES = MARK.d.split('Z').filter(Boolean).map((p) => {
   return {d: p + 'Z', cx: (b.x0 + b.x1) / 2, cy: (b.y0 + b.y1) / 2, w: b.x1 - b.x0, h: b.y1 - b.y0};
 });
 
-const Mark = ({h, color = C.orange, pieces = [{}, {}, {}], stroke, sw = 2}) => (
+const Mark = ({h, color = C.noir, pieces = [{}, {}, {}], stroke, sw = 2}) => (
   <svg viewBox={`-20 -20 ${MARK.w + 40} ${MARK.h + 40}`} style={{height: h, width: (h * (MARK.w + 40)) / (MARK.h + 40), overflow: 'visible', display: 'block'}}>
     {PIECES.map((p, i) => {
       const o = pieces[i] || {};
@@ -164,7 +167,7 @@ const S1 = ({t, W, H, v}) => {
   const size = v ? 96 : 76;
   // « Construis » : flash orange puis blanc (comme « Build » dans la référence)
   const cIn = pop(t, E.construis, 0.28);
-  const cColor = t < E.construis + 0.13 ? C.orange : C.blanc;
+  const cColor = t < E.construis + 0.13 ? C.orange : C.encre;
   // « Construis » se replie quand le logo apparaît ; « prochain projet » se déplie
   const cW = lerp(t, E.logo - 0.08, E.logo + 0.22, 1, 0, io);
   const pW = lerp(t, E.projet - 0.02, E.projet + 0.36, 0, 1, ease);
@@ -207,17 +210,18 @@ const S1 = ({t, W, H, v}) => {
   const markH = size * 1.0;
 
   return (
-    <AbsoluteFill style={{background: C.noir}}>
+    <AbsoluteFill style={{background: C.papier}}>
+      <Grid W={W} H={H} step={v ? 180 : 160} ox={W / 2 % (v ? 180 : 160)} oy={H / 2 % (v ? 180 : 160)} color="#EFEFEF" />
       <AbsoluteFill style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
         <div style={{display: 'flex', alignItems: 'center', transform: `translateY(${-size * 0.04}px)`}}>
           {/* Construis */}
           <div style={{width: cW * size * 4.6, overflow: 'hidden', display: 'flex', justifyContent: 'flex-end'}}>
-            <Txt size={size} w={500} color={cColor} style={{transform: `scale(${0.82 + 0.18 * cIn})`, opacity: t >= E.construis ? 1 : 0, paddingRight: gap}}>Construis</Txt>
+            <Txt size={size} w={500} color={cColor} style={{...soft(cIn, 14), transform: `scale(${0.82 + 0.18 * cIn})`, opacity: t >= E.construis ? 1 : 0, paddingRight: gap}}>Construis</Txt>
           </div>
           {/* Case : ton → formes → logo → cube */}
           <div style={{width: lerp(t, E.outTxt, E.outTxt + 0.24, slot, slot * 1.1, io), height: size * 1.2, position: 'relative', flexShrink: 0}}>
             {!toShapes && t >= E.ton && (
-              <Txt size={size} w={500} color={C.blanc} style={{position: 'absolute', left: 0, top: '50%', transform: `translateY(-55%) scale(${0.8 + 0.2 * tonIn})`, transformOrigin: 'left center'}}>ton</Txt>
+              <Txt size={size} w={500} color={C.encre} style={{...soft(tonIn, 12), position: 'absolute', left: 0, top: '50%', transform: `translateY(-55%) scale(${0.8 + 0.2 * tonIn})`, transformOrigin: 'left center'}}>ton</Txt>
             )}
             {toShapes && !showMark && shapes.map((s, i) => {
               const b1 = burst[i], b2 = burst2[i];
@@ -231,7 +235,7 @@ const S1 = ({t, W, H, v}) => {
               const x = x0 + (tx - x0) * gather, y = y0 + (ty - y0) * gather;
               const sx = (1 + (bsx - 1) * m) * (1 - gather * 0.65), sy = (1 + (bsy - 1) * m) * (1 - gather * 0.65);
               const r = br * m * (1 - gather);
-              const color = m < 0.5 ? C.blanc : gather > 0.6 ? C.orange : C.peach;
+              const color = m < 0.5 ? C.encre : gather > 0.6 ? C.noir : gather > 0.2 ? C.orange : C.peach;
               const common = {position: 'absolute', left: slot / 2 + x - s.w / 2, top: size * 0.6 + y - s.h / 2, width: s.w, height: s.h, transform: `rotate(${r}deg) scale(${sx}, ${sy})`};
               if (s.kind === 'bar') return <div key={i} style={{...common, background: color, borderRadius: 2}} />;
               if (s.kind === 'disc') return <div key={i} style={{...common, background: color, borderRadius: '50%'}} />;
@@ -244,17 +248,17 @@ const S1 = ({t, W, H, v}) => {
             )}
             {t >= E.cube && (
               <div style={{position: 'absolute', left: '50%', top: '50%', transform: `translate(-50%,-50%) scale(${cubeIn * (filled ? 1 + 0.12 * pop(t, E.cubeFill, 0.22) - 0.12 * (t > E.cubeFill + 0.05 ? 1 : 0) * pop(t, E.cubeFill + 0.05, 0.2) : 1)})`}}>
-                <Cube s={size * 0.78} color={filled ? C.blanc : C.orange} sw={1.9} fill={filled ? C.blanc : 'none'} top={filled ? '#f4f4f4' : undefined} />
+                <Cube s={size * 0.78} color={C.noir} sw={1.9} fill={filled ? C.noir : 'none'} top={filled ? '#3a3a3a' : undefined} />
               </div>
             )}
           </div>
           {/* prochain projet */}
           <div style={{width: pW * (1 - pOut) * size * 7.4, overflow: 'hidden'}}>
-            <Txt size={size} w={500} color={C.blanc} style={{paddingLeft: gap * 0.6, transform: `translateX(${(1 - pW) * -size * 0.6}px)`}}>prochain projet</Txt>
+            <Txt size={size} w={500} color={C.encre} style={{...soft(pW, 12), paddingLeft: gap * 0.6, transform: `translateX(${(1 - pW) * -size * 0.6}px)`}}>prochain projet</Txt>
           </div>
         </div>
       </AbsoluteFill>
-      <Corners W={W} H={H} op={lerp(t, 0.2, 0.6, 0, 1)} />
+      <Corners W={W} H={H} color="rgba(0,0,0,.45)" op={lerp(t, 0.2, 0.6, 0, 1)} />
     </AbsoluteFill>
   );
 };
@@ -273,8 +277,8 @@ const S2 = ({t, W, H, v}) => {
   // Carrés blancs des barres latérales (la boîte « tire » des petits carrés)
   const sq = (k) => pop(t, E.open1 + k * 0.08, 0.2);
   return (
-    <AbsoluteFill style={{background: C.noir}}>
-      <div style={{position: 'absolute', left: cx - bw / 2, top: cy - bh / 2, width: bw, height: bh, background: C.fond, overflow: 'hidden'}}>
+    <AbsoluteFill style={{background: C.papier}}>
+      <div style={{position: 'absolute', left: cx - bw / 2, top: cy - bh / 2, width: bw, height: bh, background: C.fond, overflow: 'hidden', outline: `${2 * (1 - s3)}px solid ${C.noir}`}}>
         <Grid W={bw} H={bh} step={v ? 180 : 160} ox={(bw / 2) % 180 + drift} oy={(bh / 2) % 180} color="#E4E4E4" />
         {/* carte centrale */}
         <div style={{position: 'absolute', left: bw / 2 - cardW / 2, top: bh / 2 - cardH / 2, width: cardW, height: cardH, background: C.blanc, outline: '1.4px solid #DCDCDC', opacity: s2}}>
@@ -283,9 +287,9 @@ const S2 = ({t, W, H, v}) => {
           ))}
         </div>
         <div style={{position: 'absolute', left: bw / 2, top: bh / 2, transform: 'translate(-50%,-50%)', display: 'flex', alignItems: 'center', gap: size * 0.5}}>
-          <Txt size={size} w={500} style={{opacity: a1 > 0 ? 1 : 0, transform: `translateX(${(1 - a1) * 30}px)`}}>Ton idée</Txt>
+          <Txt size={size} w={500} style={{...soft(a1), opacity: a1 > 0 ? 1 : 0, transform: `translateX(${(1 - a1) * 30}px)`}}>Ton idée</Txt>
           <div style={{transform: `scale(${a2}) rotate(${(1 - a2) * -60}deg)`}}><Cube s={size * 1.05} color={C.encre} sw={1.5} /></div>
-          <Txt size={size} w={500} style={{opacity: a3 > 0 ? 1 : 0, transform: `translateX(${(1 - a3) * -30}px)`}}>Ton digital</Txt>
+          <Txt size={size} w={500} style={{...soft(a3), opacity: a3 > 0 ? 1 : 0, transform: `translateX(${(1 - a3) * -30}px)`}}>Ton digital</Txt>
         </div>
       </div>
       {/* barres noires latérales avec petits carrés blancs */}
@@ -294,7 +298,7 @@ const S2 = ({t, W, H, v}) => {
           {[0, 1, 2, 3, 4].map((k) => {
             const yy = cy + (k - 2) * (v ? 300 : 190);
             const s = sq(k) * (1 - lerp(t, E.open3, E.open3 + 0.25, 0, 1, io));
-            return <div key={k} style={{position: 'absolute', [side < 0 ? 'right' : 'left']: 22 + (k % 2) * 30, top: yy - 16, width: 32, height: 32, background: C.blanc, transform: `scale(${s})`}} />;
+            return <div key={k} style={{position: 'absolute', [side < 0 ? 'right' : 'left']: 22 + (k % 2) * 30, top: yy - 16, width: 32, height: 32, background: C.noir, transform: `scale(${s})`}} />;
           })}
         </div>
       ))}
@@ -344,7 +348,7 @@ const S3 = ({t, W, H, v}) => {
         })}
       </svg>
       <div style={{position: 'absolute', left: cx, top: cy, transform: `translate(-50%,-50%) scale(${0.9 + 0.1 * pop(t, E.cercles, 0.3)})`}}>
-        <Txt size={size} w={500}>Chaque besoin, connecté</Txt>
+        <Txt size={size} w={500} style={soft(pop(t, E.cercles, 0.3), 12)}>Chaque besoin, connecté</Txt>
       </div>
       {SERVICES.map((name, i) => {
         const [a0, ri] = place[i];
@@ -486,7 +490,7 @@ const S5 = ({t, W, H, v}) => {
         <div style={{position: 'absolute', left: N1.x - (v ? 150 : 100), top: finY, transform: 'translate(-12%, 0)', display: 'flex', alignItems: 'center', gap: fs * 0.3}}>
           {fin.map((w) => {
             const p = pop(t, w.t, 0.26);
-            return t >= w.t ? <Txt key={w.s} size={fs * 1.15} w={500} style={{transform: `translateY(${(1 - p) * 20}px)`, opacity: Math.min(1, p * 2)}}>{w.s}</Txt> : null;
+            return t >= w.t ? <Txt key={w.s} size={fs * 1.15} w={500} style={{...soft(p), transform: `translateY(${(1 - p) * 20}px)`, opacity: Math.min(1, p * 2)}}>{w.s}</Txt> : null;
           })}
           {t >= E.fusee && (
             <div style={{transform: `translate(${(1 - pop(t, E.fusee, 0.3)) * -30}px, ${(1 - pop(t, E.fusee, 0.3)) * 30}px) scale(${pop(t, E.fusee, 0.3, 0.3)})`}}><Rocket s={fs * 1.3} color={C.orange} /></div>
@@ -496,7 +500,7 @@ const S5 = ({t, W, H, v}) => {
         <div style={{position: 'absolute', left: W / 2 + (v ? W * 0.18 : W * 0.22), top: H / 2 + (v ? H * 0.62 : H * 0.7), transform: 'translate(-50%,-50%)', display: 'flex', gap: fs * 0.32}}>
           {['Pensé', 'pour', 'ton', 'business'].map((w, i) => {
             const p = pop(t, E.pense[i], 0.24);
-            return t >= E.pense[i] ? <Txt key={w} size={v ? 74 : 64} w={500} color={i === 3 ? C.orange : C.encre} style={{transform: `translateY(${(1 - p) * 24}px)`, opacity: Math.min(1, p * 2)}}>{w}</Txt> : null;
+            return t >= E.pense[i] ? <Txt key={w} size={v ? 74 : 64} w={500} color={i === 3 ? C.orange : C.encre} style={{...soft(p), transform: `translateY(${(1 - p) * 24}px)`, opacity: Math.min(1, p * 2)}}>{w}</Txt> : null;
           })}
         </div>
       </div>
@@ -514,7 +518,7 @@ const S6 = ({t, W, H, v}) => {
         <div style={{display: 'flex', gap: size * 0.26, opacity: 1 - up * 0.55}}>
           {[['On', E.on], ["t'accompagne", E.acc]].map(([w, t0]) => {
             const p = pop(t, t0, 0.26);
-            return t >= t0 ? <Txt key={w} size={size} w={600} color={C.blanc} ls={-0.03} style={{transform: `translateY(${(1 - p) * 30}px)`}}>{w}</Txt> : null;
+            return t >= t0 ? <Txt key={w} size={size} w={600} color={C.blanc} ls={-0.03} style={{...soft(p, 12), transform: `translateY(${(1 - p) * 30}px)`}}>{w}</Txt> : null;
           })}
         </div>
         {t >= E.bout && (
@@ -553,13 +557,13 @@ const S7 = ({t, W, H, v}) => {
   const wIn = pop(t, E.lock + 0.08, 0.34, 0.15);
   const sIn = pop(t, E.sous, 0.3);
   const ctaIn = pop(t, E.cta, 0.3, 0.25);
-  const ink = '#3B342C';
+  const ink = '#2B2621';
   const markW = (markH * (MARK.w + 40)) / (MARK.h + 40);
   const wordH = markH * 0.62;
   return (
     <AbsoluteFill style={{background: C.beige}}>
       {/* lignes de construction du plan */}
-      <svg width={W} height={H} style={{position: 'absolute', inset: 0}} stroke={ink} strokeWidth={1.2} opacity={0.22 * lerp(t, E.outro, E.outro + 0.2, 0, 1)}>
+      <svg width={W} height={H} style={{position: 'absolute', inset: 0}} stroke={ink} strokeWidth={1.2} opacity={0.22 * lerp(t, E.outro, E.outro + 0.2, 0, 1) * (1 - 0.6 * lerp(t, E.lock + 0.2, E.lock + 0.8, 0, 1))}>
         <line x1={0} y1={cy - markH / 2} x2={W} y2={cy - markH / 2} />
         <line x1={0} y1={cy + markH / 2} x2={W} y2={cy + markH / 2} />
         <line x1={cx} y1={0} x2={cx} y2={H} />
@@ -569,17 +573,18 @@ const S7 = ({t, W, H, v}) => {
       <div style={{position: 'absolute', left: cx, top: cy, transform: `translate(-50%,-50%) scale(${lock ? 1 + 0.06 * (1 - kick) : 1})`, display: 'flex', flexDirection: v ? 'column' : 'row', alignItems: 'center', gap: v ? 40 : 56}}>
         <div style={{position: 'relative', width: markW, height: markH}}>
           <div style={{position: 'absolute', inset: 0}}><Mark h={markH} stroke={ink} sw={2} pieces={pieces.map((p) => ({...p, op: 1 - fill}))} /></div>
-          <div style={{position: 'absolute', inset: 0, opacity: fill}}><Mark h={markH} color={C.orange} /></div>
+          <div style={{position: 'absolute', inset: 0, opacity: fill}}><Mark h={markH} color={C.noir} /></div>
         </div>
         <div style={{display: 'flex', flexDirection: 'column', alignItems: v ? 'center' : 'flex-start', gap: 18, opacity: lock ? 1 : 0}}>
           <div style={{transform: `translateY(${(1 - wIn) * 30}px)`, clipPath: `inset(0 ${(1 - wIn) * 100}% 0 0)`}}><Wordmark h={wordH} color={C.encre} /></div>
           <Txt size={v ? 34 : 28} w={500} ls={0.32} color={C.encre} style={{opacity: sIn > 0 ? 1 : 0, clipPath: `inset(0 ${(1 - Math.min(1, sIn)) * 100}% 0 0)`}}>SOLUTIONS DIGITALES</Txt>
         </div>
       </div>
-      {/* appel à l'action discret */}
-      <div style={{position: 'absolute', left: cx, bottom: v ? 230 : 90, transform: `translate(-50%,0) scale(${ctaIn})`, display: 'flex', alignItems: 'center', gap: 14, padding: v ? '20px 36px' : '16px 30px', borderRadius: 50, background: C.encre}}>
-        <svg viewBox="0 0 24 24" style={{width: v ? 40 : 32, height: v ? 40 : 32}}><path fill="#fff" d="M12 2.2a9.7 9.7 0 0 0-8.4 14.6L2.3 21.7l5-1.3A9.7 9.7 0 1 0 12 2.2zm0 17.7a8 8 0 0 1-4.1-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8 8 0 1 1 12 19.9zm4.4-6c-.2-.1-1.4-.7-1.7-.8s-.4-.1-.5.1-.6.8-.8 1-.3.2-.5 0a6.6 6.6 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a.9.9 0 0 0-.7.3 2.8 2.8 0 0 0-.9 2.1 4.9 4.9 0 0 0 1 2.6 11.2 11.2 0 0 0 4.3 3.8c1.6.7 2.2.7 3 .6a2.6 2.6 0 0 0 1.7-1.2 2.1 2.1 0 0 0 .1-1.2c0-.1-.2-.2-.4-.3z" /></svg>
-        <Txt size={v ? 40 : 32} w={500} color={C.blanc} ls={0}>WhatsApp · [NUMÉRO]</Txt>
+      {/* site de l'entreprise, discret */}
+      <div style={{position: 'absolute', left: cx, bottom: v ? 250 : 96, transform: 'translate(-50%,0)', display: 'flex', alignItems: 'center', gap: 18, opacity: ctaIn > 0 ? 1 : 0}}>
+        <div style={{width: 60 * Math.min(1, ctaIn), height: 1.6, background: C.encre}} />
+        <Txt size={v ? 32 : 26} w={500} font={MONO} ls={0.02} color={C.encre} style={{...soft(ctaIn, 8), transform: `translateY(${(1 - ctaIn) * 16}px)`}}>cyberspacesarl.com</Txt>
+        <div style={{width: 60 * Math.min(1, ctaIn), height: 1.6, background: C.encre}} />
       </div>
     </AbsoluteFill>
   );
