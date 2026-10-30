@@ -1,0 +1,1000 @@
+{
+ "duree": 19.6,
+ "musique": {
+  "fichier": "sons/musique-cyberspace.wav",
+  "source": "../audio/cyberspace-sound.mp3",
+  "db": 0
+ },
+ "sons": {
+  "clic": {
+   "epidemic": "45c94b43-2fb0-4970-98db-cc0fe6ea3678",
+   "titre": "Glassy Touch",
+   "fichier": "sons/clic.wav"
+  },
+  "clic2": {
+   "epidemic": "d637e4e8-6846-496b-84f9-19f3f7b59539",
+   "titre": "Simple Select",
+   "fichier": "sons/clic2.wav"
+  },
+  "tick": {
+   "epidemic": "326f0f67-5371-452f-aec4-65f1c0a654b0",
+   "titre": "Type Zap",
+   "fichier": "sons/tick.wav"
+  },
+  "pop": {
+   "epidemic": "7cce069c-4a3a-4746-b5c8-94a653fab587",
+   "titre": "Bubbly Select",
+   "fichier": "sons/pop.wav"
+  },
+  "pop2": {
+   "epidemic": "19edc18a-387f-4987-9110-75d1abecc3fa",
+   "titre": "Bubbly Option",
+   "fichier": "sons/pop2.wav"
+  },
+  "whoosh": {
+   "epidemic": "c406a00b-d4b3-42e9-ba76-707ba5174543",
+   "titre": "Generic Air",
+   "fichier": "sons/whoosh.wav"
+  },
+  "whooshDoux": {
+   "epidemic": "073cf199-3d1b-4a67-9128-a5abd13870ff",
+   "titre": "Soft Airy",
+   "fichier": "sons/whooshDoux.wav"
+  },
+  "data": {
+   "epidemic": "53d103e7-fdd7-4e11-8994-4f724415f262",
+   "titre": "Data Read Out Burst 01",
+   "fichier": "sons/data.wav"
+  },
+  "scan": {
+   "epidemic": "7762db67-eb05-432b-8662-a9e448f9cab2",
+   "titre": "Data Process 03",
+   "fichier": "sons/scan.wav"
+  },
+  "clavier": {
+   "epidemic": "f94a21b7-3e53-4cf8-b3b3-4cb0ce73febd",
+   "titre": "Laptop Key Press Single",
+   "fichier": "sons/clavier.wav"
+  },
+  "lock": {
+   "epidemic": "46216b97-17a4-48ec-a7ec-999132ef096a",
+   "titre": "Confirm Dull",
+   "fichier": "sons/lock.wav"
+  },
+  "logo": {
+   "epidemic": "e6ba185b-70c0-434f-919b-e05e8a578a1c",
+   "titre": "Stinger Soft Hit Short",
+   "fichier": "sons/logo.wav"
+  },
+  "impact": {
+   "epidemic": "6d82b75c-2d2f-40b3-9e1b-4d822c1173d5",
+   "titre": "Boom Low Hit",
+   "fichier": "sons/impact.wav"
+  },
+  "trait": {
+   "epidemic": "27384f5f-7e69-4f29-916d-b31071cf0112",
+   "titre": "Tech Data Transition 02",
+   "fichier": "sons/trait.wav"
+  }
+ },
+ "reperes": [
+  {
+   "t": 0.05,
+   "son": "data",
+   "db": -15,
+   "element": "Construis"
+  },
+  {
+   "t": 0.08,
+   "son": "tick",
+   "db": -22,
+   "element": "HUD"
+  },
+  {
+   "t": 0.42,
+   "son": "clic",
+   "db": -12,
+   "element": "ton"
+  },
+  {
+   "t": 0.94,
+   "son": "whoosh",
+   "db": -15,
+   "element": "morph"
+  },
+  {
+   "t": 1.79,
+   "son": "tick",
+   "db": -14,
+   "element": "échange"
+  },
+  {
+   "t": 2.36,
+   "son": "lock",
+   "db": -11,
+   "element": "logo"
+  },
+  {
+   "t": 2.44,
+   "son": "data",
+   "db": -16,
+   "element": "prochain projet"
+  },
+  {
+   "t": 3.45,
+   "son": "whoosh",
+   "db": -15,
+   "element": "sortie"
+  },
+  {
+   "t": 3.8,
+   "son": "pop",
+   "db": -12,
+   "element": "cube"
+  },
+  {
+   "t": 4.16,
+   "son": "pop2",
+   "db": -14,
+   "element": "remplissage"
+  },
+  {
+   "t": 4.37,
+   "son": "tick",
+   "db": -13,
+   "element": "ouverture 1"
+  },
+  {
+   "t": 4.45,
+   "son": "clic2",
+   "db": -22,
+   "element": "carré 1"
+  },
+  {
+   "t": 4.53,
+   "son": "clic2",
+   "db": -22,
+   "element": "carré 2"
+  },
+  {
+   "t": 4.61,
+   "son": "clic2",
+   "db": -22,
+   "element": "carré 3"
+  },
+  {
+   "t": 4.69,
+   "son": "tick",
+   "db": -13,
+   "element": "ouverture 2"
+  },
+  {
+   "t": 5.02,
+   "son": "tick",
+   "db": -13,
+   "element": "ouverture 3"
+  },
+  {
+   "t": 5.02,
+   "son": "scan",
+   "db": -17,
+   "element": "cadre"
+  },
+  {
+   "t": 5.06,
+   "son": "data",
+   "db": -16,
+   "element": "Ton idée"
+  },
+  {
+   "t": 5.1,
+   "son": "data",
+   "db": -24,
+   "element": "repères"
+  },
+  {
+   "t": 5.25,
+   "son": "pop",
+   "db": -12,
+   "element": "cube"
+  },
+  {
+   "t": 5.46,
+   "son": "data",
+   "db": -16,
+   "element": "Ton digital"
+  },
+  {
+   "t": 6.38,
+   "son": "whoosh",
+   "db": -14,
+   "element": "cercles"
+  },
+  {
+   "t": 6.44,
+   "son": "data",
+   "db": -16,
+   "element": "titre"
+  },
+  {
+   "t": 6.76,
+   "son": "pop",
+   "db": -13,
+   "element": "pastille 1"
+  },
+  {
+   "t": 6.97,
+   "son": "pop2",
+   "db": -13,
+   "element": "pastille 2"
+  },
+  {
+   "t": 7.19,
+   "son": "pop",
+   "db": -13,
+   "element": "pastille 3"
+  },
+  {
+   "t": 7.41,
+   "son": "pop2",
+   "db": -13,
+   "element": "pastille 4"
+  },
+  {
+   "t": 7.62,
+   "son": "pop",
+   "db": -13,
+   "element": "pastille 5"
+  },
+  {
+   "t": 7.78,
+   "son": "whoosh",
+   "db": -14,
+   "element": "trame"
+  },
+  {
+   "t": 7.83,
+   "son": "pop2",
+   "db": -13,
+   "element": "pastille 6"
+  },
+  {
+   "t": 8.15,
+   "son": "clavier",
+   "db": -10,
+   "element": "Tout"
+  },
+  {
+   "t": 8.15,
+   "son": "tick",
+   "db": -20,
+   "element": "fantôme Tout"
+  },
+  {
+   "t": 8.15,
+   "son": "data",
+   "db": -20,
+   "element": "invite"
+  },
+  {
+   "t": 8.2,
+   "son": "tick",
+   "db": -22,
+   "element": "micro-grille"
+  },
+  {
+   "t": 8.68,
+   "son": "clavier",
+   "db": -10,
+   "element": "en un"
+  },
+  {
+   "t": 8.68,
+   "son": "tick",
+   "db": -20,
+   "element": "fantôme en un"
+  },
+  {
+   "t": 9.45,
+   "son": "clavier",
+   "db": -10,
+   "element": "endroit"
+  },
+  {
+   "t": 9.45,
+   "son": "tick",
+   "db": -20,
+   "element": "fantôme endroit"
+  },
+  {
+   "t": 10.19,
+   "son": "tick",
+   "db": -14,
+   "element": "bloc 1"
+  },
+  {
+   "t": 10.43,
+   "son": "tick",
+   "db": -14,
+   "element": "bloc 2"
+  },
+  {
+   "t": 10.6,
+   "son": "tick",
+   "db": -14,
+   "element": "bloc 3"
+  },
+  {
+   "t": 10.69,
+   "son": "whoosh",
+   "db": -16,
+   "element": "carré"
+  },
+  {
+   "t": 10.84,
+   "son": "pop",
+   "db": -12,
+   "element": "nœud"
+  },
+  {
+   "t": 10.88,
+   "son": "data",
+   "db": -18,
+   "element": "étiquette nœud"
+  },
+  {
+   "t": 11.05,
+   "son": "trait",
+   "db": -16,
+   "element": "liaison 1"
+  },
+  {
+   "t": 11.49,
+   "son": "pop",
+   "db": -13,
+   "element": "Brief"
+  },
+  {
+   "t": 11.94,
+   "son": "pop2",
+   "db": -13,
+   "element": "Build"
+  },
+  {
+   "t": 12.14,
+   "son": "pop",
+   "db": -11,
+   "element": "Launch"
+  },
+  {
+   "t": 12.24,
+   "son": "trait",
+   "db": -18,
+   "element": "liaison 2"
+  },
+  {
+   "t": 12.79,
+   "son": "clic",
+   "db": -12,
+   "element": "au"
+  },
+  {
+   "t": 13.05,
+   "son": "clic",
+   "db": -12,
+   "element": "lancement"
+  },
+  {
+   "t": 13.33,
+   "son": "pop2",
+   "db": -13,
+   "element": "fusée"
+  },
+  {
+   "t": 13.58,
+   "son": "whooshDoux",
+   "db": -13,
+   "element": "panoramique"
+  },
+  {
+   "t": 14.3,
+   "son": "clic",
+   "db": -12,
+   "element": "Pensé"
+  },
+  {
+   "t": 14.52,
+   "son": "clic2",
+   "db": -12,
+   "element": "pour"
+  },
+  {
+   "t": 14.74,
+   "son": "clic",
+   "db": -12,
+   "element": "ton"
+  },
+  {
+   "t": 15.07,
+   "son": "clic2",
+   "db": -12,
+   "element": "business"
+  },
+  {
+   "t": 15.3,
+   "son": "whoosh",
+   "db": -13,
+   "element": "volet"
+  },
+  {
+   "t": 15.6,
+   "son": "impact",
+   "db": -10,
+   "element": "plein orange"
+  },
+  {
+   "t": 15.8,
+   "son": "data",
+   "db": -15,
+   "element": "On"
+  },
+  {
+   "t": 16.05,
+   "son": "data",
+   "db": -15,
+   "element": "t'accompagne"
+  },
+  {
+   "t": 16.42,
+   "son": "whoosh",
+   "db": -18,
+   "element": "montée"
+  },
+  {
+   "t": 16.46,
+   "son": "data",
+   "db": -15,
+   "element": "jusqu'au bout"
+  },
+  {
+   "t": 17.05,
+   "son": "whoosh",
+   "db": -13,
+   "element": "pièces"
+  },
+  {
+   "t": 17.21,
+   "son": "data",
+   "db": -22,
+   "element": "cotes"
+  },
+  {
+   "t": 17.32,
+   "son": "logo",
+   "db": -8,
+   "element": "logo"
+  },
+  {
+   "t": 17.32,
+   "son": "scan",
+   "db": -19,
+   "element": "cadre logo"
+  },
+  {
+   "t": 17.4,
+   "son": "clic2",
+   "db": -16,
+   "element": "nom"
+  },
+  {
+   "t": 17.55,
+   "son": "data",
+   "db": -16,
+   "element": "sous-titre"
+  },
+  {
+   "t": 17.9,
+   "son": "pop",
+   "db": -14,
+   "element": "site"
+  }
+ ],
+ "layers": [
+  {
+   "name": "Musique · Cyberspace sound",
+   "file": "sons/musique-cyberspace.wav",
+   "start": 0,
+   "db": 0
+  },
+  {
+   "name": "SFX 01 · data · Construis",
+   "file": "sons/data.wav",
+   "start": 0.05,
+   "db": -15,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 02 · tick · HUD",
+   "file": "sons/tick.wav",
+   "start": 0.08,
+   "db": -22,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 03 · clic · ton",
+   "file": "sons/clic.wav",
+   "start": 0.42,
+   "db": -12,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 04 · whoosh · morph",
+   "file": "sons/whoosh.wav",
+   "start": 0.94,
+   "db": -15,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 05 · tick · échange",
+   "file": "sons/tick.wav",
+   "start": 1.79,
+   "db": -14,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 06 · lock · logo",
+   "file": "sons/lock.wav",
+   "start": 2.36,
+   "db": -11,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 07 · data · prochain projet",
+   "file": "sons/data.wav",
+   "start": 2.44,
+   "db": -16,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 08 · whoosh · sortie",
+   "file": "sons/whoosh.wav",
+   "start": 3.45,
+   "db": -15,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 09 · pop · cube",
+   "file": "sons/pop.wav",
+   "start": 3.8,
+   "db": -12,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 10 · pop2 · remplissage",
+   "file": "sons/pop2.wav",
+   "start": 4.16,
+   "db": -14,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 11 · tick · ouverture 1",
+   "file": "sons/tick.wav",
+   "start": 4.37,
+   "db": -13,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 12 · clic2 · carré 1",
+   "file": "sons/clic2.wav",
+   "start": 4.45,
+   "db": -22,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 13 · clic2 · carré 2",
+   "file": "sons/clic2.wav",
+   "start": 4.53,
+   "db": -22,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 14 · clic2 · carré 3",
+   "file": "sons/clic2.wav",
+   "start": 4.61,
+   "db": -22,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 15 · tick · ouverture 2",
+   "file": "sons/tick.wav",
+   "start": 4.69,
+   "db": -13,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 16 · tick · ouverture 3",
+   "file": "sons/tick.wav",
+   "start": 5.02,
+   "db": -13,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 17 · scan · cadre",
+   "file": "sons/scan.wav",
+   "start": 5.02,
+   "db": -17,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 18 · data · Ton idée",
+   "file": "sons/data.wav",
+   "start": 5.06,
+   "db": -16,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 19 · data · repères",
+   "file": "sons/data.wav",
+   "start": 5.1,
+   "db": -24,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 20 · pop · cube",
+   "file": "sons/pop.wav",
+   "start": 5.25,
+   "db": -12,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 21 · data · Ton digital",
+   "file": "sons/data.wav",
+   "start": 5.46,
+   "db": -16,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 22 · whoosh · cercles",
+   "file": "sons/whoosh.wav",
+   "start": 6.38,
+   "db": -14,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 23 · data · titre",
+   "file": "sons/data.wav",
+   "start": 6.44,
+   "db": -16,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 24 · pop · pastille 1",
+   "file": "sons/pop.wav",
+   "start": 6.76,
+   "db": -13,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 25 · pop2 · pastille 2",
+   "file": "sons/pop2.wav",
+   "start": 6.97,
+   "db": -13,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 26 · pop · pastille 3",
+   "file": "sons/pop.wav",
+   "start": 7.19,
+   "db": -13,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 27 · pop2 · pastille 4",
+   "file": "sons/pop2.wav",
+   "start": 7.41,
+   "db": -13,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 28 · pop · pastille 5",
+   "file": "sons/pop.wav",
+   "start": 7.62,
+   "db": -13,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 29 · whoosh · trame",
+   "file": "sons/whoosh.wav",
+   "start": 7.78,
+   "db": -14,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 30 · pop2 · pastille 6",
+   "file": "sons/pop2.wav",
+   "start": 7.83,
+   "db": -13,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 31 · clavier · Tout",
+   "file": "sons/clavier.wav",
+   "start": 8.15,
+   "db": -10,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 32 · tick · fantôme Tout",
+   "file": "sons/tick.wav",
+   "start": 8.15,
+   "db": -20,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 33 · data · invite",
+   "file": "sons/data.wav",
+   "start": 8.15,
+   "db": -20,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 34 · tick · micro-grille",
+   "file": "sons/tick.wav",
+   "start": 8.2,
+   "db": -22,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 35 · clavier · en un",
+   "file": "sons/clavier.wav",
+   "start": 8.68,
+   "db": -10,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 36 · tick · fantôme en un",
+   "file": "sons/tick.wav",
+   "start": 8.68,
+   "db": -20,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 37 · clavier · endroit",
+   "file": "sons/clavier.wav",
+   "start": 9.45,
+   "db": -10,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 38 · tick · fantôme endroit",
+   "file": "sons/tick.wav",
+   "start": 9.45,
+   "db": -20,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 39 · tick · bloc 1",
+   "file": "sons/tick.wav",
+   "start": 10.19,
+   "db": -14,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 40 · tick · bloc 2",
+   "file": "sons/tick.wav",
+   "start": 10.43,
+   "db": -14,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 41 · tick · bloc 3",
+   "file": "sons/tick.wav",
+   "start": 10.6,
+   "db": -14,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 42 · whoosh · carré",
+   "file": "sons/whoosh.wav",
+   "start": 10.69,
+   "db": -16,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 43 · pop · nœud",
+   "file": "sons/pop.wav",
+   "start": 10.84,
+   "db": -12,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 44 · data · étiquette nœud",
+   "file": "sons/data.wav",
+   "start": 10.88,
+   "db": -18,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 45 · trait · liaison 1",
+   "file": "sons/trait.wav",
+   "start": 11.05,
+   "db": -16,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 46 · pop · Brief",
+   "file": "sons/pop.wav",
+   "start": 11.49,
+   "db": -13,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 47 · pop2 · Build",
+   "file": "sons/pop2.wav",
+   "start": 11.94,
+   "db": -13,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 48 · pop · Launch",
+   "file": "sons/pop.wav",
+   "start": 12.14,
+   "db": -11,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 49 · trait · liaison 2",
+   "file": "sons/trait.wav",
+   "start": 12.24,
+   "db": -18,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 50 · clic · au",
+   "file": "sons/clic.wav",
+   "start": 12.79,
+   "db": -12,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 51 · clic · lancement",
+   "file": "sons/clic.wav",
+   "start": 13.05,
+   "db": -12,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 52 · pop2 · fusée",
+   "file": "sons/pop2.wav",
+   "start": 13.33,
+   "db": -13,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 53 · whooshDoux · panoramique",
+   "file": "sons/whooshDoux.wav",
+   "start": 13.58,
+   "db": -13,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 54 · clic · Pensé",
+   "file": "sons/clic.wav",
+   "start": 14.3,
+   "db": -12,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 55 · clic2 · pour",
+   "file": "sons/clic2.wav",
+   "start": 14.52,
+   "db": -12,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 56 · clic · ton",
+   "file": "sons/clic.wav",
+   "start": 14.74,
+   "db": -12,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 57 · clic2 · business",
+   "file": "sons/clic2.wav",
+   "start": 15.07,
+   "db": -12,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 58 · whoosh · volet",
+   "file": "sons/whoosh.wav",
+   "start": 15.3,
+   "db": -13,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 59 · impact · plein orange",
+   "file": "sons/impact.wav",
+   "start": 15.6,
+   "db": -10,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 60 · data · On",
+   "file": "sons/data.wav",
+   "start": 15.8,
+   "db": -15,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 61 · data · t'accompagne",
+   "file": "sons/data.wav",
+   "start": 16.05,
+   "db": -15,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 62 · whoosh · montée",
+   "file": "sons/whoosh.wav",
+   "start": 16.42,
+   "db": -18,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 63 · data · jusqu'au bout",
+   "file": "sons/data.wav",
+   "start": 16.46,
+   "db": -15,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 64 · whoosh · pièces",
+   "file": "sons/whoosh.wav",
+   "start": 17.05,
+   "db": -13,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 65 · data · cotes",
+   "file": "sons/data.wav",
+   "start": 17.21,
+   "db": -22,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 66 · logo · logo",
+   "file": "sons/logo.wav",
+   "start": 17.32,
+   "db": -8,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 67 · scan · cadre logo",
+   "file": "sons/scan.wav",
+   "start": 17.32,
+   "db": -19,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 68 · clic2 · nom",
+   "file": "sons/clic2.wav",
+   "start": 17.4,
+   "db": -16,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 69 · data · sous-titre",
+   "file": "sons/data.wav",
+   "start": 17.55,
+   "db": -16,
+   "sfx": 1
+  },
+  {
+   "name": "SFX 70 · pop · site",
+   "file": "sons/pop.wav",
+   "start": 17.9,
+   "db": -14,
+   "sfx": 1
+  }
+ ]
+}
