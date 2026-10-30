@@ -43,10 +43,13 @@
       var sp = prop.isSpatial, z = null;
       if (sp) { z = []; var dim = (prop.value instanceof Array) ? prop.value.length : 1; for (i = 0; i < dim; i++) z.push(0); }
       for (i = 1; i <= prop.numKeys; i++) {
+        // AE 2026 annonce isSpatial sur certaines propriétés de forme mais refuse ensuite les tangentes
         if (sp) {
-          prop.setSpatialAutoBezierAtKey(i, false);
-          prop.setSpatialContinuousAtKey(i, false);
-          prop.setSpatialTangentsAtKey(i, z, z);
+          try {
+            prop.setSpatialAutoBezierAtKey(i, false);
+            prop.setSpatialContinuousAtKey(i, false);
+            prop.setSpatialTangentsAtKey(i, z, z);
+          } catch (e) { sp = false; }
         }
         prop.setInterpolationTypeAtKey(i, it, it);
       }

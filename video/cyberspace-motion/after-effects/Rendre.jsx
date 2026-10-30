@@ -1,5 +1,5 @@
 // Rend la composition principale du projet ouvert (« CyberSpace 9:16 » ou « CyberSpace 16:9 ») en 4K 60 i/s :
-// qualité optimale, résolution complète, flou de bougé activé, en Apple ProRes dans rendus-ae/.
+// qualité optimale, résolution complète, flou de bougé activé, sans perte (ProRes 422 HQ ou QuickTime Animation) dans rendus-ae/.
 // Le son final (mix master) est ajouté ensuite par « node livrer.mjs ».
 (function () {
   var DIR = (typeof CS_DIR !== 'undefined') ? CS_DIR : File($.fileName).parent.fsName;
@@ -29,7 +29,8 @@
       item.setSettings({'Quality': 'Best', 'Resolution': 'Full', 'Motion Blur': 'On for Checked Layers', 'Frame Blending': 'Off for All Layers'});
     } catch (e) { log('setSettings rendu : ' + e); }
     var om = item.outputModule(1);
-    var omt = pick(om.templates, [/ProRes 422 HQ/i, /ProRes 4444/i, /^High Quality$/i, /^Haute qualit/i, /^Lossless$/i, /^Sans perte$/i]);
+    // AE en français : « Qualité supérieure » ne donne que du ProRes 422 standard, d'où « Non destructif » avant lui
+    var omt = pick(om.templates, [/ProRes 422 HQ/i, /ProRes 4444/i, /^Lossless$/i, /^Non destructif$/i, /^Sans perte$/i, /^High Quality$/i, /^Qualité supérieure$/i, /^Haute qualit/i]);
     if (omt) om.applyTemplate(omt);
     log('Module de sortie : ' + omt + ' (disponibles : ' + om.templates.join(' | ') + ')');
     om.file = new File(OUTDIR + '/cyberspace-motion-' + fmt + '-ae.mov');

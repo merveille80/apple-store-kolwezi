@@ -45,6 +45,6 @@ Reconstruire (si les fichiers source changent)
      node after-effects/sons.mjs preparer && node after-effects/sons.mjs mixer
   3. Dans After Effects : Fichier > Scripts > Exécuter le fichier de script… → Construire-9x16.jsx
      (ou Construire-16x9.jsx). Un journal construction-<format>.log signale toute police remplacée.
-  4. Rendu : Rendre.jsx (ProRes 4K dans rendus-ae/), puis
+  4. Rendu : Rendre.jsx (4K sans perte dans rendus-ae/), puis
      node after-effects/livrer.mjs rendus-ae/cyberspace-motion-9x16-ae.mov 9x16 <dossier>
      (ajoute le mix master et produit le MP4 4K et l'aperçu 720p).
