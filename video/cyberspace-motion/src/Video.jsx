@@ -146,12 +146,61 @@ const PixelWord = ({word, px, color = C.orange, reveal = 1}) => {
   );
 };
 
-// Petits libellés de marque dans les coins (scènes sombres, comme la référence)
-const Corners = ({W, H, color = 'rgba(255,255,255,.55)', op = 1}) => (
+// Anciens libellés de coin : remplacés par la couche HUD commune (voir Hud)
+const Corners = () => null;
+
+// ───────────── Couche « high-tech » ─────────────
+const GLYPHS = 'ABCDEFGHKMNPRSTUVXYZ0123456789#/<>_';
+const glyph = (t, i) => GLYPHS[Math.floor(rnd(Math.floor(t * 36) * 13 + i * 7) * GLYPHS.length)];
+
+// Texte qui se « décode » : chaque lettre défile en caractères techniques puis se fixe
+const Decode = ({t, t0, text, stagger = 0.016, dur = 0.14, scramble = C.orange}) => (
   <>
-    <Txt size={20} w={500} color={color} ls={0.01} style={{position: 'absolute', left: 44, top: 44, opacity: op}}>CyberSpace</Txt>
-    <Txt size={20} w={400} color={color} ls={0.01} style={{position: 'absolute', right: 44, bottom: 44, opacity: op}}>solutions digitales</Txt>
+    {[...text].map((c, i) => {
+      const ts = t0 + i * stagger;
+      if (c === ' ') return <span key={i}> </span>;
+      if (t < ts) return <span key={i} style={{visibility: 'hidden'}}>{c}</span>;
+      if (t < ts + dur) return <span key={i} style={{color: scramble, fontFamily: MONO, fontWeight: 500}}>{glyph(t, i)}</span>;
+      return <span key={i}>{c}</span>;
+    })}
   </>
+);
+
+const pad2 = (n) => String(n).padStart(2, '0');
+
+// Interface tête haute : coins de visée, règle graduée, time code, index de bloc
+const Hud = ({t, W, H, v, light, idx}) => {
+  const ink = light ? 'rgba(255,255,255,.85)' : 'rgba(0,0,0,.62)';
+  const faint = light ? 'rgba(255,255,255,.3)' : 'rgba(0,0,0,.16)';
+  const m = v ? 46 : 40, L = v ? 40 : 32;
+  const k = lerp(t, 0.05, 0.45, 0, 1, io);
+  const fs = v ? 18 : 16;
+  const f = Math.floor(t * 60);
+  const tc = `TC ${pad2(Math.floor(t / 60))}:${pad2(Math.floor(t) % 60)}:${pad2(f % 60)}`;
+  const on = Math.floor(t * 2.4) % 2 === 0;
+  const corner = (x, y, sx, sy) => <path d={`M ${x} ${y + sy * L * k} L ${x} ${y} L ${x + sx * L * k} ${y}`} />;
+  const ticks = [];
+  for (let y = m + 90, n = 0; y < H - m - 90; y += 24, n++) ticks.push(<line key={y} x1={m * 0.4} x2={m * 0.4 + (n % 5 === 0 ? 12 : 6)} y1={y} y2={y} />);
+  const lab = {position: 'absolute', fontFamily: MONO, fontSize: fs, fontWeight: 500, color: ink, letterSpacing: '0.08em', whiteSpace: 'pre', lineHeight: 1, opacity: k};
+  return (
+    <AbsoluteFill style={{pointerEvents: 'none'}}>
+      <svg width={W} height={H} style={{position: 'absolute', inset: 0}} fill="none" stroke={ink} strokeWidth={2}>
+        {corner(m, m, 1, 1)}{corner(W - m, m, -1, 1)}{corner(m, H - m, 1, -1)}{corner(W - m, H - m, -1, -1)}
+        <g stroke={faint} strokeWidth={1.4} opacity={k}>{ticks}</g>
+      </svg>
+      <div style={{...lab, left: m + L + 14, top: m - fs / 2}}>CYBERSPACE SARL</div>
+      <div style={{...lab, right: m + L + 14, top: m - fs / 2}}>{tc}</div>
+      <div style={{...lab, left: m + L + 14, bottom: m - fs / 2, display: 'flex', alignItems: 'center', gap: 10}}>
+        <span style={{width: fs * 0.55, height: fs * 0.55, borderRadius: '50%', background: C.orange, opacity: on ? 1 : 0.25, boxShadow: on ? '0 0 8px rgba(255,90,0,.8)' : 'none'}} />SOLUTIONS DIGITALES
+      </div>
+      <div style={{...lab, right: m + L + 14, bottom: m - fs / 2}}>{`${pad2(idx)} / 07`}</div>
+    </AbsoluteFill>
+  );
+};
+
+// Ligne de scan orange (lueur légère)
+const Scan = ({x = 0, y, w, op = 1}) => (
+  <div style={{position: 'absolute', left: x, top: y - 1, width: w, height: 2, background: C.orange, boxShadow: '0 0 14px 2px rgba(255,90,0,.55)', opacity: op}} />
 );
 
 const Grid = ({W, H, step, color = C.grille, ox = 0, oy = 0, dots}) => {
@@ -215,8 +264,8 @@ const S1 = ({t, W, H, v}) => {
       <AbsoluteFill style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
         <div style={{display: 'flex', alignItems: 'center', transform: `translateY(${-size * 0.04}px)`}}>
           {/* Construis */}
-          <div style={{width: cW * size * 4.6, overflow: 'hidden', display: 'flex', justifyContent: 'flex-end'}}>
-            <Txt size={size} w={500} color={cColor} style={{...soft(cIn, 14), transform: `scale(${0.82 + 0.18 * cIn})`, opacity: t >= E.construis ? 1 : 0, paddingRight: gap}}>Construis</Txt>
+          <div style={{width: cW * size * 5.4, overflow: 'hidden', display: 'flex', justifyContent: 'flex-end'}}>
+            <Txt size={size} w={500} color={cColor} style={{...soft(cIn, 14), transform: `scale(${0.82 + 0.18 * cIn})`, opacity: t >= E.construis ? 1 : 0, paddingRight: gap}}><Decode t={t} t0={E.construis} text="Construis" /></Txt>
           </div>
           {/* Case : ton → formes → logo → cube */}
           <div style={{width: lerp(t, E.outTxt, E.outTxt + 0.24, slot, slot * 1.1, io), height: size * 1.2, position: 'relative', flexShrink: 0}}>
@@ -254,7 +303,7 @@ const S1 = ({t, W, H, v}) => {
           </div>
           {/* prochain projet */}
           <div style={{width: pW * (1 - pOut) * size * 7.4, overflow: 'hidden'}}>
-            <Txt size={size} w={500} color={C.encre} style={{...soft(pW, 12), paddingLeft: gap * 0.6, transform: `translateX(${(1 - pW) * -size * 0.6}px)`}}>prochain projet</Txt>
+            <Txt size={size} w={500} color={C.encre} style={{...soft(pW, 12), paddingLeft: gap * 0.6, transform: `translateX(${(1 - pW) * -size * 0.6}px)`}}><Decode t={t} t0={E.projet} text="prochain projet" /></Txt>
           </div>
         </div>
       </AbsoluteFill>
@@ -286,10 +335,13 @@ const S2 = ({t, W, H, v}) => {
             <div key={i + '' + j} style={{position: 'absolute', left: i * cardW - 4, top: j * cardH - 4, width: 8, height: 8, background: '#BDBDBD'}} />
           ))}
         </div>
+        <Txt size={v ? 17 : 15} w={500} font={MONO} ls={0.1} color="#9A9A9A" style={{position: 'absolute', left: bw / 2 - cardW / 2, top: bh / 2 - cardH / 2 - 34, opacity: s3}}><Decode t={t} t0={E.open3 + 0.05} text="IDÉE → DIGITAL" scramble="#9A9A9A" /></Txt>
+        <Txt size={v ? 17 : 15} w={500} font={MONO} ls={0.1} color="#9A9A9A" style={{position: 'absolute', right: bw / 2 - cardW / 2, top: bh / 2 + cardH / 2 + 16, opacity: s3}}><Decode t={t} t0={E.open3 + 0.12} text="X 540 · Y 960" scramble="#9A9A9A" /></Txt>
+        {t >= E.open3 && t < E.open3 + 0.42 && <Scan y={lerp(t, E.open3, E.open3 + 0.4, 0, bh, Easing.inOut(Easing.quad))} w={bw} op={1 - lerp(t, E.open3 + 0.3, E.open3 + 0.42, 0, 1)} />}
         <div style={{position: 'absolute', left: bw / 2, top: bh / 2, transform: 'translate(-50%,-50%)', display: 'flex', alignItems: 'center', gap: size * 0.5}}>
-          <Txt size={size} w={500} style={{...soft(a1), opacity: a1 > 0 ? 1 : 0, transform: `translateX(${(1 - a1) * 30}px)`}}>Ton idée</Txt>
+          <Txt size={size} w={500} style={{...soft(a1), opacity: a1 > 0 ? 1 : 0, transform: `translateX(${(1 - a1) * 30}px)`}}><Decode t={t} t0={E.idee} text="Ton idée" /></Txt>
           <div style={{transform: `scale(${a2}) rotate(${(1 - a2) * -60}deg)`}}><Cube s={size * 1.05} color={C.encre} sw={1.5} /></div>
-          <Txt size={size} w={500} style={{...soft(a3), opacity: a3 > 0 ? 1 : 0, transform: `translateX(${(1 - a3) * -30}px)`}}>Ton digital</Txt>
+          <Txt size={size} w={500} style={{...soft(a3), opacity: a3 > 0 ? 1 : 0, transform: `translateX(${(1 - a3) * -30}px)`}}><Decode t={t} t0={E.digital} text="Ton digital" /></Txt>
         </div>
       </div>
       {/* barres noires latérales avec petits carrés blancs */}
@@ -318,6 +370,11 @@ const S3 = ({t, W, H, v}) => {
   const place = v
     ? [[-115, 1], [-65, 2], [-28, 2], [32, 2], [112, 1], [152, 2]]
     : [[-150, 1], [-70, 2], [-12, 1], [40, 2], [118, 1], [190, 2]];
+  const pp = (i) => {
+    const [a0, ri] = place[i];
+    const a = ((a0 + orbit) * Math.PI) / 180;
+    return {x: cx + Math.cos(a) * R[ri] * (v ? 0.62 : 1.25), y: cy + Math.sin(a) * R[ri] * (v ? 1.2 : 0.82)};
+  };
   // Trame de points qui envahit l'écran depuis la droite (7,83 → 8,15)
   const tr = lerp(t, E.trame, E.tout, 0, 1, Easing.bezier(0.5, 0, 0.9, 0.6));
   const cell = v ? 60 : 54;
@@ -339,7 +396,21 @@ const S3 = ({t, W, H, v}) => {
       <svg width={W} height={H} style={{position: 'absolute', inset: 0}}>
         {R.map((r, i) => {
           const rr = r * (0.82 + 0.18 * lerp(t, E.cercles + i * 0.06, E.cercles + i * 0.06 + 0.5, 0, 1));
-          return <ellipse key={i} cx={cx} cy={cy} rx={rr * (v ? 0.62 : 1.25)} ry={rr * (v ? 1.2 : 0.82)} fill="none" stroke="#DCDCDF" strokeWidth={2.4} opacity={rip} />;
+          return <ellipse key={i} cx={cx} cy={cy} rx={rr * (v ? 0.62 : 1.25)} ry={rr * (v ? 1.2 : 0.82)} fill="none" stroke="#CFCFD4" strokeWidth={2.2} strokeDasharray={i === 1 ? '2 10' : '14 8'} strokeDashoffset={(t - E.cercles) * (i % 2 ? 60 : -40)} opacity={rip} />;
+        })}
+        {/* liaisons centre → pastilles : trait pointillé + impulsion qui arrive pile au pop */}
+        {SERVICES.map((n, i) => {
+          const q = pp(i), t0 = E.pills[i];
+          if (t < t0 - 0.14) return null;
+          const k = lerp(t, t0 - 0.14, t0, 0, 1, Easing.in(Easing.quad));
+          const loop = ((t - t0) * 1.1 + i * 0.17) % 1;
+          return (
+            <g key={'l' + n}>
+              <line x1={cx} y1={cy} x2={cx + (q.x - cx) * k} y2={cy + (q.y - cy) * k} stroke="#C9C9CE" strokeWidth={1.6} strokeDasharray="5 7" />
+              {k < 1 && <circle cx={cx + (q.x - cx) * k} cy={cy + (q.y - cy) * k} r={7} fill={C.orange} style={{filter: 'drop-shadow(0 0 6px rgba(255,90,0,.9))'}} />}
+              {t > t0 + 0.2 && <circle cx={cx + (q.x - cx) * loop} cy={cy + (q.y - cy) * loop} r={4} fill={C.orange} opacity={0.85 * Math.sin(loop * Math.PI)} />}
+            </g>
+          );
         })}
         {/* onde qui part du centre à chaque service */}
         {E.pills.map((p, i) => {
@@ -348,13 +419,10 @@ const S3 = ({t, W, H, v}) => {
         })}
       </svg>
       <div style={{position: 'absolute', left: cx, top: cy, transform: `translate(-50%,-50%) scale(${0.9 + 0.1 * pop(t, E.cercles, 0.3)})`}}>
-        <Txt size={size} w={500} style={soft(pop(t, E.cercles, 0.3), 12)}>Chaque besoin, connecté</Txt>
+        <Txt size={size} w={500} style={{padding: '14px 28px', background: '#F7F7F8'}}><Decode t={t} t0={E.cercles} text="Chaque besoin, connecté" /></Txt>
       </div>
       {SERVICES.map((name, i) => {
-        const [a0, ri] = place[i];
-        const a = ((a0 + orbit) * Math.PI) / 180;
-        const r = R[ri];
-        const x = cx + Math.cos(a) * r * (v ? 0.62 : 1.25), y = cy + Math.sin(a) * r * (v ? 1.2 : 0.82);
+        const {x, y} = pp(i);
         const p = pop(t, E.pills[i], 0.3, 0.3);
         const hl = i === 2; // une pastille pêche, comme la référence
         const ps = v ? 1.75 : 1.45;
@@ -430,7 +498,17 @@ const S4 = ({t, W, H, v}) => {
           ) : null;
         })}
       </div>
-      <Corners W={W} H={H} />
+      {/* ligne d'invite au-dessus, curseur bloc orange qui suit la frappe */}
+      <Txt size={v ? 26 : 24} w={500} font={MONO} ls={0.04} color="rgba(255,255,255,.55)" style={{position: 'absolute', left: v ? 70 : 120, top: H / 2 - size * 0.95}}><Decode t={t} t0={E.tout} text="> cyberspace --tout-en-un" scramble={C.orange} stagger={0.012} /></Txt>
+      {(() => {
+        let cur = null;
+        lay.forEach((w) => { if (t >= w.t) cur = w; });
+        if (!cur) return null;
+        const n = Math.max(1, Math.ceil(lerp(t, cur.t, cur.t + 0.03 * cur.s.length, 1, cur.s.length, Easing.linear)));
+        const typing = t < cur.t + 0.03 * cur.s.length + 0.05;
+        const show = typing || Math.floor(t * 3.2) % 2 === 0;
+        return show ? <div style={{position: 'absolute', left: x + (cur.col + n) * adv + adv * 0.12, top: H / 2 - size * 0.4, width: adv * 0.5, height: size * 0.72, background: C.orange, boxShadow: '0 0 18px rgba(255,90,0,.6)'}} /> : null;
+      })()}
       {blocks}
     </AbsoluteFill>
   );
@@ -469,10 +547,13 @@ const S5 = ({t, W, H, v}) => {
           <path d={p1} pathLength={1} strokeDasharray="1 1" strokeDashoffset={1 - draw1} />
           <path d={p2} pathLength={1} strokeDasharray="1 1" strokeDashoffset={1 - draw2} />
           <path d={p3} pathLength={1} strokeDasharray="1 1" strokeDashoffset={1 - draw3} />
+          {/* impulsions lumineuses qui circulent une fois le trait posé */}
+          {[[p2, draw2, 0], [p3, draw3, 0.4]].map(([d, dr, ph], i) => (dr >= 1 ? <path key={i} d={d} pathLength={1} stroke={C.orange} strokeWidth={4} strokeLinecap="round" strokeDasharray="0.05 0.95" strokeDashoffset={-((t * 0.8 + ph) % 1)} style={{filter: 'drop-shadow(0 0 6px rgba(255,90,0,.9))'}} /> : null))}
         </svg>
         {/* nœud principal pêche */}
         <div style={{position: 'absolute', left: N1.x, top: N1.y, transform: `translate(-50%,-50%) scale(${n1})`, width: nodeW, height: nodeH, background: C.peach, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-          <Txt size={fs} w={500}>De la première idée</Txt>
+          <Txt size={fs} w={500}><Decode t={t} t0={E.node1 + 0.04} text="De la première idée" scramble={C.encre} /></Txt>
+          <Txt size={v ? 17 : 14} w={500} font={MONO} ls={0.1} color={C.orange} style={{position: 'absolute', right: 0, top: v ? -30 : -24}}><Decode t={t} t0={E.node1 + 0.1} text="NODE_01 · IDÉE" /></Txt>
           {[[0, 0], [1, 0], [0, 1], [1, 1]].map(([i, j]) => <div key={i + '' + j} style={{position: 'absolute', left: i * nodeW - 4, top: j * nodeH - 4, width: 8, height: 8, background: C.orange}} />)}
         </div>
         <div style={{position: 'absolute', left: N1.x - nodeW / 2 - 70 + (1 - sq) * -W * 0.4, top: N1.y - nodeH / 2 - 70, width: 70, height: 70, background: C.orange, opacity: t >= E.node1 - 0.15 && t < E.n2 ? 1 : 0}} />
@@ -480,7 +561,8 @@ const S5 = ({t, W, H, v}) => {
         {steps.map((s, i) => {
           const p = pop(t, s.t, 0.28, 0.25);
           return (
-            <div key={s.s} style={{position: 'absolute', left: stepX(i), top: stepY, transform: `translate(-50%,-50%) scale(${p})`, padding: v ? '20px 30px' : '16px 28px', background: i === 2 ? C.orange : C.blanc, outline: i === 2 ? 'none' : '1.6px solid #2A2A2A', display: 'flex', alignItems: 'center', gap: 12}}>
+            <div key={s.s} style={{position: 'absolute', left: stepX(i), top: stepY, transform: `translate(-50%,-50%) scale(${p})`, padding: v ? '20px 30px' : '16px 28px', background: i === 2 ? C.orange : C.blanc, outline: i === 2 ? 'none' : '1.6px solid #2A2A2A', boxShadow: i === 2 ? '0 0 26px rgba(255,90,0,.45)' : 'none', display: 'flex', alignItems: 'center', gap: 12}}>
+              <Txt size={v ? 16 : 13} w={500} font={MONO} ls={0.1} color="#8A8A8A" style={{position: 'absolute', left: 0, top: v ? -28 : -22}}>{`0${i + 1}`}</Txt>
               <div style={{width: 12, height: 12, background: i === 2 ? C.blanc : C.orange}} />
               <Txt size={v ? 40 : 34} w={600} font={MONO} ls={0} color={i === 2 ? C.blanc : C.encre}>{s.s}</Txt>
             </div>
@@ -518,11 +600,11 @@ const S6 = ({t, W, H, v}) => {
         <div style={{display: 'flex', gap: size * 0.26, opacity: 1 - up * 0.55}}>
           {[['On', E.on], ["t'accompagne", E.acc]].map(([w, t0]) => {
             const p = pop(t, t0, 0.26);
-            return t >= t0 ? <Txt key={w} size={size} w={600} color={C.blanc} ls={-0.03} style={{...soft(p, 12), transform: `translateY(${(1 - p) * 30}px)`}}>{w}</Txt> : null;
+            return t >= t0 ? <Txt key={w} size={size} w={600} color={C.blanc} ls={-0.03} style={{transform: `translateY(${(1 - p) * 30}px)`}}><Decode t={t} t0={t0} text={w} scramble={C.noir} stagger={0.02} /></Txt> : null;
           })}
         </div>
         {t >= E.bout && (
-          <Txt size={size} w={600} color={C.blanc} ls={-0.03} style={{transform: `translateY(${(1 - pop(t, E.bout, 0.28)) * 60}px)`}}>jusqu'au bout.</Txt>
+          <Txt size={size} w={600} color={C.blanc} ls={-0.03} style={{transform: `translateY(${(1 - pop(t, E.bout, 0.28)) * 60}px)`}}><Decode t={t} t0={E.bout} text="jusqu'au bout." scramble={C.noir} stagger={0.02} /></Txt>
         )}
       </div>
       <Corners W={W} H={H} color="rgba(255,255,255,.75)" />
@@ -553,7 +635,9 @@ const S7 = ({t, W, H, v}) => {
   // Les trois pièces arrivent de directions différentes (contour), se verrouillent puis se remplissent
   const from = [{x: 900, y: -300, r: 90}, {x: -700, y: 500, r: -90}, {x: -500, y: -700, r: 45}];
   const pieces = from.map((f) => ({x: f.x * (1 - slide), y: f.y * (1 - slide), r: f.r * (1 - slide)}));
-  const fill = lerp(t, E.lock, E.lock + 0.12, 0, 1, Easing.linear);
+  const reveal = lerp(t, E.lock, E.lock + 0.3, 0, 1, io); // le noir se révèle de haut en bas sous la ligne de scan
+  const fill = lerp(t, E.lock + 0.2, E.lock + 0.4, 0, 1, Easing.linear); // le contour s'efface
+  const dim = lerp(t, E.outro + 0.08, E.outro + 0.3, 0, 1) * (1 - 0.65 * lerp(t, E.lock + 0.5, E.lock + 0.9, 0, 1));
   const wIn = pop(t, E.lock + 0.08, 0.34, 0.15);
   const sIn = pop(t, E.sous, 0.3);
   const ctaIn = pop(t, E.cta, 0.3, 0.25);
@@ -573,17 +657,26 @@ const S7 = ({t, W, H, v}) => {
       <div style={{position: 'absolute', left: cx, top: cy, transform: `translate(-50%,-50%) scale(${lock ? 1 + 0.06 * (1 - kick) : 1})`, display: 'flex', flexDirection: v ? 'column' : 'row', alignItems: 'center', gap: v ? 40 : 56}}>
         <div style={{position: 'relative', width: markW, height: markH}}>
           <div style={{position: 'absolute', inset: 0}}><Mark h={markH} stroke={ink} sw={2} pieces={pieces.map((p) => ({...p, op: 1 - fill}))} /></div>
-          <div style={{position: 'absolute', inset: 0, opacity: fill}}><Mark h={markH} color={C.noir} /></div>
+          <div style={{position: 'absolute', inset: 0, clipPath: `inset(0 0 ${(1 - reveal) * 100}% 0)`}}><Mark h={markH} color={C.noir} /></div>
+          {t >= E.lock && reveal < 1 && <Scan x={-markW * 0.15} y={reveal * markH} w={markW * 1.3} />}
+          {/* cotes du plan : largeur / hauteur */}
+          <svg width={markW} height={markH} style={{position: 'absolute', inset: 0, overflow: 'visible', opacity: dim}} fill="none" stroke={ink} strokeWidth={1.4}>
+            <path d={`M 0 -40 L ${markW} -40 M 0 -50 L 0 -30 M ${markW} -50 L ${markW} -30`} />
+            <path d={`M -40 0 L -40 ${markH} M -50 0 L -30 0 M -50 ${markH} L -30 ${markH}`} />
+            <path d={`M ${markW / 2 - 14} ${markH / 2} L ${markW / 2 + 14} ${markH / 2} M ${markW / 2} ${markH / 2 - 14} L ${markW / 2} ${markH / 2 + 14}`} stroke={C.orange} strokeWidth={2} />
+          </svg>
+          <Txt size={v ? 16 : 14} w={500} font={MONO} ls={0.1} color={ink} style={{position: 'absolute', left: markW / 2, top: -72, transform: 'translateX(-50%)', opacity: dim}}><Decode t={t} t0={E.outro + 0.1} text="W 1317 PX" scramble={C.orange} /></Txt>
+          <Txt size={v ? 16 : 14} w={500} font={MONO} ls={0.1} color={ink} style={{position: 'absolute', left: -62, top: markH / 2, transform: 'translate(-50%,-50%) rotate(-90deg)', opacity: dim}}><Decode t={t} t0={E.outro + 0.14} text="H 1058 PX" scramble={C.orange} /></Txt>
         </div>
         <div style={{display: 'flex', flexDirection: 'column', alignItems: v ? 'center' : 'flex-start', gap: 18, opacity: lock ? 1 : 0}}>
           <div style={{transform: `translateY(${(1 - wIn) * 30}px)`, clipPath: `inset(0 ${(1 - wIn) * 100}% 0 0)`}}><Wordmark h={wordH} color={C.encre} /></div>
-          <Txt size={v ? 34 : 28} w={500} ls={0.32} color={C.encre} style={{opacity: sIn > 0 ? 1 : 0, clipPath: `inset(0 ${(1 - Math.min(1, sIn)) * 100}% 0 0)`}}>SOLUTIONS DIGITALES</Txt>
+          <Txt size={v ? 34 : 28} w={500} ls={0.32} color={C.encre} style={{opacity: sIn > 0 ? 1 : 0}}><Decode t={t} t0={E.sous} text="SOLUTIONS DIGITALES" stagger={0.012} /></Txt>
         </div>
       </div>
       {/* site de l'entreprise, discret */}
       <div style={{position: 'absolute', left: cx, bottom: v ? 250 : 96, transform: 'translate(-50%,0)', display: 'flex', alignItems: 'center', gap: 18, opacity: ctaIn > 0 ? 1 : 0}}>
         <div style={{width: 60 * Math.min(1, ctaIn), height: 1.6, background: C.encre}} />
-        <Txt size={v ? 32 : 26} w={500} font={MONO} ls={0.02} color={C.encre} style={{...soft(ctaIn, 8), transform: `translateY(${(1 - ctaIn) * 16}px)`}}>cyberspacesarl.com</Txt>
+        <Txt size={v ? 32 : 26} w={500} font={MONO} ls={0.02} color={C.encre} style={{...soft(ctaIn, 8), transform: `translateY(${(1 - ctaIn) * 16}px)`}}><Decode t={t} t0={E.cta} text="cyberspacesarl.com" stagger={0.012} /></Txt>
         <div style={{width: 60 * Math.min(1, ctaIn), height: 1.6, background: C.encre}} />
       </div>
     </AbsoluteFill>
@@ -609,6 +702,8 @@ export const Video = ({vertical = true, audio = true}) => {
     <AbsoluteFill style={{background: C.noir}}>
       <Fonts />
       {scene}
+      <Hud t={t} W={W} H={H} v={v} light={(t >= E.tout && t < E.blanc) || (t >= E.orange && t < E.outro)}
+        idx={t < E.open1 ? 1 : t < E.cercles ? 2 : t < E.tout ? 3 : t < E.blanc ? 4 : t < E.pense[0] ? 5 : t < E.outro ? 6 : 7} />
       {audio && <Audio src={staticFile('mix.wav')} />}
     </AbsoluteFill>
   );
