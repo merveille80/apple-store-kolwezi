@@ -1,0 +1,50 @@
+CyberSpace SARL · « Construis ton prochain projet » · projets After Effects
+==========================================================================
+
+Deux projets, un par format :
+  CyberSpace-9x16.aep   composition principale « CyberSpace 9:16 »  (2160 × 3840, 60 i/s, 19,6 s)
+  CyberSpace-16x9.aep   composition principale « CyberSpace 16:9 »  (3840 × 2160, 60 i/s, 19,6 s)
+
+Ouvre le projet du format voulu : la composition principale s'ouvre à la racine du panneau Projet.
+
+Organisation
+------------
+  Composition principale
+    Fond noir, puis une précomposition par scène, puis le HUD (coins de visée, time code, « 0N / 07 »),
+    puis la musique et un calque son par bruitage (« SFX 46 · pop · Brief » = 46e bruitage, son « pop »,
+    élément « Brief »). Chaque son est placé à l'image près sur l'élément qu'il accompagne.
+  01 Scènes   S1 · Accroche, S2 · Idée → digital, S3 · Services connectés, S4 · Tout en un endroit,
+              S5 · De l'idée au lancement, S6 · On t'accompagne, S7 · Logo
+  02 HUD      HUD sombre (sur fond noir) et HUD clair (sur fond blanc ou orange)
+  03 Sons     musique fournie + 14 bruitages Epidemic Sound
+
+Tout est natif et modifiable :
+  - Textes éditables (double-clic). Les effets de décodage sont des animateurs de texte
+    « Apparition » / « Décodage » / « Frappe » : changer le texte garde l'animation.
+  - Formes, logo CyberSpace (toujours noir), fusée, cube : calques de forme vectoriels.
+  - Mouvements : images clés réelles (courbes déjà appliquées), modifiables dans l'éditeur de graphique.
+  - Quelques animations répétitives (time code, clignotement, impulsions orange) sont des expressions.
+  - Flou de bougé activé sur les calques qui bougent (obturateur 180°, 16 échantillons).
+
+Polices à installer avant d'ouvrir (dossier fonts/, double-clic puis « Installer ») :
+  Inter (Regular, Medium, SemiBold, Bold) et JetBrains Mono (Medium, SemiBold, Bold).
+  Sans elles, After Effects remplace les textes par une autre police.
+
+Son
+---
+  sons/mix-master.wav       mix final (-14 LUFS, crête -1 dBTP), celui des MP4 livrés
+  sons/stem-musique.wav     musique seule, au niveau du mix
+  sons/stem-bruitages.wav   bruitages seuls, au niveau du mix
+  Les calques son du projet reprennent les mêmes niveaux (avant la normalisation finale).
+
+Reconstruire (si les fichiers source changent)
+----------------------------------------------
+  1. node after-effects/gen.mjs                 (régénère data-9x16.js et data-16x9.js depuis src/Video.jsx)
+  2. node after-effects/sons.mjs plan           (repères son → sons.json)
+     bruitages Epidemic dans sons/brut/<clé>.wav (identifiants dans sons.json), puis
+     node after-effects/sons.mjs preparer && node after-effects/sons.mjs mixer
+  3. Dans After Effects : Fichier > Scripts > Exécuter le fichier de script… → Construire-9x16.jsx
+     (ou Construire-16x9.jsx). Un journal construction-<format>.log signale toute police remplacée.
+  4. Rendu : Rendre.jsx (ProRes 4K dans rendus-ae/), puis
+     node after-effects/livrer.mjs rendus-ae/cyberspace-motion-9x16-ae.mov 9x16 <dossier>
+     (ajoute le mix master et produit le MP4 4K et l'aperçu 720p).

@@ -2,3 +2,8 @@ node_modules/
 out/
 public/mix.wav
 audio/pistes/
+after-effects/sons/
+after-effects/rendus-ae/
+after-effects/*.aep
+after-effects/*.log
+after-effects/fonts/_mesure.html
