@@ -25,7 +25,7 @@ const port = server.address().port;
 const [mode, w, h, outdir, ...rest] = process.argv.slice(2);
 const W = +w, H = +h;
 fs.mkdirSync(outdir, { recursive: true });
-const handle = process.env.HANDLE || '@TON_HANDLE';
+const handle = process.env.HANDLE || '@Dgit';
 
 const args = ['--use-gl=angle', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'];
 const browser = await chromium.launch({ args, executablePath: process.env.CHROME || undefined });

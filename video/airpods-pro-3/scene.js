@@ -409,7 +409,7 @@ logoEl.className = 't';
 logoEl.innerHTML = `<svg viewBox="0 0 24 24" width="100%" height="100%"><path fill="#fff" d="${APPLE_PATH}"/></svg>`;
 typeLayer.appendChild(logoEl);
 
-let HANDLE = '@TON_HANDLE';
+let HANDLE = '@Dgit';
 function place(el, { x, y, size, align = 'center', vAlign = 'center', opacity = 1, blur = 0, dx = 0, dy = 0, scale = 1, sy = 1 }) {
   el.style.fontSize = size + 'px';
   el.style.left = x + 'px';
