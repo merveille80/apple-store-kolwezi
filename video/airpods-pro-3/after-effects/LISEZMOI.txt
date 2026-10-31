@@ -1,0 +1,53 @@
+Spec ad « All new AirPods Pro 3 » · projets After Effects
+==========================================================
+
+Deux projets, un par format :
+  AirPods-Pro-3-9x16.aep   composition « AirPods Pro 3 9:16 »  (2160 × 3840, 60 i/s, 11,1 s)
+  AirPods-Pro-3-16x9.aep   composition « AirPods Pro 3 16:9 »  (3840 × 2160, 60 i/s, 11,1 s)
+
+Ouvre le projet du format voulu : la composition s'ouvre dans le visualiseur.
+
+Pile des calques (de haut en bas)
+---------------------------------
+  Mention légale          texte natif, 2 lignes (« Spec ad by @Dgit »), apparition en fondu à 10,15 s
+  Logo Apple              calque de forme vectoriel (Pomme + Feuille), fondu + zoom 94 → 100 % + flou à 10,05 s
+  Touch control           « Touch » puis « control » (glissé depuis la gauche), beat H (7,0–8,8 s)
+  Mot 1…5                 « Rebuilt from the ground up », un calque par mot, beat E (3,8–4,4 s)
+  Fit, finally figured out.   beat G (5,8–7,0 s)
+  Titre · All new / AirPods Pro 3   beat A (0–1,4 s), respiration sur la grosse caisse
+  AirPods 3D (Blender)    séquence PNG RGBA 60 i/s (vrai modèle AR Apple, rendu Cycles,
+                          ombres de contact et halo du capteur inclus), agrandie à la taille de la composition
+  Fond gris #E8E8ED       fondu entrant de 2,5 à 2,95 s, jusqu'à 10,0 s
+  Anneaux                 séquence des fonds animés (A bleu → noir, C clair), 0–3,0 s
+  Fond noir
+  Référence · mix master  (son coupé) le mix final des MP4 livrés, pour comparer
+  Musique · The Mood      musique seule, −3 dB (niveau du mix)
+  SFX 01…21               un calque par bruitage, déjà calé et au niveau du mix
+                          (nom = numéro · son · élément, ex. « SFX 03 · boom-deep · boîtier »)
+
+Tout est natif et modifiable :
+  - Textes éditables (double-clic), police Helvetica Neue (Medium / Bold / Regular), approche −20.
+  - Animations = images clés réelles (opacité, position, échelle, Flou gaussien « Flou d'entrée »),
+    échantillonnées à 60 i/s sur les mêmes courbes que l'aperçu (entrées exponentielles « keynote »).
+  - La 3D est précalculée dans Blender (scene.py) : pour changer un mouvement d'objet,
+    il faut relancer le rendu Blender, puis remplacer la séquence (Fichier > Remplacer le métrage).
+
+Dossiers
+--------
+  medias/3d-9x16, medias/3d-16x9            séquences 3D (PNG RGBA, f00114.png = 1,90 s … f00599.png)
+  medias/anneaux-9x16, medias/anneaux-16x9  fonds animés 0–3,0 s
+  sons/master.wav       mix final (−14 LUFS, crête −1 dBTP), celui des MP4 livrés
+  sons/musique.wav      musique seule (avant −3 dB du mix)
+  sons/bruitages.wav    tous les bruitages, au niveau du mix
+  sons/bruitages/       un fichier par bruitage, calé sur la timeline (0 s = début de la vidéo)
+  sons/cues.js          repères (temps, gain, hauteur) — voir aussi son/cue-sheet.md dans le dépôt
+
+Médias sous licence : modèle 3D Apple (usage spec ad, non commercial) et sons Epidemic Sound
+(compte de merveille). Ne pas les publier sur GitHub.
+
+Reconstruire
+------------
+  1. node after-effects/gen.mjs <dossier>      régénère data-9x16.js / data-16x9.js depuis les courbes de scene.js
+  2. Dans After Effects : Fichier > Scripts > Exécuter le fichier de script… → Construire-9x16.jsx
+     (ou Construire-16x9.jsx). Un journal construction-<format>.log signale toute police remplacée.
+  Tout en une fois : after-effects/preparer.sh "<dossier>" (copie sons et médias, puis construit les deux projets).
