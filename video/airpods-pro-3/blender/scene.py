@@ -415,8 +415,8 @@ def shot_case(t):
     Rc = Matrix.Rotation(yaw, 4, 'Z')
     for side, sx, b in (('L', -1, budL), ('R', 1, budR)):
         show(b, openk > 0.05)
-        seat = Vector((sx * 0.0142, 0.0008, CASE_H / 2 - 0.0085))  # repère boîtier (centre)
-        up = Vector((sx * 0.0058 * lift, -0.004 * lift, 0.035 * lift + float_y(t, sx, 0.0005) * lift))
+        seat = Vector((sx * 0.0142, 0.0008, CASE_H / 2 - 0.016))  # repère boîtier (centre)
+        up = Vector((sx * 0.0058 * lift, -0.004 * lift, 0.0425 * lift + float_y(t, sx, 0.0005) * lift))
         pos = Vector((0, 0, zc)) + (Rc @ ((seat + up) * s).to_4d()).to_3d()
         phi = lerp(1.25, 0.6, lift)
         sw = Vector((sx * 0.10 * lift, 0, -1)); nw = Vector(nozzle(sx, phi, 0.15 * lift))
