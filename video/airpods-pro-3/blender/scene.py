@@ -327,6 +327,15 @@ FACE = LIGHTS[4].data; FACE_E = FACE.energy
 bg.inputs['Strength'].default_value *= A.world
 RIG = bpy.data.objects.new('rig_lumieres', None); sc.collection.objects.link(RIG)
 for l in LIGHTS: l.parent = RIG
+# éclairage macro dédié au gros plan H (éteint ailleurs) : la tige reste bien blanche
+MACRO = [
+    area('macro_strip', 0.012, 0.06, (-0.045, -0.035, 0.01), 0.0),
+    area('macro_contre', 0.05, 0.015, (0.03, 0.04, 0.02), 0.0),
+    area('macro_face', 0.06, 0.04, (0.012, -0.07, 0.03), 0.0),
+]
+MACRO_E = [0.030, 0.020, 0.022]
+def macro(on):
+    for l, e in zip(MACRO, MACRO_E): l.data.energy = e * on * A.lights
 
 # attrape-ombres (ombres de contact sur fond transparent)
 bpy.ops.mesh.primitive_plane_add(size=2.0)
@@ -335,6 +344,40 @@ floor.is_shadow_catcher = True
 fm = bpy.data.materials.new('sol'); fm.use_nodes = True
 set_in(principled(fm), 'Base Color', (0.82, 0.82, 0.84, 1)); set_in(principled(fm), 'Roughness', 0.9)
 floor.data.materials.append(fm)
+
+# ---------- halo (bloom) limité à l'émission ----------
+# Image + Glare(passe Émission) ; l'alpha s'étend sous le halo pour qu'il
+# reste visible une fois posé sur le fond du montage.
+vl.use_pass_emit = True
+ct = bpy.data.node_groups.new('compo_halo', 'CompositorNodeTree')
+sc.compositing_node_group = ct
+cn = ct.nodes; cl = ct.links
+ct.interface.new_socket('Image', in_out='OUTPUT', socket_type='NodeSocketColor')
+rl = cn.new('CompositorNodeRLayers'); rl.scene = sc
+gl = cn.new('CompositorNodeGlare')
+gl.inputs['Type'].default_value = 'Bloom'
+gl.inputs['Threshold'].default_value = 0.0
+gl.inputs['Size'].default_value = 0.5
+gl.inputs['Strength'].default_value = 1.0
+
+cl.new(rl.outputs['Emission' if 'Emission' in rl.outputs else 'Emit'], gl.inputs['Image'])
+si = cn.new('CompositorNodeSeparateColor'); cl.new(rl.outputs['Image'], si.inputs['Image'])
+sg = cn.new('CompositorNodeSeparateColor'); cl.new(gl.outputs['Glare'], sg.inputs['Image'])
+cc = cn.new('CompositorNodeCombineColor')
+def mathn(op, a, b=None, clamp=False):
+    n = cn.new('ShaderNodeMath'); n.operation = op; n.use_clamp = clamp
+    for i, x in enumerate((a, b)):
+        if x is None: continue
+        if isinstance(x, (int, float)): n.inputs[i].default_value = x
+        else: cl.new(x, n.inputs[i])
+    return n.outputs[0]
+HALO = 2.2
+for ch in ('Red', 'Green', 'Blue'):
+    cl.new(mathn('ADD', si.outputs[ch], mathn('MULTIPLY', sg.outputs[ch], HALO)), cc.inputs[ch])
+gmax = mathn('MAXIMUM', mathn('MAXIMUM', sg.outputs['Red'], sg.outputs['Green']), sg.outputs['Blue'])
+cov = mathn('MULTIPLY', mathn('SUBTRACT', 1.0, si.outputs['Alpha']), mathn('MULTIPLY', gmax, HALO), clamp=True)
+cl.new(mathn('ADD', si.outputs['Alpha'], cov, clamp=True), cc.inputs['Alpha'])
+go = cn.new('NodeGroupOutput'); cl.new(cc.outputs['Image'], go.inputs[0])
 
 # ---------- caméras ----------
 def make_cam(name):
@@ -383,6 +426,7 @@ def state(t):
     SENS_BASE.default_value = (0.86, 0.86, 0.87, 1)
     RIG.rotation_euler = (0, 0, 0)
     FACE.energy = FACE_E
+    macro(0.0)
     if B['C'] <= t < B['E']:
         shot_case(t)
     elif B['F'] <= t < B['G']:
@@ -483,9 +527,10 @@ def shot_touch(t):
     sp = center(O[P['sensL']])
     glow = eout(prog(t, B['H'] + 0.45, B['H'] + 0.9))
     breathe = 0.85 + 0.15 * math.sin((t - B['H']) * 7)
-    SENS_STRENGTH.default_value = 1.7 * glow * breathe
+    SENS_STRENGTH.default_value = 1.15 * glow * breathe
     SENS_BASE.default_value = tuple(lerp(a, b, glow) for a, b in zip((0.86, 0.86, 0.87, 1), (0.02, 0.36, 0.07, 1)))
     FACE.energy = FACE_E * 9.0  # gros plan : on rapproche la face douce
+    macro(1.0)
     off = 0.0042 if PORTRAIT else 0.0077
     target = (sp.x + off, sp.y, sp.z + lerp(0.0025, 0.001, eio(k)))
     frame_cam(target, (-0.12, -1, 0.05),
@@ -515,6 +560,7 @@ def key_all(f, t):
     SENS_STRENGTH.keyframe_insert('default_value', frame=f)
     SENS_BASE.keyframe_insert('default_value', frame=f)
     FACE.keyframe_insert('energy', frame=f)
+    for l in MACRO: l.data.keyframe_insert('energy', frame=f)
     return vis
 
 def has3d(t):
