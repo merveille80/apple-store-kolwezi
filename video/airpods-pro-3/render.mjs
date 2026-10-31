@@ -8,10 +8,14 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
-const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json' };
+const TYPES = { '.png': 'image/png', '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json' };
+// LAYER_DIR : dossier de PNG RGBA (rendu Blender) servi sous /layer/
+const LAYER_DIR = process.env.LAYER_DIR ? path.resolve(process.env.LAYER_DIR) : null;
 const server = http.createServer((req, res) => {
-  const p = path.join(ROOT, decodeURIComponent(req.url.split('?')[0]));
-  if (!p.startsWith(ROOT) || !fs.existsSync(p) || fs.statSync(p).isDirectory()) { res.writeHead(404); return res.end(); }
+  const u = decodeURIComponent(req.url.split('?')[0]);
+  const base = LAYER_DIR && u.startsWith('/layer/') ? LAYER_DIR : ROOT;
+  const p = path.join(base, base === ROOT ? u : u.slice('/layer/'.length));
+  if (!p.startsWith(base) || !fs.existsSync(p) || fs.statSync(p).isDirectory()) { res.writeHead(404); return res.end(); }
   res.writeHead(200, { 'Content-Type': TYPES[path.extname(p)] || 'application/octet-stream' });
   fs.createReadStream(p).pipe(res);
 });
@@ -31,6 +35,7 @@ page.on('pageerror', (e) => console.error('pageerror:', e.message));
 await page.goto(`http://localhost:${port}/scene.html`);
 await page.waitForFunction(() => window.sceneReady === true, null, { timeout: 60000 });
 await page.evaluate(([a, b, c]) => window.setup(a, b, c), [W, H, handle]);
+if (LAYER_DIR) await page.evaluate((fps) => window.useLayer('/layer', fps), +(process.env.LAYER_FPS || 60));
 
 async function shot(t, file) {
   await page.evaluate((tt) => window.renderFrame(tt), t);

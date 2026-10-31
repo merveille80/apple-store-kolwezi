@@ -682,9 +682,26 @@ window.setup = (w, h, handle) => {
   camera.updateProjectionMatrix();
 };
 
+// Calque produit externe (rendu Blender RGBA), sinon three.js
+let LAYER = null; // { url, fps }
+const layerImg = new Image();
+function loadImg(src) {
+  return new Promise((res) => { layerImg.onload = () => res(true); layerImg.onerror = () => res(false); layerImg.src = src; });
+}
+window.useLayer = (url, fps) => { LAYER = url ? { url, fps } : null; };
+
 window.renderFrame = async (t) => {
   setScene(t);
-  renderer.render(scene, camera);
+  fxx.clearRect(0, 0, W, H);
+  if (LAYER) {
+    hideObjects();
+    renderer.render(scene, camera);
+    const n = Math.round(t * LAYER.fps);
+    const ok = await loadImg(`${LAYER.url}/f${String(n).padStart(5, '0')}.png`);
+    if (ok) fxx.drawImage(layerImg, 0, 0, W, H);
+  } else {
+    renderer.render(scene, camera);
+  }
   await document.fonts.ready;
   return true;
 };
