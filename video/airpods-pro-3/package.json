@@ -1,0 +1,6 @@
+{
+  "name": "airpods-pro-3-spec-ad",
+  "private": true,
+  "type": "module",
+  "dependencies": { "three": "0.170.0", "playwright": "*" }
+}
