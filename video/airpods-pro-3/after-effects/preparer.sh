@@ -14,7 +14,9 @@ node -e "const j=require('$MIX/cues.json'); require('fs').writeFileSync('$AE/son
 if [[ "$2" != "--sans-3d" ]]; then
   for F in 9x16 16x9; do
     mkdir -p "$AE/medias/3d-$F"
-    rsync -a --exclude '*.part.png' "$HOME/ap3-build/rendus-3d/final-$F/" "$AE/medias/3d-$F/"
+    # liens physiques (même disque) : aucune place supplémentaire
+    SRC="$HOME/ap3-build/rendus-3d/final-$F"
+    rsync -a --exclude '*.part.png' --link-dest="$SRC/" "$SRC/" "$AE/medias/3d-$F/"
   done
 fi
 for F in 9x16 16x9; do
