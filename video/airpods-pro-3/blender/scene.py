@@ -24,6 +24,7 @@ ap.add_argument('--samples', type=int, default=96)
 ap.add_argument('--stills', default='')
 ap.add_argument('--range', default='')
 ap.add_argument('--save-blend', default='')
+ap.add_argument('--resume', action='store_true')  # saute les images déjà présentes
 ap.add_argument('--exposure', type=float, default=0.0)
 ap.add_argument('--lights', type=float, default=1.0)
 ap.add_argument('--world', type=float, default=1.0)
@@ -269,7 +270,7 @@ for d in cp.devices: d.use = (d.type == 'METAL')
 cs = sc.cycles
 cs.device = 'GPU'
 cs.samples = A.samples
-cs.use_adaptive_sampling = True; cs.adaptive_threshold = 0.015
+cs.use_adaptive_sampling = True; cs.adaptive_threshold = 0.02
 cs.use_denoising = True
 try: cs.denoiser = 'OPENIMAGEDENOISE'
 except Exception: pass
@@ -616,12 +617,15 @@ timings = []
 for n, t, fbase in plan:
     name = f't{t:.2f}.png' if n is None else f'f{n:05d}.png'
     path = os.path.join(A.out, name)
+    if A.resume and os.path.exists(path): continue
     if fbase is None:
         write_empty(path); continue
     sc.frame_set(fbase)
     t_start = time.time()
-    sc.render.filepath = path
+    tmp = path[:-4] + '.part.png'  # écriture atomique : une image interrompue n'est jamais sautée
+    sc.render.filepath = tmp
     bpy.ops.render.render(write_still=True)
+    os.replace(tmp, path)
     dt = time.time() - t_start; timings.append(dt)
     print(f'RENDU {name} t={t:.3f}s {dt:.1f}s', flush=True)
 if timings:
