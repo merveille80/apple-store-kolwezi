@@ -646,7 +646,7 @@ function setScene(t) {
     // C : anneaux clairs ; D : passage au gris
     drawRings(t, 1);
     const g = eio(prog(t, B.D + 0.1, B.D + 0.55));
-    if (g > 0) fillBg(GRAY, g);
+    if (g > 0 && !window.BG_ONLY) fillBg(GRAY, g);
     setCase(t);
   } else if (t < B.F) {
     fillBg(GRAY);
@@ -665,6 +665,7 @@ function setScene(t) {
   } else {
     fillBg('#000');
   }
+  if (window.BG_ONLY) { hideObjects(); hideAll(); return; } // fonds seuls (calque After Effects)
   setType(t);
 }
 
@@ -693,7 +694,7 @@ window.useLayer = (url, fps) => { LAYER = url ? { url, fps } : null; };
 window.renderFrame = async (t) => {
   setScene(t);
   fxx.clearRect(0, 0, W, H);
-  if (LAYER) {
+  if (LAYER && !window.BG_ONLY) {
     hideObjects();
     renderer.render(scene, camera);
     const n = Math.round(t * LAYER.fps);

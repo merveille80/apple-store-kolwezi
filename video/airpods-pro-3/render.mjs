@@ -35,6 +35,8 @@ page.on('pageerror', (e) => console.error('pageerror:', e.message));
 await page.goto(`http://localhost:${port}/scene.html`);
 await page.waitForFunction(() => window.sceneReady === true, null, { timeout: 60000 });
 await page.evaluate(([a, b, c]) => window.setup(a, b, c), [W, H, handle]);
+// BG_ONLY=1 : fonds seuls (anneaux), sans texte ni 3D, pour After Effects
+if (process.env.BG_ONLY) await page.evaluate(() => { window.BG_ONLY = true; });
 if (LAYER_DIR) await page.evaluate((fps) => window.useLayer('/layer', fps), +(process.env.LAYER_FPS || 60));
 
 async function shot(t, file) {
